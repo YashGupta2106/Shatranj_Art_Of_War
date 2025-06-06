@@ -1,0 +1,279 @@
+.chess-game-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  font-family: 'Arial', sans-serif;
+}
+
+.chess-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.chess-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.game-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.current-player {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.back-btn {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.chess-main {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  gap: 40px;
+}
+
+.chess-board-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chess-board {
+  display: grid;
+  grid-template-columns: repeat(8, 80px);
+  grid-template-rows: repeat(8, 80px);
+  border: 4px solid #8b4513;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  background: #f0d9b5;
+  transition: transform 0.5s ease; /* Smooth rotation transition */
+}
+
+/* ✅ UPDATED: Board rotation around X-axis (vertical flip like flipping a pancake) */
+.chess-board.rotated {
+  transform: rotateX(180deg);
+}
+
+.chess-square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.chess-square.light {
+  background-color: #f0d9b5;
+}
+
+.chess-square.dark {
+  background-color: #b58863;
+}
+
+.chess-square:hover {
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 0, 0.6);
+}
+
+.chess-square.selected {
+  box-shadow: inset 0 0 0 4px #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.3) !important;
+}
+
+.square-notation {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.4);
+  font-weight: bold;
+  transition: transform 0.5s ease; /* Smooth rotation transition */
+}
+
+/* ✅ UPDATED: Keep square notation upright when board is flipped around X-axis */
+.chess-board.rotated .square-notation {
+  transform: rotateX(180deg);
+}
+
+.chess-piece {
+  font-size: 48px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  transition: transform 0.5s ease; /* Smooth rotation transition */
+}
+
+.chess-piece:hover {
+  transform: scale(1.1);
+}
+
+/* ✅ UPDATED: Keep pieces upright when board is flipped around X-axis */
+.chess-board.rotated .chess-piece {
+  transform: rotateX(180deg);
+}
+
+/* ✅ UPDATED: Handle hover effect for flipped pieces around X-axis */
+.chess-board.rotated .chess-piece:hover {
+  transform: rotateX(180deg) scale(1.1);
+}
+
+.chess-piece.white {
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.chess-piece.black {
+  color: #2c3e50;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.game-sidebar {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 30px;
+  backdrop-filter: blur(10px);
+  min-width: 250px;
+}
+
+.captured-pieces h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.game-controls {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.control-btn {
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .chess-main {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .game-sidebar {
+    min-width: auto;
+    width: 100%;
+    max-width: 640px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chess-board {
+    grid-template-columns: repeat(8, 60px);
+    grid-template-rows: repeat(8, 60px);
+  }
+  
+  .chess-piece {
+    font-size: 36px;
+  }
+  
+  .chess-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .game-info {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Possible move highlighting */
+.chess-square.possible-move {
+  position: relative;
+  background-color: rgba(0, 123, 255, 0.3) !important; /* Light blue background */
+}
+
+/* Blue circle indicator */
+.move-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background-color: #007bff; /* Blue circle */
+  border-radius: 50%;
+  opacity: 0.8;
+  pointer-events: none; /* Don't interfere with clicks */
+  z-index: 2; /* Above the piece */
+  transition: transform 0.5s ease; /* Smooth rotation transition */
+}
+
+/* ✅ UPDATED: Keep move indicators upright when board is flipped around X-axis */
+.chess-board.rotated .move-indicator {
+  transform: translate(-50%, -50%) rotateX(180deg);
+}
+
+/* Alternative: Hollow blue circle */
+.move-indicator-hollow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 3px solid #007bff;
+  border-radius: 50%;
+  background-color: transparent;
+  pointer-events: none;
+  z-index: 2;
+  transition: transform 0.5s ease; /* Smooth rotation transition */
+}
+
+/* ✅ UPDATED: Keep hollow move indicators upright when board is flipped around X-axis */
+.chess-board.rotated .move-indicator-hollow {
+  transform: translate(-50%, -50%) rotateX(180deg);
+}
+
+/* For squares with pieces - smaller circle */
+.chess-square:has(.chess-piece) .move-indicator {
+  width: 15px;
+  height: 15px;
+  background-color: rgba(0, 123, 255, 0.7);
+}

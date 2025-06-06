@@ -1,0 +1,66 @@
+### VS Code ###
+.vscode/
+.idea/
+*.iml
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Firebase service account files
+**/firebase-service-account*.json
+**/serviceAccountKey*.json
+**/*-firebase-adminsdk-*.json
+
+### IntelliJ IDEA ###
+*.iws
+*.ipr
+
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+
+node_modules/
+/backend/target/
+/backend/.env
+
+# Frontend
+/frontend/node_modules/
+/frontend/build/
+
+# Firebase service account key (DO NOT COMMIT THIS FILE)
+backend/src/main/resources/firebase-service-account.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
