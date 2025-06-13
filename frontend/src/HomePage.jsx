@@ -1,29 +1,39 @@
 import React from "react";
-import { auth } from "./firebase-config";
+import { useNavigate } from "react-router-dom"; // ADD THIS
 import { signOut } from "firebase/auth";
+import { auth } from "./firebase-config";
+import { useAuth } from "./AuthContext"; // ADD THIS
 import "./HomePage.css";
 
-export default function HomePage({ user, onLogout, onNavigateToPractice, onNavigateToOnline }) {
+
+export default function HomePage() {
+
+  const navigate = useNavigate(); // ADD THIS
+  const { currentUser } = useAuth(); // ADD THIS
+
   const handlePracticeMode = () => {
     console.log("Practice Mode clicked");
-    onNavigateToPractice();
+    navigate('/practice'); // CHANGE: use navigate instead of callback
   };
 
   const handlePlayOnline = () => {
     console.log("Play Online clicked");
-    onNavigateToOnline();
+    navigate('/online'); // CHANGE: use navigate instead of callback
   };
 
   const handleMyGames = () => {
     console.log("My Games clicked");
     // TODO: Navigate to game history
+    
+    navigate('/my-games');
+    
   };
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
       console.log("User logged out successfully");
-      onLogout();
+      navigate('/login'); // Redirect to login page after logout
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -34,7 +44,7 @@ export default function HomePage({ user, onLogout, onNavigateToPractice, onNavig
       <header className="homepage-header">
         <h1>Shatranj - Art of War</h1>
         <div className="user-info">
-          <span>Welcome, {user?.email || 'Player'}!</span>
+          <span>Welcome, {currentUser?.email || 'Player'}!</span>
           <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>

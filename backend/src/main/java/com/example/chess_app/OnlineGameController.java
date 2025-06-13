@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
+import java.time.LocalDateTime;
 
 @Controller
 public class OnlineGameController {
@@ -45,6 +46,9 @@ public class OnlineGameController {
                     break;
                 case "GAME_MOVE":
                     handleGameMove(message);
+                    break;
+                case "SHOW_MOVE":
+                    handleShowMove(message);
                     break;
                 default:
                     System.err.println("❌ Unknown message type: " + message.getMessageType());
@@ -124,6 +128,7 @@ public class OnlineGameController {
         // Update game status
         game.setActive(true);
         // game.setGameStatus("active");
+        game.setStartTime(LocalDateTime.now());
         gameRepository.save(game);
         
         // Create game start response
@@ -198,6 +203,10 @@ public class OnlineGameController {
 
         // Check for time-based game endings
         if(whiteTime == 0){
+            game.setActive(false);
+            game.setGameEndReason("White ran out of Time");
+            game.setWinner("black");
+            game.setEndTime(LocalDateTime.now());
             response.setGameEnded(true);
             response.setGameEndReason("White ran out of Time");
             response.setWinner("black");
@@ -205,6 +214,10 @@ public class OnlineGameController {
             return response;
         }
         else if(blackTime == 0){
+            game.setActive(false);
+            game.setGameEndReason("Black ran out of Time");
+            game.setWinner("white");
+            game.setEndTime(LocalDateTime.now());
             response.setGameEnded(true);
             response.setGameEndReason("Black ran out of Time");
             response.setWinner("white");
@@ -222,6 +235,7 @@ public class OnlineGameController {
                     game.setGameEndReason("Draw");
                     game.setWinner("draw");
                     game.setActive(false);
+                    game.setEndTime(LocalDateTime.now());
                     gameRepository.save(game);
                     response.setGameEnded(true);
                     response.setGameEndReason("Draw");
@@ -244,6 +258,7 @@ public class OnlineGameController {
                     game.setGameEndReason("Draw");
                     game.setWinner("draw");
                     game.setActive(false);
+                    game.setEndTime(LocalDateTime.now());
                     gameRepository.save(game);
                     response.setGameEnded(true);
                     response.setGameEndReason("Draw");
@@ -313,6 +328,8 @@ public class OnlineGameController {
         else {
             if(!(moveMessage.getPromoteTo().equals("no"))){
                 response.setPromoteTo(moveMessage.getPromoteTo());
+                response.setIsPromotion("yes");
+                System.out.println("yes isPromotion is yes");
             }
             // Call game handler for actual move processing
             OnlineGameHandler gameHandler = new OnlineGameHandler(game, squareClicked, hasCircle, playerColor, response);
@@ -327,6 +344,64 @@ public class OnlineGameController {
         }
     }
 
+    private void handleShowMove(WebSocketMessage message){
+        Game game=gameRepository.findByGameId(message.getGameId());
+        int currentGameMove=game.getMoveNumber();
+        ShowMove showMove = new ShowMove();
+        if(message.getNumber()==1){
+            showMove.setMoveStatus(1);
+            if(message.getCurrentMove()>currentGameMove){
+                // int this case we wont change the board.... so send a message
+                showMove.setMessageType("NO_SHOW");
+            }
+            else{
+                // int this case we will change the board
+                showMove.setMessageType("SHOW_MOVE");
+                for(Move move:game.getMoves()){
+                    if(move.getMoveNumber()==message.getCurrentMove()){
+                        System.out.println("Changing board to move number: " + (message.getCurrentMove()+1));
+                        showMove.setMoveNumber(move.getMoveNumber());
+                        showMove.setFrom_sq(move.getFrom_sq());
+                        showMove.setTo_sq(move.getTo_sq());
+                        showMove.setPieceCaptured(move.getPieceCaptured());
+                        showMove.setPieceMoved(move.getPieceMoved());
+                        showMove.setEnPassant(move.getEnPassant());
+                        showMove.setCastling(move.getCastling());
+                        showMove.setPromotion(move.getPromotion());
+                        showMove.setPromotionPiece(move.getPromotionPiece());
+                        showMove.setSquareCaptured(move.getSquareCaptured());
+
+
+                        break;
+                    }
+                }
+            }
+        }
+        else if(message.getNumber()==-1){
+            showMove.setMessageType("SHOW_MOVE");
+            showMove.setMoveStatus(-1);
+            // we will change the board to previous move
+            for(Move move:game.getMoves()){
+                    if(move.getMoveNumber()==message.getCurrentMove()){
+                        System.out.println("Changing board to move number: " + (message.getCurrentMove()-1));
+                        showMove.setMoveNumber(move.getMoveNumber());
+                        showMove.setFrom_sq(move.getFrom_sq());
+                        showMove.setTo_sq(move.getTo_sq());
+                        showMove.setPieceCaptured(move.getPieceCaptured());
+                        showMove.setPieceMoved(move.getPieceMoved());
+                        showMove.setEnPassant(move.getEnPassant());
+                        showMove.setCastling(move.getCastling());
+                        showMove.setPromotion(move.getPromotion());
+                        showMove.setPromotionPiece(move.getPromotionPiece());
+                        showMove.setSquareCaptured(move.getSquareCaptured());
+                        break;
+                    }
+                }
+        }
+        
+            messagingTemplate.convertAndSend("/topic/" + message.getPlayerEmail(),showMove);
+    }
+   
     // Helper method to create error responses
     private MoveResponse createErrorResponse(String errorMessage) {
         MoveResponse response = new MoveResponse();
@@ -349,6 +424,8 @@ public class OnlineGameController {
         private String promoteTo;
         private String buttonClicked;
         private String drawOffer;
+        private int number;
+        private int currentMove;
 
         // Getters and setters
         public String getMessageType() { return messageType; }
@@ -386,7 +463,13 @@ public class OnlineGameController {
         
         public String getDrawOffer() { return drawOffer; }
         public void setDrawOffer(String drawOffer) { this.drawOffer = drawOffer; }
+        public int getNumber() { return number; }
+        public void setNumber(int number) { this.number = number; }
+        public int getCurrentMove() { return currentMove; }
+        public void setCurrentMove(int currentMove) { this.currentMove = currentMove; }
     }
+
+    
 
     public static class ReadyResponse {
         private String messageType;

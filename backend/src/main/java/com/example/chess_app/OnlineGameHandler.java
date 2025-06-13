@@ -3,7 +3,7 @@ package com.example.chess_app;
 // import all stuff
 import java.util.ArrayList;
 import java.util.List;
-
+import java.time.LocalDateTime;
 // this function will search for the game from the gamerepository.
 // it will find kiski baari hai to determine a valid click is made or not
 // if valid is made then it will proceed with almost same logic of gameHandler
@@ -58,6 +58,8 @@ public class OnlineGameHandler {
             // now i have to do a lot of changes
             game.setMoveNumber();
             Move newMove=new Move(game.getLastSquareClicked(),squareClicked);
+            newMove.setMoveNumber(game.getMoveNumber());
+            moveResponse.setMoveNumber(game.getMoveNumber());
             // at end remember to update lastSquare to this current one
             moveResponse.setMoveFrom(game.getLastSquareClicked());
             moveResponse.setMoveTo(squareClicked);
@@ -178,6 +180,8 @@ public class OnlineGameHandler {
                                                 pawnFlag=1;
                                                 newMove.setPieceCaptured("Pawn");
                                                 newMove.setEnPassant(true);
+                                                moveResponse.setIsEnPassant("yes");
+                                                newMove.setSquareCaptured(p1.getSquare());
                                                 break;
                                             }
                                         }
@@ -191,14 +195,53 @@ public class OnlineGameHandler {
                                 for(Piece bp: blackPieces){
                                     if(bp.getSquare().equals(squareClicked)){
                                         blackPieces.remove(bp);
+                                        if(bp instanceof Rook){
+                                            newMove.setPieceCaptured("rook");
+                                        }
+                                        else if(bp instanceof Knight){
+                                            newMove.setPieceCaptured("knight");
+                                        }
+                                        else if(bp instanceof Bishop){
+                                            newMove.setPieceCaptured("bishop");
+                                        }
+                                        else if(bp instanceof Queen){
+                                            newMove.setPieceCaptured("queen");
+                                        }
                                         break;
                                     }
                                 }
+
+                                
                                 // movePiece(gameState.getSquareSelected(),square.getSquare(),squarePanes);
-                                p.setSquare(squareClicked);
+                                // p.setSquare(squareClicked);
                                 // String promotedPiece=handlePawnPromotion(squareClicked, "white", squarePanes);
+                                whitePieces.remove(p);
+                                // now add the new piece:
+                                if(moveResponse.getPromoteTo().equals("queen")){
+                                    Queen queen=new Queen("white",squareClicked);
+                                    whitePieces.add(queen);
+
+                                }
+                                else if(moveResponse.getPromoteTo().equals("rook")){
+                                    Rook rook=new Rook("white", squareClicked);
+                                    rook.setCastleTo("no");
+                                    rook.setFirstMove("yes");
+                                    whitePieces.add(rook);
+
+                                }
+                                else if(moveResponse.getPromoteTo().equals("bishop")){
+                                    Bishop bishop=new Bishop("white", squareClicked);
+                                    whitePieces.add(bishop);
+
+                                }
+                                else if(moveResponse.getPromoteTo().equals("knight")){
+                                    Knight knight=new Knight("white", squareClicked);
+                                    whitePieces.add(knight);
+
+                                }
                                 pawnFlag=1;
                                 newMove.setPromotion(true);
+                                newMove.setPromotionPiece(moveResponse.getPromoteTo());
                                 moveResponse.setIsPromotion("yes");
                                 // here i make a call to ask for what to promote to
                                 // newMove.setPromotionPiece(promotedPiece);
@@ -387,6 +430,8 @@ public class OnlineGameHandler {
                                                 pawnFlag=1;
                                                 newMove.setPieceCaptured("Pawn");
                                                 newMove.setEnPassant(true);
+                                                moveResponse.setIsEnPassant("yes");
+                                                newMove.setSquareCaptured(p1.getSquare());
                                                 break;
                                             }
                                         }
@@ -394,20 +439,55 @@ public class OnlineGameHandler {
                                 }
 
                             }
-                            if(rank==8){
+                            if(rank==1){
                                 System.out.println("its promotion time baby");
                                 // removePiece(square.getSquare(),squarePanes);
                                 for(Piece bp: whitePieces){
                                     if(bp.getSquare().equals(squareClicked)){
                                         whitePieces.remove(bp);
+                                        if(bp instanceof Rook){
+                                            newMove.setPieceCaptured("rook");
+                                        }
+                                        else if(bp instanceof Knight){
+                                            newMove.setPieceCaptured("knight");
+                                        }
+                                        else if(bp instanceof Bishop){
+                                            newMove.setPieceCaptured("bishop");
+                                        }
+                                        else if(bp instanceof Queen){
+                                            newMove.setPieceCaptured("queen");
+                                        }
                                         break;
                                     }
                                 }
                                 // movePiece(gameState.getSquareSelected(),square.getSquare(),squarePanes);
-                                p.setSquare(squareClicked);
+                                blackPieces.remove(p);
+                                if(moveResponse.getPromoteTo().equals("queen")){
+                                    Queen queen=new Queen("black",squareClicked);
+                                    blackPieces.add(queen);
+
+                                }
+                                else if(moveResponse.getPromoteTo().equals("rook")){
+                                    Rook rook=new Rook("black", squareClicked);
+                                    rook.setCastleTo("no");
+                                    rook.setFirstMove("yes");
+                                    blackPieces.add(rook);
+
+                                }
+                                else if(moveResponse.getPromoteTo().equals("bishop")){
+                                    Bishop bishop=new Bishop("black", squareClicked);
+                                    blackPieces.add(bishop);
+
+                                }
+                                else if(moveResponse.getPromoteTo().equals("knight")){
+                                    Knight knight=new Knight("black", squareClicked);
+                                    blackPieces.add(knight);
+
+                                }
                                 // String promotedPiece=handlePawnPromotion(squareClicked, "white", squarePanes);
                                 pawnFlag=1;
                                 newMove.setPromotion(true);
+                                newMove.setPromotionPiece(moveResponse.getPromoteTo());
                                 moveResponse.setIsPromotion("yes");
                                 // newMove.setPromotionPiece(promotedPiece);
                                 
@@ -1517,6 +1597,7 @@ public class OnlineGameHandler {
                 game.setWinner("black");
                 game.setActive(false);
                 game.setGameEndReason("Checkmate");
+                game.setEndTime(LocalDateTime.now());
                 return ;
             }
             else{
@@ -1565,6 +1646,7 @@ public class OnlineGameHandler {
                 game.setWinner("white");
                 game.setActive(false);
                 game.setGameEndReason("Checkmate");
+                game.setEndTime(LocalDateTime.now());
                 
                 return ;
 
@@ -1585,6 +1667,7 @@ public class OnlineGameHandler {
                 game.setWinner("draw");
                 game.setActive(false);
                 game.setGameEndReason("draw");
+                game.setEndTime(LocalDateTime.now());
                 return ;
 
             }
@@ -1600,6 +1683,7 @@ public class OnlineGameHandler {
                 game.setWinner("draw");
                 game.setActive(false);
                 game.setGameEndReason("draw");
+                game.setEndTime(LocalDateTime.now());
                 return ;
 
             }

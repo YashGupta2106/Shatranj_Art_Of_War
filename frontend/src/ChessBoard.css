@@ -277,3 +277,191 @@
   height: 15px;
   background-color: rgba(0, 123, 255, 0.7);
 }
+
+
+/* Promotion Modal Styles */
+.promotion-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  pointer-events: all;
+}
+
+.promotion-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  z-index: 10000; /* Even higher z-index */
+  position: relative;
+}
+
+.promotion-modal h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.5em;
+}
+
+.promotion-modal p {
+  margin: 0 0 20px 0;
+  color: #666;
+}
+
+.promotion-pieces {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.promotion-piece-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 100px;
+  justify-content: center;
+}
+
+.promotion-piece-btn:hover {
+  border-color: #4CAF50;
+  background: #f0f8f0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.promotion-piece-btn:active {
+  transform: translateY(0);
+}
+
+.promotion-piece-btn .chess-piece {
+  font-size: 3em;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.piece-label {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: #333;
+}
+
+.promotion-cancel-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+}
+
+.promotion-cancel-btn:hover {
+  background: #d32f2f;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .promotion-pieces {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  
+  .promotion-piece-btn {
+    padding: 15px 10px;
+    min-height: 80px;
+  }
+  
+  .promotion-piece-btn .chess-piece {
+    font-size: 2em;
+  }
+  
+  .piece-label {
+    font-size: 0.8em;
+  }
+}
+
+
+/* Add these styles to your existing ChessBoard.css */
+
+/* Update chess-main to accommodate eval bar */
+.chess-main {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+/* Evaluation bar section */
+.eval-bar-section {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* Chess board container adjustments */
+.chess-board-container {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Game sidebar adjustments */
+.game-sidebar {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+/* Responsive layout */
+@media (max-width: 1200px) {
+  .chess-main {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .eval-bar-section {
+    order: 2;
+    margin: 20px 0;
+  }
+  
+  .chess-board-container {
+    order: 1;
+  }
+  
+  .game-sidebar {
+    order: 3;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .chess-main {
+    padding: 10px;
+    gap: 15px;
+  }
+  
+  .eval-bar-section {
+    margin: 15px 0;
+  }
+}

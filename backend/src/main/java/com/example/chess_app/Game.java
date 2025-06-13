@@ -27,6 +27,7 @@ public class Game {
     private int moveNumber=0;
     private String whiteDrawOffer="no"; // to check if draw offer is accepted by both players
     private String blackDrawOffer="no"; // to check if draw offer is accepted by both players
+    private LocalDateTime endTime;
 
     public Game(String whitePlayer, String blackPlayer, String gameName, List<Piece> whitePieces, List<Piece> blackPieces) {
         this.whitePlayer = whitePlayer;
@@ -155,6 +156,12 @@ public class Game {
     }
     public void setBlackPlayerName(String blackPlayerName) {
         this.blackPlayerName = blackPlayerName;
+    }
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
     
 }

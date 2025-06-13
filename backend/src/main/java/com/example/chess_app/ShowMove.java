@@ -1,31 +1,35 @@
 package com.example.chess_app;
 
-public class Move {
-    private int moveNumber=0;
+
+public class ShowMove {
+    private String messageType;
+    private int moveNumber;
     private String from_sq;
     private String to_sq;
-    private String pieceCaptured;
+    private String pieceCaptured="no";
     private String pieceMoved;
-    private boolean whiteKingInCheck=false;
-    private boolean blackKingInCheck=false;
     private boolean enPassant=false;
     private boolean castling=false;
     private boolean promotion=false;
-    private String promotionPiece="no";
-    private String squareCaptured="no"; // this is used to capture the square where the piece was captured
-    public Move(String from_sq, String to_sq) {
-        this.from_sq = from_sq;
-        this.to_sq = to_sq;
-        this.pieceCaptured = "no";
+    private String promotionPiece;
+    private int moveStatus=0;
+    private String squareCaptured="no";
+
+    public String getMessageType() {
+        return messageType;
+    }
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public int getMoveNumber() {
+        return moveNumber;
+    }
+    public void setMoveNumber(int moveNumber) {
+        this.moveNumber = moveNumber;
     }
     public String getFrom_sq() {
         return from_sq;
-    }
-    public void setMoveNumber(int moveNo){
-        moveNumber=moveNo;
-    }
-    public int getMoveNumber(){
-        return moveNumber;
     }
     public void setFrom_sq(String from_sq) {
         this.from_sq = from_sq;
@@ -48,31 +52,19 @@ public class Move {
     public void setPieceMoved(String pieceMoved) {
         this.pieceMoved = pieceMoved;
     }
-    public boolean getWhiteKingInCheck() {
-        return whiteKingInCheck;
-    }
-    public void setWhiteKingInCheck(boolean whiteKingInCheck) {
-        this.whiteKingInCheck = whiteKingInCheck;
-    }
-    public boolean getBlackKingInCheck() {
-        return blackKingInCheck;
-    }
-    public void setBlackKingInCheck(boolean blackKingInCheck) {
-        this.blackKingInCheck = blackKingInCheck;
-    }
-    public boolean getEnPassant() {
+    public boolean isEnPassant() {
         return enPassant;
     }
     public void setEnPassant(boolean enPassant) {
         this.enPassant = enPassant;
     }
-    public boolean getCastling() {
+    public boolean isCastling() {
         return castling;
     }
     public void setCastling(boolean castling) {
         this.castling = castling;
     }
-    public boolean getPromotion() {
+    public boolean isPromotion() {
         return promotion;
     }
     public void setPromotion(boolean promotion) {
@@ -84,11 +76,18 @@ public class Move {
     public void setPromotionPiece(String promotionPiece) {
         this.promotionPiece = promotionPiece;
     }
+    public int getMoveStatus() {
+        return moveStatus;
+    }
+    public void setMoveStatus(int moveStatus) {
+        this.moveStatus = moveStatus;
+    }
     public String getSquareCaptured() {
         return squareCaptured;
     }
     public void setSquareCaptured(String squareCaptured) {
         this.squareCaptured = squareCaptured;
     }
+    
 
 }

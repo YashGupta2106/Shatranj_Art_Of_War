@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createGameManager } from "./manageGame";
 import "./ChessBoard.css";
+import { useNavigate } from "react-router-dom"; 
+import { useAuth } from "./AuthContext";
 
 
 // Chess piece Unicode symbols
@@ -53,7 +55,19 @@ const createInitialBoard = () => {
   return board;
 };
 
-export default function ChessBoard({ user,onBackToHome,  gameMode }) {
+const getRowColFromNotation = (notation) => {
+  const col = notation.charCodeAt(0) - 'a'.charCodeAt(0);
+  const row = parseInt(notation[1]) - 1;
+  // if(color==="white"){
+  //   row = 7-row;
+  // }
+  return [row, col];
+};
+
+export default function ChessBoard({ gameMode }) {
+  const navigate = useNavigate(); // ADD THIS
+  const { currentUser } = useAuth();  // get user from context
+
   // UI State - managed by ChessBoard
   const [board, setBoard] = useState(createInitialBoard()); // Show board immediately
   const [selectedSquare, setSelectedSquare] = useState(null);
@@ -66,6 +80,13 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
   const [isConnected, setIsConnected] = useState(false);
   const [playerColor, setPlayerColor] = useState('null'); // Default to white
   const [gameId, setGameId] = useState("practice-game"); // Default game ID for practice mode
+  const [clickStatus, setClickStatus] = useState('highlight'); // Track click status for highlight/move
+
+  // promotion states:
+  const [showPromotionModal, setShowPromotionModal] = useState(false);
+  const [promotionColor, setPromotionColor] = useState(null);
+  const [promotionResolver, setPromotionResolver] = useState(null);
+  const [promotionPosition, setPromotionPosition] = useState(null);
   // let gameId = "practice-game";
   // NEW: Game ready state for online games
   const [gameReady, setGameReady] = useState(gameMode === "practice"); // Practice is always ready
@@ -80,11 +101,11 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
 
   // Initialize Game Manager on component mount
   useEffect(() => {
-    if(!isInitialized && user?.email){
+    if(!isInitialized && currentUser?.email){
       console.log(`🎮 Initializing ${gameMode} game with ID: ${gameId}`);
-      console.log(`👤 Player email: ${user?.email}`);
+      console.log(`👤 Player email: ${currentUser?.email}`);
 
-      if (gameMode === "online" && !user?.email) {
+      if (gameMode === "online" && !currentUser?.email) {
         console.error('❌ No user email available for online game');
         setGameMessage('Error: User not authenticated for online play');
         return;
@@ -102,8 +123,8 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
         gameId:null,
         gameMode,
         initialBoard: board,
-        playerEmail: user?.email,
-        playerName: user?.displayName || user?.email?.split('@')[0] || 'Player',
+        playerEmail: currentUser?.email,
+        playerName: currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Player',
         // Callback functions for manageGame to update UI
         callbacks: {
           onBoardUpdate: (newBoard) => {
@@ -168,6 +189,10 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
           onGameId:(id)=>{
             console.log(`🎮 Game ID: ${id}`);
             setGameId(id);
+          },
+          onClickStatusChange: (status) => {
+            console.log(`🖱️ Click status changed: ${status}`);
+            setClickStatus(status);
           }
 
         }
@@ -187,7 +212,11 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
         gameManagerRef.current.cleanup();
       }
     };
-  }, [gameMode, user?.email]);
+  }, [gameMode, currentUser?.email]);
+
+  const handleBackToHome = () => {
+    navigate('/home');
+  };
 
   // Convert row, col to chess notation (e.g., 0,0 -> a1, 7,7 -> h8)
   const getSquareNotation = (row, col,color) => {
@@ -223,11 +252,79 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
     console.log(`🖱️ Square clicked: Row ${row}, Col ${col}`);
     const square = getSquareNotation(row, col,playerColor);
     console.log(`👆 Square clicked: ${square}`);
+    const message={
+      promoteTo:null,
+      promotion:false
+
+    };
     
     // Delegate to game manager - it handles all the logic
     if(currentPlayer===playerColor){
+      if(clickStatus==="move"){
+        const [lastRow,lastCol]=getRowColFromNotation(selectedSquare);
+        const piece = board[lastRow][lastCol];
+        if(row===7 && playerColor==="white"){
+          console.log("it might be promotion time")
+          console.log("the piece in question is a ",piece);
+          if(piece.type==="pawn" && piece.color==="white"){
+            console.log("its promotion time");
+            const handlePawnPromotion=async(row,col)=>{
+              try{
+                const chosenPiece=await promotePawn(row,col,playerColor);
+                console.log(`Player chose: ${chosenPiece}`);
+                message.promoteTo=chosenPiece;
+                message.promotion=true;
+                gameManager.handleSquareClick(square,message);
+              }
+              catch(error){
+                console.error("Error during pawn promotion:", error);
+              }
+              
+            };
+            handlePawnPromotion(row,col);
+            
 
-      gameManager.handleSquareClick(square);
+          }
+          else{
+            // not promotion go ahead
+            gameManager.handleSquareClick(square,message);
+          }
+        }
+        else if(row===0 && playerColor==="black"){
+          if(piece.type==="pawn" && piece.color==="black"){
+            console.log("its promotion time");
+            const handlePawnPromotion=async(row,col)=>{
+              try{
+                const chosenPiece=await promotePawn(row,col,playerColor);
+                console.log(`Player chose: ${chosenPiece}`);
+                message.promoteTo=chosenPiece;
+                message.promotion=true;
+                gameManager.handleSquareClick(square,message);
+              }
+              catch(error){
+                console.error("Error during pawn promotion:", error);
+              }
+                
+            };
+            handlePawnPromotion(row,col);
+          }
+          else{
+            // not promotion go ahead
+            gameManager.handleSquareClick(square,message);
+          }
+        }
+        else{
+          // no chance for promotion so go ahead
+          gameManager.handleSquareClick(square,message);
+        }
+      }
+
+      else{
+        // this is for highlight to move without tensions
+        gameManager.handleSquareClick(square,message);
+      }
+      
+        
     }
     else{
       console.log("Not your turn");
@@ -235,6 +332,68 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
   };
 
   // Handle game control buttons
+
+  const showPreviousMove = () => {
+    gameManager.showPreviousMove();
+  };
+
+  const showNextMove = () => {
+    gameManager.showNextMove();
+  };
+
+  // Add this function inside your ChessBoard component
+  const promotePawn = (row, col, color) => {
+    return new Promise((resolve) => {
+      console.log(`🔄 Promoting pawn at ${row},${col} for ${color}`);
+
+      // Set up the promotion modal
+      setPromotionPosition({ row, col });
+      setPromotionColor(color);
+      setShowPromotionModal(true);
+
+      // Store the resolver function to call when piece is selected
+      console.log(`📱 Modal should now be visible. showPromotionModal will be set to true`);
+      setPromotionResolver(() => resolve);
+    });
+  };
+
+  // Add this function to handle piece selection
+  const handlePromotionChoice = (pieceType) => {
+    console.log(`✨ Pawn promoted to ${pieceType}`);
+
+    // Hide the modal
+    setShowPromotionModal(false);
+
+    // Call the resolver with the chosen piece
+    if (promotionResolver) {
+      promotionResolver(pieceType);
+    }
+
+    // Clean up state
+    setPromotionPosition(null);
+    setPromotionColor(null);
+    setPromotionResolver(null);
+  };
+
+  // Add this function to cancel promotion (optional)
+  const handlePromotionCancel = () => {
+    console.log('❌ Promotion cancelled');
+
+    // Hide the modal
+    setShowPromotionModal(false);
+
+    // Call resolver with null or default to queen
+    if (promotionResolver) {
+      promotionResolver('queen'); // Default to queen if cancelled
+    }
+
+    // Clean up state
+    setPromotionPosition(null);
+    setPromotionColor(null);
+    setPromotionResolver(null);
+  };
+
+
   const handleNewGame = () => {
     if (gameMode === "practice" && gameManager) {
       console.log('🔄 Starting new practice game');
@@ -317,7 +476,7 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
           )}
 
           {/* Back Button */}
-          <button className="back-btn" onClick={onBackToHome}>
+          <button className="back-btn" onClick={handleBackToHome}>
             Back to Home
           </button>
         </div>
@@ -388,6 +547,19 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
             <h3>Moves</h3>
             <div className="moves-list">
               {/* TODO: Add move history from gameManager */}
+              <button className="control-btn" 
+                onClick={showPreviousMove} 
+                disabled={!gameManager || !gameReady}>
+
+                  <h4>⏮</h4>
+              </button>
+
+              <button className="control-btn" 
+                onClick={showNextMove} 
+                disabled={!gameManager || !gameReady}>
+                  
+                  <h4>⏭</h4>
+              </button>
               <p>Move history will appear here</p>
             </div>
           </div>
@@ -435,6 +607,64 @@ export default function ChessBoard({ user,onBackToHome,  gameMode }) {
           )}
         </div>
       </main>
+      {(showPromotionModal &&
+      <div className="promotion-modal-overlay">
+        <div className="promotion-modal" >
+          <h3>Choose Promotion Piece</h3>
+          <p>Promote your pawn to:</p>
+          
+          <div className="promotion-pieces">
+            <button 
+              className="promotion-piece-btn"
+              onClick={() => handlePromotionChoice('queen')}
+              title="Queen">
+              <span className={`chess-piece ${promotionColor}`}>
+                {PIECES[promotionColor]?.queen}
+              </span>
+              <span className="piece-label">Queen</span>
+            </button>
+            
+            <button 
+              className="promotion-piece-btn"
+              onClick={() => handlePromotionChoice('rook')}
+              title="Rook">
+              <span className={`chess-piece ${promotionColor}`}>
+                {PIECES[promotionColor]?.rook}
+              </span>
+              <span className="piece-label">Rook</span>
+            </button>
+            
+            <button 
+              className="promotion-piece-btn"
+              onClick={() => handlePromotionChoice('bishop')}
+              title="Bishop">
+              <span className={`chess-piece ${promotionColor}`}>
+                {PIECES[promotionColor]?.bishop}
+              </span>
+              <span className="piece-label">Bishop</span>
+            </button>
+            
+            <button 
+              className="promotion-piece-btn"
+              onClick={() => handlePromotionChoice('knight')}
+              title="Knight">
+              <span className={`chess-piece ${promotionColor}`}>
+                {PIECES[promotionColor]?.knight}
+              </span>
+              <span className="piece-label">Knight</span>
+            </button>
+          </div>
+          
+          {/* Optional cancel button */}
+          <button 
+            className="promotion-cancel-btn"
+            onClick={handlePromotionCancel}>
+            Cancel (Default: Queen)
+          </button>
+        </div>
+      </div>
+      )}
+    
     </div>
   );
 }

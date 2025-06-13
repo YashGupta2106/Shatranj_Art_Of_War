@@ -234,6 +234,19 @@ class WebSocketService {
     this.sendMessage(message);
   }
 
+  showMove(gameId,currentMove, playerEmail,number) {
+    
+    const message = {
+      messageType: "SHOW_MOVE",
+      gameId: gameId,
+      currentMove: currentMove,
+      playerEmail: playerEmail,
+      number: number
+    };
+
+    this.sendMessage(message);
+  }
+
   disconnect() {
     console.log('🔌 Disconnecting WebSocket...');
     
@@ -266,7 +279,10 @@ class WebSocketService {
 }
 
 
-
+// Render a chess piece
+const createPiece = (type, color) => {
+  return { type, color };
+};
 
 // Create a single instance
 const websocketService = new WebSocketService();
@@ -280,7 +296,7 @@ const getSquareNotation = (row, col) => {
 };
 
 // Helper function to convert chess notation to row, col
-const getRowColFromNotation = (notation,color) => {
+const getRowColFromNotation = (notation) => {
   const col = notation.charCodeAt(0) - 'a'.charCodeAt(0);
   const row = parseInt(notation[1]) - 1;
   // if(color==="white"){
@@ -289,14 +305,6 @@ const getRowColFromNotation = (notation,color) => {
   return [row, col];
 };
 
-const renderPiece = (piece) => {
-  if (!piece) return null;
-  return (
-    <span className={`chess-piece ${piece.color}`}>
-      {PIECES[piece.color][piece.type]}
-    </span>
-  );
-};
 
 const PIECES = {
   white: {
@@ -330,6 +338,8 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   let whiteTime = 600; // 10 minutes
   let blackTime = 600; // 10 minutes
   let isGameActive=false;
+  let currentMove = 0; // Track current move number that is being viewed
+  let actualMoveNumber=0;
   
   // Game ready state and matchmaking state
   let gameReady = gameMode === "practice"; // Practice is always ready
@@ -444,6 +454,11 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
         return;
       }
 
+      if(response.messageType === "SHOW_MOVE"){
+        handleShowMove(response);
+        return;
+      }
+
       // Handle existing game responses
       if (response.isValid === false) {
         callbacks.onMessageChange?.('Invalid move!');
@@ -536,54 +551,50 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     
     if (possibleMoves.length > 0) {
       callbacks.onMessageChange?.(`Selected piece. ${possibleMoves.length} possible moves.`);
+      callbacks.onClickStatusChange?.("move");
     } else {
       callbacks.onMessageChange?.('No possible moves for this piece.');
     }
   };
 
-  // Handle move response (actually move the piece)
-  const handleMoveResponse = (response) => {
-    console.log('🚀 Handling move response');
-    
-    // Clear possible moves
-    possibleMoves = [];
-    callbacks.onPossibleMovesChange?.([]);
-    console.log(`🟢 Move response: ${response.fromSquare} → ${response.toSquare}`);
-    
-    // Update board if move details provided
-    if (response.moveFrom && response.moveTo) {
-      updateBoardFromMove(response);
-    }
-    
-    // Switch player
-    currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-    callbacks.onPlayerChange?.(currentPlayer);
-    
-    // Update message
-    const moveText = response.moveFrom && response.moveTo 
-      ? `${response.moveFrom} → ${response.moveTo}` 
-      : 'Move made';
-    callbacks.onMessageChange?.(`${moveText}. ${currentPlayer}'s turn.`);
-    
-    // Clear selection
-    selectedSquare = null;
-    callbacks.onSelectionChange?.(null);
-  };
+  // Handle showing previous moves
+  const handleShowMove=(response)=>{
+    console.log(`going to show the move: {response.moveNumber}`);
+    const [fromRow, fromCol] = getRowColFromNotation(response.from_sq);
+    const [toRow, toCol] = getRowColFromNotation(response.to_sq);
 
-  // Update board based on move
-  const updateBoardFromMove = (response) => {
-    console.log(`🔄 Updating board: response.fromSquare → response.toSquare`);
-    
-    const [fromRow, fromCol] = getRowColFromNotation(response.moveFrom,currentPlayer);
-    const [toRow, toCol] = getRowColFromNotation(response.moveTo,currentPlayer);
+    if(response.moveStatus===1){
+      console.log("this is a move ahead");
 
-    
-    
-    if(response.color==="white"){
+      if(response.castling === true){
+        // this is for white king
 
-      if(!response.isCastle==="no"){
+        if(response.to_sq==="c1"){
+          // move rook from a1 to d1
+          const kingPiece=board[fromRow][fromCol];
+          const rookPiece=board[fromRow][0];
+          board[fromRow][fromCol]=null;
+          board[fromRow][0]=null;
+          board[fromRow][2]=kingPiece;
+          board[fromRow][3]=rookPiece;
 
-        if(response.toSquare==="c1"){
+
+
+        }
+        else if(response.to_sq==="g1"){
+          // move rook from h1 to f1
+          const kingPiece=board[fromRow][fromCol];
+          const rookPiece=board[fromRow][7];
+          board[fromRow][fromCol]=null;
+          board[fromRow][7]=null;
+          board[fromRow][6]=kingPiece;
+          board[fromRow][5]=rookPiece;
+
+        }
+
+        // from here black king
+        else if(response.to_sq==="c8"){
+          // move rook from a8 to d8
           const kingPiece=board[fromRow][fromCol];
           const rookPiece=board[fromRow][0];
           board[fromRow][fromCol]=null;
@@ -592,41 +603,373 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
           board[fromRow][3]=rookPiece;
 
         }
-        else if(response.toSquare==="g1"){
+        else if(response.to_sq==="g8"){
+          // move rook from h8 to f8
           const kingPiece=board[fromRow][fromCol];
           const rookPiece=board[fromRow][7];
           board[fromRow][fromCol]=null;
           board[fromRow][7]=null;
           board[fromRow][6]=kingPiece;
           board[fromRow][5]=rookPiece;
+
+        }
+
+      }
+
+      else if(response.promotion=== true){
+        console.log("this is a promotion show time ");
+        board[toRow][toCol]=null;
+        board[fromRow][fromCol]=null;
+
+        if(response.promotionPiece==="knight"){
+          if(toRow===0){
+            board[toRow][toCol]=createPiece("knight","black");
+          }
+          else if(toRow===7){
+            board[toRow][toCol]=createPiece("knight","white");
+          }
+
+        }
+        else if(response.promotionPiece==="bishop"){
+          if(toRow===0){
+            board[toRow][toCol]=createPiece("bishop","black");
+          }
+          else if(toRow===7){
+            board[toRow][toCol]=createPiece("bishop","white");
+          }
+
+        }
+        else if(response.promotionPiece==="rook"){
+          if(toRow===0){
+            board[toRow][toCol]=createPiece("rook","black");
+          }
+          else if(toRow===7){
+            board[toRow][toCol]=createPiece("rook","white");
+          }
+
+        }
+        else if(response.promotionPiece==="queen"){
+          console.log("this is a queen promotion");
+          if(toRow===0){
+            board[toRow][toCol]=createPiece("queen","black");
+          }
+          else if(toRow===7){
+            console.log("here a queen should come");
+            board[toRow][toCol]=createPiece("queen","white");
+          }
+
+        }
+
+      }
+
+      else if(response.enPassant===true){
+        console.log("this is an en passant move");
+        const [remRow, remCol] = getRowColFromNotation(response.squareCaptured);
+        board[remRow][remCol]=null;
+        board[toRow][toCol]=board[fromRow][fromCol];
+        board[fromRow][fromCol]=null;
+      }
+
+
+      else if(response.pieceCaptured !=="no"){
+        
+        board[toRow][toCol]=null;
+        board[toRow][toCol]=board[fromRow][fromCol];
+        board[fromRow][fromCol]=null;
+
+      }
+      else{
+        // simple move without any capture
+        board[toRow][toCol]=board[fromRow][fromCol];
+        board[fromRow][fromCol]=null;
+      }
+
+    }
+
+    else if(response.moveStatus===-1){
+      console.log("this is a move behind");
+      if(response.castling === true){
+        // this is for white king
+
+        if(response.to_sq==="c1"){
+          // move rook from d1 to a1
+          const kingPiece=board[toRow][toCol];
+          const rookPiece=board[toRow][3];
+          board[toRow][toCol]=null;
+          board[toRow][3]=null;
+          board[toRow][0]=rookPiece;
+          board[fromRow][fromCol]=kingPiece;
+
+
+
+        }
+        else if(response.to_sq==="g1"){
+          // move rook from f1 to h1
+          const kingPiece=board[toRow][toCol];
+          const rookPiece=board[toRow][5];
+          board[toRow][toCol]=null;
+          board[toRow][5]=null;
+          board[toRow][7]=rookPiece;
+          board[fromRow][fromCol]=kingPiece;
+
+        }
+
+        // from here black king
+        else if(response.to_sq==="c8"){
+          // move rook from d8 to a8
+          const kingPiece=board[toRow][toCol];
+          const rookPiece=board[toRow][3];
+          board[toRow][toCol]=null;
+          board[toRow][3]=null;
+          board[toRow][0]=rookPiece;
+          board[fromRow][fromCol]=kingPiece;
+
+        }
+        else if(response.to_sq==="g8"){
+          // move rook from f8 to h8
+          const kingPiece=board[toRow][toCol];
+          const rookPiece=board[toRow][5];
+          board[toRow][toCol]=null;
+          board[toRow][5]=null;
+          board[toRow][7]=rookPiece;
+          board[fromRow][fromCol]=kingPiece;
+
+        }
+      
+      }
+
+      else if(response.promotion=== true){
+        board[toRow][toCol]=null;
+        if(response.pieceCaptured!=="no"){
+          if(response.pieceCaptured==="knight"){
+            if(response.moveNumber%2===0){
+              board[toRow][toCol]=createPiece("knight","white");
+            }
+            else{
+              board[toRow][toCol]=createPiece("knight","black");
+            }
+
+          } 
+          else if(response.pieceCaptured==="bishop"){
+            if(response.moveNumber%2===0){
+              board[toRow][toCol]=createPiece("bishop","white");
+            }
+            else{
+              board[toRow][toCol]=createPiece("bishop","black");
+            }
+
+          } 
+          else if(response.pieceCaptured==="rook"){
+            if(response.moveNumber%2===0){
+              board[toRow][toCol]=createPiece("rook","white");
+            }
+            else{
+              board[toRow][toCol]=createPiece("rook","black");
+            }
+
+          } 
+          else if(response.pieceCaptured==="queen"){
+            if(response.moveNumber%2===0){
+              board[toRow][toCol]=createPiece("queen","white");
+            }
+            else{
+              board[toRow][toCol]=createPiece("queen","black");
+            }
+
+          }  
+        }
+
+        // now putting back the pawn there
+        if(response.moveNumber%2===0){
+          board[fromRow][fromCol]=createPiece("pawn","black");
+        }
+        else{
+          board[fromRow][fromCol]=createPiece("pawn","white");
+        }
+        
+
+      }
+
+      else if(response.enPassant===true){
+        console.log("this is an en passant move");
+        const [remRow, remCol] = getRowColFromNotation(response.squareCaptured);
+        board[remRow][remCol]=createPiece("pawn","black");
+        board[fromRow][fromCol]=board[toRow][toCol];
+        board[toRow][toCol]=null;
+      }
+
+
+      else if(response.pieceCaptured !=="no"){
+        board[toRow][toCol]=null;
+        board[fromRow][fromCol]=board[toRow][toCol];
+        if(response.pieceCaptured==="knight"){
+          if(response.moveNumber%2===0){
+            board[toRow][toCol]=createPiece("knight","white");
+          }
+          else{
+            board[toRow][toCol]=createPiece("knight","black");
+          }
+
+        }
+        else if(response.pieceCaptured==="bishop"){
+          if(response.moveNumber%2===0){
+            board[toRow][toCol]=createPiece("bishop","white");
+          }
+          else{
+            board[toRow][toCol]=createPiece("bishop","black");
+          }
+        
+        }
+        else if(response.pieceCaptured==="rook"){
+          if(response.moveNumber%2===0){
+            board[toRow][toCol]=createPiece("rook","white");
+          }
+          else{
+            board[toRow][toCol]=createPiece("rook","black");
+          }
+
+        }
+        else if(response.pieceCaptured==="queen"){
+          if(response.moveNumber%2===0){
+            board[toRow][toCol]=createPiece("queen","white");
+          }
+          else{
+            board[toRow][toCol]=createPiece("queen","black");
+          }
+
+        }
+        else if(response.pieceCaptured==="Pawn"){
+          if(response.moveNumber%2===0){
+            board[toRow][toCol]=createPiece("pawn","white");
+          }
+          else{
+            board[toRow][toCol]=createPiece("pawn","black");
+          }
+
+        }
+
+      } 
+      else{
+        // simple move without any capture
+        board[fromRow][fromCol]=board[toRow][toCol];
+        board[toRow][toCol]=null;
+      }
+    }
+
+    // Update the display
+    callbacks.onBoardUpdate?.(board.map(row => [...row]));
+    
+    
+  };
+
+  // Handle move response (actually move the piece)
+  const handleMoveResponse = (response) => {
+    console.log('🚀 Handling move response');
+    
+    if(actualMoveNumber===currentMove){
+      // Clear possible moves
+      possibleMoves = [];
+      callbacks.onPossibleMovesChange?.([]);
+      console.log(`🟢 Move response: ${response.fromSquare} → ${response.toSquare}`);
+      
+      // Update board if move details provided
+      if (response.moveFrom && response.moveTo) {
+        updateBoardFromMove(response);
+      }
+      actualMoveNumber=response.moveNumber;
+      currentMove=response.moveNumber;
+
+    }
+    else{
+      console.log("Opponent made a move");
+      actualMoveNumber=response.moveNumber;
+    }
+    // Switch player
+    currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+    callbacks.onPlayerChange?.(currentPlayer);
+    // Update message
+    const moveText = response.moveFrom && response.moveTo 
+      ? `${response.moveFrom} → ${response.moveTo}` 
+      : 'Move made';
+    callbacks.onMessageChange?.(`${moveText}. ${currentPlayer}'s turn.`);
+    // Clear selection
+    selectedSquare = null;
+    callbacks.onSelectionChange?.(null);
+    callbacks.onClickStatusChange?.("highlight");
+    
+  };
+
+  // Update board based on move
+  const updateBoardFromMove = (response) => {
+    console.log(`🔄 Updating board: response.fromSquare → response.toSquare`);
+    console.log("response mein promotion is: ",response.isPromotion);
+    
+    const [fromRow, fromCol] = getRowColFromNotation(response.moveFrom);
+    const [toRow, toCol] = getRowColFromNotation(response.moveTo);
+    console.log("this was the move number",actualMoveNumber);
+
+    
+    
+    if(response.color==="white"){
+
+      if(response.isCastle!=="no"){
+        console.log("this is a castle move");
+
+        if(response.moveTo==="c1"){
+          board[fromRow][2]=board[fromRow][fromCol];
+          board[fromRow][3]=board[fromRow][0];
+          board[fromRow][fromCol]=null;
+          board[fromRow][0]=null;
+
+        }
+        else if(response.moveTo==="g1"){
+          
+          
+          board[fromRow][6]=board[fromRow][fromCol];
+          board[fromRow][5]=board[fromRow][7];
+          board[fromRow][fromCol]=null;
+          board[fromRow][7]=null;
         }
 
 
       }
-      else if(!response.promoteTo==="no"){
+      else if(response.isPromotion!=="no"){
+        console.log("this is a promotion move");
         // first removing any existing piece there
         board[toRow][toCol]=null;
         board[fromRow][fromCol]=null;
-        if(promoteTo==="queen"){
-          board[toRow][toCol]=PIECES.white.queen;
+        if(response.promoteTo==="queen"){
+          board[toRow][toCol]=createPiece("queen","white");
           console.log("Promoting to queen");
         }
-        else if(promoteTo==="rook"){
-          board[toRow][toCol]=PIECES.white.rook;
+        else if(response.promoteTo==="rook"){
+          board[toRow][toCol]=createPiece("rook","white");
           console.log("Promoting to rook");
         }
-        else if(promoteTo==="bishop"){
-          board[toRow][toCol]=PIECES.white.bishop;
+        else if(response.promoteTo==="bishop"){
+          board[toRow][toCol]=createPiece("bishop","white");
           console.log("Promoting to bishop");
         }
-        else if(promoteTo==="knight"){
-          board[toRow][toCol]=PIECES.white.knight;
+        else if(response.promoteTo==="knight"){
+          board[toRow][toCol]=createPiece("knight","white");
           console.log("Promoting to knight");
         }
+        else{
+          console.log("mujhe toh kuch mila hi nahi kya bhej raha hai");
+        }
+
+      }
+      else if(response.isEnPassant!=="no"){
+        console.log("this is an en passant move");
+        const [remRow, remCol] = getRowColFromNotation(response.removePiece);
+        board[remRow][remCol]=null;
+        board[toRow][toCol]=board[fromRow][fromCol];
+        board[fromRow][fromCol]=null;
 
       }
       else{
         // case for removal/normal move
+        console.log("mai toh yaha se chalunga");
         board[toRow][toCol]=null;
         board[toRow][toCol]=board[fromRow][fromCol];
         board[fromRow][fromCol]=null;
@@ -635,9 +978,9 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
     else if(response.color==="black"){
 
-      if(!response.isCastle==="no"){
+      if(response.isCastle!=="no"){
 
-        if(response.toSquare==="c8"){
+        if(response.moveTo==="c8"){
           const kingPiece=board[fromRow][fromCol];
           const rookPiece=board[fromRow][0];
           board[fromRow][fromCol]=null;
@@ -646,7 +989,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
           board[fromRow][3]=rookPiece;
 
         }
-        else if(response.toSquare==="g8"){
+        else if(response.moveTo==="g8"){
           const kingPiece=board[fromRow][fromCol];
           const rookPiece=board[fromRow][7];
           board[fromRow][fromCol]=null;
@@ -657,28 +1000,38 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
 
       }
-      else if(!response.promoteTo==="no"){
+      else if(response.isPromotion!=="no"){
         // first removing any existing piece there
         board[toRow][toCol]=null;
         board[fromRow][fromCol]=null;
-        if(promoteTo==="queen"){
-          board[toRow][toCol]=PIECES.black.queen;
+        if(response.promoteTo==="queen"){
+          board[toRow][toCol]=createPiece("queen","black");
           console.log("Promoting to queen");
         }
-        else if(promoteTo==="rook"){
-          board[toRow][toCol]=PIECES.black.rook;
+        else if(response.promoteTo==="rook"){
+          board[toRow][toCol]=createPiece("rook","black");
           console.log("Promoting to rook");
         }
-        else if(promoteTo==="bishop"){
-          board[toRow][toCol]=PIECES.black.bishop;
+        else if(response.promoteTo==="bishop"){
+          board[toRow][toCol]=createPiece("bishop","black");
           console.log("Promoting to bishop");
         }
-        else if(promoteTo==="knight"){
-          board[toRow][toCol]=PIECES.black.knight;
+        else if(response.promoteTo==="knight"){
+          board[toRow][toCol]=createPiece("knight","black");
           console.log("Promoting to knight");
         }
 
       }
+
+      else if(response.isEnPassant!=="no"){
+        console.log("this is an en passant move");
+        const [remRow, remCol] = getRowColFromNotation(response.removePiece);
+        board[remRow][remCol]=null;
+        board[toRow][toCol]=board[fromRow][fromCol];
+        board[fromRow][fromCol]=null;
+
+      }
+
       else{
         // case for removal/normal move
         board[toRow][toCol]=null;
@@ -721,7 +1074,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   };
 
     // Handle square click - main entry point
-  const handleSquareClick = (square) => {
+  const handleSquareClick = (square,message) => {
     // Check if game is ready
     if (!gameReady) {
       console.log('🚫 Game not ready, ignoring click');
@@ -744,43 +1097,53 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
     // const square = getSquareNotation(row, col);
     console.log(`👆 Square clicked: ${square}`);
+    if(actualMoveNumber===currentMove){
+      // Check if clicked square has a possible move (hasCircle logic)
+      const hasCircle = possibleMoves.includes(square) ? "yes" : "no";
+      console.log(`🎯 Has circle: ${hasCircle}`);
 
-    // Check if clicked square has a possible move (hasCircle logic)
-    const hasCircle = possibleMoves.includes(square) ? "yes" : "no";
-    console.log(`🎯 Has circle: ${hasCircle}`);
+      // Clear highlights immediately for UI responsiveness
+      possibleMoves = [];
+      callbacks.onPossibleMovesChange?.([]);
 
-    // Clear highlights immediately for UI responsiveness
-    possibleMoves = [];
-    callbacks.onPossibleMovesChange?.([]);
+      // Create move message
+      const moveMessage = {
+        messageType: "GAME_MOVE", // Add message type
+        gameId: actualGameId,
+        playerEmail: actualPlayerEmail,
+        squareClicked: square,
+        color: currentPlayer,
+        hasCircle: hasCircle,
+        whiteTime: whiteTime,
+        blackTime: blackTime,
+        promoteTo: "no", // TODO: Handle pawn promotion
+        buttonClicked: "no",
+        drawOffer: "NA"
+      };
+      if(message.promotion===true){
+        moveMessage.promoteTo = message.promoteTo;
+      }
 
-    // Create move message
-    const moveMessage = {
-      messageType: "GAME_MOVE", // Add message type
-      gameId: actualGameId,
-      playerEmail: actualPlayerEmail,
-      squareClicked: square,
-      color: currentPlayer,
-      hasCircle: hasCircle,
-      whiteTime: whiteTime,
-      blackTime: blackTime,
-      promoteTo: "no", // TODO: Handle pawn promotion
-      buttonClicked: "no",
-      drawOffer: "NA"
-    };
+      console.log('📤 Sending move message:', moveMessage);
 
-    console.log('📤 Sending move message:', moveMessage);
+      // Send to backend
+      websocketService.sendMove(actualGameId, moveMessage);
 
-    // Send to backend
-    websocketService.sendMove(actualGameId, moveMessage);
+      // Update selection state for UI
+      if (hasCircle === "no") {
+        selectedSquare = square;
+        callbacks.onSelectionChange?.(square);
+      } else {
+        selectedSquare = null;
+        callbacks.onSelectionChange?.(null);
+      }
 
-    // Update selection state for UI
-    if (hasCircle === "no") {
-      selectedSquare = square;
-      callbacks.onSelectionChange?.(square);
-    } else {
-      selectedSquare = null;
-      callbacks.onSelectionChange?.(null);
     }
+    else{
+      callbacks.onMessageChange?.('Please go back to current move to play one');
+    }
+
+    
   };
 
   // Game control functions
@@ -886,6 +1249,26 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     }
   };
 
+  const showPreviousMove = () => {
+    console.log('🔙 Showing previous move');
+    if(currentMove>1){
+      console.log(currentMove,actualMoveNumber);
+      websocketService.showMove(actualGameId,currentMove,playerEmail,-1);
+      currentMove--;
+    }
+
+  }
+
+  const showNextMove = () => {
+    console.log('🔜 Showing next move');
+    if(currentMove<actualMoveNumber){
+      currentMove++;
+      console.log("current and actual",currentMove,actualMoveNumber);
+      websocketService.showMove(actualGameId,currentMove, playerEmail,1);
+
+    }
+  }
+
   // Initialize the connection
   initializeConnection();
 
@@ -896,6 +1279,8 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     offerDraw,
     resetGame,
     cancelMatchmaking,
+    showPreviousMove,
+    showNextMove,
     cleanup,
     
     // Getters for current state (if needed)

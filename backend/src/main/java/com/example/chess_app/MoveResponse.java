@@ -16,13 +16,14 @@ public class MoveResponse {
     private String removePiece="no"; // this is used to remove the piece from the board
     private String isCastle="no";
     private String isPromotion="no";
+    private String isEnPassant="no";
     private String promoteTo="no"; // takes value as queen/rook/bishop/knight
     private boolean gameEnded=false;
     private String gameEndReason="no"; // tells reason to win such as insufficient material, checkmate etc
     private String winner="no"; // tells white/black/draw
     private String drawOffer="no";
     private boolean gameEndCheck=false; // this is used to check for draw,timeout, resign things
-
+    private int moveNumber=0;
 
     private String errorMessage;
     
@@ -88,4 +89,8 @@ public class MoveResponse {
 
     public boolean isGameEndCheck() { return gameEndCheck; }
     public void setGameEndCheck(boolean gameEndCheck) { this.gameEndCheck = gameEndCheck; }
+    public int getMoveNumber() { return moveNumber; }
+    public void setMoveNumber(int moveNumber) { this.moveNumber = moveNumber; }
+    public String getIsEnPassant() { return isEnPassant; }
+    public void setIsEnPassant(String isEnPassant) { this.isEnPassant = isEnPassant;}
 }
