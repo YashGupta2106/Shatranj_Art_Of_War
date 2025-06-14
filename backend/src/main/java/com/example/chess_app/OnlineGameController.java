@@ -213,6 +213,7 @@ public class OnlineGameController {
             response.setWinner("black");
             response.setTimeUp(true);
             response.setGameEndCheck(true);
+            System.out.println("White ran out of time, setting game end reason and winner.");
             if(response.isGameEnded()==true){
                 System.out.println("Game has ended, removing players from active game list.");
                 matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
@@ -230,6 +231,7 @@ public class OnlineGameController {
             response.setWinner("white");
             response.setTimeUp(true);
             response.setGameEndCheck(true);
+            System.out.println("Black ran out of time, setting game end reason and winner.");
             if(response.isGameEnded()==true){
                 System.out.println("Game has ended, removing players from active game list.");
                 matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());

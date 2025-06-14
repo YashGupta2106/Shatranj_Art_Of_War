@@ -335,8 +335,8 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   let selectedSquare = null;
   let possibleMoves = [];
   let gameStatus = 'active';
-  let whiteTime = 600; // 10 minutes
-  let blackTime = 600; // 10 minutes
+  let whiteTime = 10; // 10 minutes
+  let blackTime = 10; // 10 minutes
   let isGameActive=false;
   let currentMove = 0; // Track current move number that is being viewed
   let actualMoveNumber=0;
@@ -547,6 +547,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
       // Handle game end conditions
       if (response.gameEnded) {
+        console.log("calling game end function as game ended for some reason");
         handleGameEnd(response);
         return;
       }
@@ -1162,6 +1163,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
     callbacks.onGameStatusChange?.('ended');
     callbacks.onGameReady?.(false);
+    console.log(" i got command to end the game")
 
     let message = 'Game Over! ';
     if (response.winner === 'draw') {

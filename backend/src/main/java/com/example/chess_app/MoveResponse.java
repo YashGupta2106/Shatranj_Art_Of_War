@@ -3,13 +3,13 @@ import java.util.ArrayList;
 
 public class MoveResponse {
     private boolean timeUp=false;
-    private String gameId;
-    private String squareClicked;
-    private String color; // tells who this is white or black player
+    private String gameId="";
+    private String squareClicked="";
+    private String color=""; // tells who this is white or black player
     // private int whiteTime;
     // private int blackTime;
     private boolean valid=false; // tells if move made by whom it should have i.e time to make a change to board i.e hightlight/move piece
-    private String clickStatus;  // takes value of highlight/move : this is used after knowing value of isValid()
+    private String clickStatus="";  // takes value of highlight/move : this is used after knowing value of isValid()
     private ArrayList<String> possibleMoves=new ArrayList<>(); // this is used to highlight the possible moves
     private String moveFrom="no"; // this is used to move the piece
     private String moveTo="no"; // this is used to move the piece
