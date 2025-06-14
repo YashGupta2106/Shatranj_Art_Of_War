@@ -93,4 +93,10 @@ public class MoveResponse {
     public void setMoveNumber(int moveNumber) { this.moveNumber = moveNumber; }
     public String getIsEnPassant() { return isEnPassant; }
     public void setIsEnPassant(String isEnPassant) { this.isEnPassant = isEnPassant;}
+    public boolean isTimeUp() {
+        return timeUp;
+    }
+    
+
+
 }

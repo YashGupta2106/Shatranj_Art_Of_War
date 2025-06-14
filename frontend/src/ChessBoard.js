@@ -81,6 +81,10 @@ export default function ChessBoard({ gameMode }) {
   const [playerColor, setPlayerColor] = useState('null'); // Default to white
   const [gameId, setGameId] = useState("practice-game"); // Default game ID for practice mode
   const [clickStatus, setClickStatus] = useState('highlight'); // Track click status for highlight/move
+  // Add timer refs to track intervals
+  const timerIntervalRef = useRef(null);
+  const lastUpdateTimeRef = useRef(Date.now());
+
 
   // promotion states:
   const [showPromotionModal, setShowPromotionModal] = useState(false);
@@ -213,6 +217,17 @@ export default function ChessBoard({ gameMode }) {
       }
     };
   }, [gameMode, currentUser?.email]);
+
+  
+
+  // Clean up timer on component unmount
+  useEffect(() => {
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+    };
+  }, []);
 
   const handleBackToHome = () => {
     navigate('/home');

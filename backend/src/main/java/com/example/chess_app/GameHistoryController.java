@@ -6,12 +6,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.nio.charset.Charset;
 
 
 // for stockfish response
-import java.util.HashMap;
-import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.*;
 
 
 @RestController
@@ -169,40 +171,44 @@ public class GameHistoryController {
         }
     }
 
-    @GetMapping("/stockfish")
-    public ResponseEntity<String> getStockfishResponse(@RequestParam String fen) {
+    @PostMapping("/stockfish")
+    public ResponseEntity<String> getStockfishResponse(@RequestBody Map<String, String> request) {
         try {
-            // Validate input
+            String fen = request.get("fen");
+            
             if (fen == null || fen.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("FEN is required");
+                return ResponseEntity.badRequest().body("{\"success\": false, \"error\": \"FEN is required\"}");
             }
             
             RestTemplate restTemplate = new RestTemplate();
-            restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
             
-            // Set timeout
-            HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-            factory.setConnectTimeout(5000);
-            factory.setReadTimeout(10000);
-            restTemplate.setRequestFactory(factory);
+            // ✅ Use GET request with query parameters as per documentation
+            String url = "https://stockfish.online/api/s/v2.php?fen=" + 
+                         java.net.URLEncoder.encode(fen, "UTF-8") + 
+                         "&depth=15";
             
-            String url = "https://stockfish.online/api/s/v2.php";
-            Map<String, String> requestBody = new HashMap<>();
-            requestBody.put("fen", fen);
-            requestBody.put("depth", "15");
-        
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
-        
-            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-            return ResponseEntity.ok(response.getBody());
+            System.out.println("📡 Calling Stockfish API: " + url);
+            
+            // ✅ Use GET request instead of POST
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            
+            String responseBody = response.getBody();
+            System.out.println("📊 Stockfish raw response: " + responseBody);
+            
+            if (responseBody != null && !responseBody.isEmpty()) {
+                return ResponseEntity.ok(responseBody);
+            } else {
+                return ResponseEntity.ok("{\"success\": false, \"error\": \"No response from engine\"}");
+            }
             
         } catch (Exception e) {
             System.err.println("Stockfish API error: " + e.getMessage());
-            return ResponseEntity.status(500).body("Analysis service unavailable");
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("{\"success\": false, \"error\": \"Analysis service unavailable: " + e.getMessage() + "\"}");
         }
     }
+
+
 
 
     // Response DTOs

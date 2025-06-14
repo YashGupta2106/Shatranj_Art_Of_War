@@ -174,6 +174,7 @@ public class OnlineGameController {
             messagingTemplate.convertAndSend("/topic/game/" + message.getGameId(), response);
         }
         
+        
     }
 
     // Existing move processing logic (keeping your current implementation)
@@ -211,6 +212,12 @@ public class OnlineGameController {
             response.setGameEndReason("White ran out of Time");
             response.setWinner("black");
             response.setTimeUp(true);
+            response.setGameEndCheck(true);
+            if(response.isGameEnded()==true){
+                System.out.println("Game has ended, removing players from active game list.");
+                matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
+                matchmakingService.removePlayerFromActiveGame(game.getBlackPlayer());
+            }
             return response;
         }
         else if(blackTime == 0){
@@ -222,6 +229,12 @@ public class OnlineGameController {
             response.setGameEndReason("Black ran out of Time");
             response.setWinner("white");
             response.setTimeUp(true);
+            response.setGameEndCheck(true);
+            if(response.isGameEnded()==true){
+                System.out.println("Game has ended, removing players from active game list.");
+                matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
+                matchmakingService.removePlayerFromActiveGame(game.getBlackPlayer());
+            }
             return response;
         }
 
@@ -296,6 +309,11 @@ public class OnlineGameController {
         gameRepository.save(game);
         System.out.println("game saved successfully");
         System.out.println("moving back to controller");
+        if(response.isGameEnded()==true){
+            System.out.println("Game has ended, removing players from active game list.");
+            matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
+            matchmakingService.removePlayerFromActiveGame(game.getBlackPlayer());
+        }
         return response;
     }
 

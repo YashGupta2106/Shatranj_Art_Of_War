@@ -79,11 +79,14 @@ export default function ReplayBoard({ gameData }) {
   const [currentEvaluation, setCurrentEvaluation] = useState(0);
   const [isMatePosition, setIsMatePosition] = useState(false);
   const [mateInMoves, setMateInMoves] = useState(0);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [evaluationCache, setEvaluationCache] = useState(new Map()); // Cache evaluations
 
   // Initialize replay data
   useEffect(() => {
     if (gameData && gameData.moves) {
       setTotalMoves(gameData.moves.length);
+      
       setGameMessage(`Game Replay - Move 0 of ${gameData.moves.length} (Starting Position)`);
       
       // Set initial board
@@ -104,12 +107,157 @@ export default function ReplayBoard({ gameData }) {
     }
   }, [gameData]);
 
+  useEffect(() => {
+    if (gameData && gameData.moves && board && !isAnalyzing) {
+      const currentFEN = getBoardFEN(board, currentMoveIndex);
+      analyzePosition(currentFEN);
+    }
+  }, [currentMoveIndex]); // ✅ Only analyze when move changes
+
   // Convert row, col to chess notation
   const getSquareNotation = (row, col) => {
     const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     const ranks = ['1', '2', '3', '4', '5', '6', '7', '8'];
     return files[col] + ranks[row];
   };
+
+
+  const getBoardFEN = (board, moveNumber) => {
+    // This is a simplified FEN generator - you might need a more complete one
+    let fen = '';
+    
+    // Convert board to FEN notation
+    for (let row = 7; row >= 0; row--) {
+      let emptyCount = 0;
+      for (let col = 0; col < 8; col++) {
+        const piece = board[row][col];
+        if (piece) {
+          if (emptyCount > 0) {
+            fen += emptyCount;
+            emptyCount = 0;
+          }
+          // Convert piece to FEN notation
+          let pieceChar = piece.type.charAt(0);
+          if (piece.type === 'knight') pieceChar = 'n';
+          if (piece.color === 'white') pieceChar = pieceChar.toUpperCase();
+          fen += pieceChar;
+        } else {
+          emptyCount++;
+        }
+      }
+      if (emptyCount > 0) fen += emptyCount;
+      if (row > 0) fen += '/';
+    }
+    
+    // Add additional FEN components (simplified)
+    const activeColor = moveNumber % 2 === 0 ? 'w' : 'b';
+    fen += ` ${activeColor} KQkq - 0 ${Math.floor(moveNumber / 2) + 1}`;
+    
+    return fen;
+  };
+
+
+  // Function to call Stockfish API
+  const analyzePosition = async (fen) => {
+    try {
+      setIsAnalyzing(true);
+      
+      // Check cache first
+      if (evaluationCache.has(fen)) {
+        const cachedResult = evaluationCache.get(fen);
+        setCurrentEvaluation(cachedResult.evaluation);
+        setIsMatePosition(cachedResult.isMate);
+        setMateInMoves(cachedResult.mateIn);
+        setIsAnalyzing(false);
+        return;
+      }
+
+      console.log(`🔍 Analyzing position: ${fen}`);
+      
+      const response = await fetch('http://localhost:8080/api/games/stockfish', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fen: fen })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.text();
+      console.log('📊 Stockfish response:', result);
+      
+      // Parse Stockfish response
+      const evaluation = parseStockfishResponse(result);
+      
+      // Cache the result
+      evaluationCache.set(fen, evaluation);
+      setEvaluationCache(new Map(evaluationCache));
+      
+      // Update state
+      setCurrentEvaluation(evaluation.evaluation);
+      setIsMatePosition(evaluation.isMate);
+      setMateInMoves(evaluation.mateIn);
+      
+    } catch (error) {
+      console.error('❌ Error analyzing position:', error);
+      // Fallback to neutral evaluation
+      setCurrentEvaluation(0);
+      setIsMatePosition(false);
+      setMateInMoves(0);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+const parseStockfishResponse = (response) => {
+  try {
+    console.log('🔍 Raw Stockfish response:', response);
+    
+    const data = JSON.parse(response);
+    console.log('📊 Parsed data:', data);
+    
+    if (data.success && data.evaluation !== undefined) {
+      const evalValue = parseFloat(data.evaluation);
+      const mateValue = data.mate; // This will be null or a number
+      
+      console.log('🎯 Evaluation:', evalValue);
+      console.log('♟️ Mate value:', mateValue, 'Type:', typeof mateValue);
+      
+      // ✅ Check for mate properly
+      if (mateValue !== null && mateValue !== undefined) {
+        console.log('🏁 Mate detected:', mateValue);
+        return {
+          evaluation: mateValue > 0 ? 1000 : -1000,
+          isMate: true,
+          mateIn: Math.abs(mateValue)
+        };
+      }
+      
+      // ✅ Regular evaluation (convert to centipawns)
+      const centipawns = Math.round(evalValue * 100);
+      console.log('📊 Regular evaluation:', centipawns, 'centipawns');
+      
+      return {
+        evaluation: centipawns,
+        isMate: false,
+        mateIn: 0
+      };
+    }
+    
+    // Fallback
+    console.log('⚠️ Invalid response format, using fallback');
+    return { evaluation: 0, isMate: false, mateIn: 0 };
+    
+  } catch (error) {
+    console.error('❌ Error parsing Stockfish response:', error);
+    return { evaluation: 0, isMate: false, mateIn: 0 };
+  }
+};
+
+
 
   // Apply a move to the board
   const applyMoveToBoard = (board, move, forward = true) => {
@@ -330,38 +478,41 @@ export default function ReplayBoard({ gameData }) {
       <header className="chess-header">
         <h1>Game Replay</h1>
         <div className="game-info">
-          {/* Game Info */}
           <span className="current-player">
             <strong>{gameData.players.white.name}</strong> (⚪) vs <strong>{gameData.players.black.name}</strong> (⚫)
           </span>
           
-          {/* Back Button */}
+          {isAnalyzing && (
+            <span className="analysis-status">
+              🔍 Analyzing...
+            </span>
+          )}
+          
           <button className="back-btn" onClick={handleBackToGames}>
             Back to My Games
           </button>
         </div>
       </header>
 
-      
-
-      {/* Game Message Display */}
       {gameMessage && (
         <div className="game-message">
           {gameMessage}
+          {isAnalyzing && <span className="analyzing-indicator"> • Analyzing position...</span>}
         </div>
       )}
 
       <main className="chess-main">
-        {/* Chess Board */}
+        <div className="eval-bar-section">
+          <EvalBar 
+            evaluation={currentEvaluation}
+            isMate={isMatePosition}
+            mateIn={mateInMoves}
+            height={400}
+            isAnalyzing={isAnalyzing}
+          />
+        </div>
+
         <div className="chess-board-container">
-            <div className="eval-bar-section">
-              <EvalBar 
-                evaluation={currentEvaluation}
-                isMate={isMatePosition}
-                mateIn={mateInMoves}
-                height={400}
-              />
-            </div>
           <div className={`chess-board ${gameData.userColor === 'white' ? 'rotated' : ''}`}>
             {board.map((row, rowIndex) =>
               row.map((piece, colIndex) => (
@@ -369,12 +520,10 @@ export default function ReplayBoard({ gameData }) {
                   key={`${rowIndex}-${colIndex}`}
                   className={`chess-square ${getSquareColor(rowIndex, colIndex)}`}
                 >
-                  {/* Square coordinates for debugging */}
                   <div className="square-notation">
                     {getSquareNotation(rowIndex, colIndex)}
                   </div>
                   
-                  {/* Chess Piece */}
                   {renderPiece(piece)}
                 </div>
               ))
@@ -382,13 +531,12 @@ export default function ReplayBoard({ gameData }) {
           </div>
         </div>
 
-        {/* Replay Controls Sidebar */}
         <div className="game-sidebar">
-          {/* Move Navigation */}
           <div className="move-history">
             <h3>Move Navigation</h3>
             <div className="move-counter">
               Move {currentMoveIndex} of {totalMoves}
+              {isAnalyzing && <span className="analyzing-dot">🔍</span>}
             </div>
             
             <div className="replay-controls">
@@ -418,7 +566,8 @@ export default function ReplayBoard({ gameData }) {
               >
                 ⏭
               </button>
-                            <button 
+              
+              <button 
                 className="control-btn" 
                 onClick={goToEnd}
                 disabled={currentMoveIndex >= totalMoves}
@@ -429,16 +578,29 @@ export default function ReplayBoard({ gameData }) {
             </div>
           </div>
 
-          {/* Game Information */}
           <div className="game-status">
             <h3>Game Information</h3>
             <p><strong>Result:</strong> {gameData.result.replace('_', ' ').toUpperCase()}</p>
             <p><strong>End Reason:</strong> {gameData.endReason}</p>
             <p><strong>Your Color:</strong> {gameData.userColor.toUpperCase()}</p>
             <p><strong>Total Moves:</strong> {totalMoves}</p>
+            
+            <div className="current-analysis">
+              <h4>Current Position</h4>
+              {isAnalyzing ? (
+                <p>🔍 Analyzing...</p>
+              ) : (
+                <>
+                  {isMatePosition ? (
+                    <p><strong>Mate in {mateInMoves}</strong></p>
+                  ) : (
+                    <p><strong>Evaluation:</strong> {(currentEvaluation / 100).toFixed(1)}</p>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
-          {/* Move List */}
           <div className="move-list">
             <h3>Move History</h3>
             <div className="moves-list-container">
@@ -472,7 +634,6 @@ export default function ReplayBoard({ gameData }) {
             </div>
           </div>
 
-          {/* Keyboard Shortcuts Info */}
           <div className="keyboard-shortcuts">
             <h4>Keyboard Shortcuts</h4>
             <div className="shortcuts-list">

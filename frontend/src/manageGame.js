@@ -348,6 +348,11 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   let actualPlayerName = playerName || "Player"; // Fallback
   let isWaitingForMatch = gameMode === "online";
 
+  let timerInterval = null;
+  let lastTimerUpdate = Date.now();
+  let turnStartTime = Date.now(); // Track when current player's turn started
+
+
   // Generate appropriate game ID based on mode
   if (gameMode === "practice") {
     actualGameId = `practice-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -374,6 +379,77 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
       handleConnectionChange
     );
   };
+
+
+   const startTimer = () => {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    
+    console.log('🕐 Starting game timer...');
+    turnStartTime = Date.now(); // Reset turn start time
+    lastTimerUpdate = Date.now();
+    
+    timerInterval = setInterval(() => {
+      if (gameStatus !== 'active' || !gameReady) {
+        stopTimer();
+        return;
+      }
+      
+      const now = Date.now();
+      const timeSinceLastUpdate = now - lastTimerUpdate;
+      
+      // Only update if at least 1 second has passed since last update
+      if (timeSinceLastUpdate >= 1000) {
+        const secondsToDeduct = Math.floor(timeSinceLastUpdate / 1000);
+        lastTimerUpdate = now;
+        
+        // Update the current player's time
+        if (currentPlayer === 'white') {
+          whiteTime = Math.max(0, whiteTime - secondsToDeduct);
+          console.log(`⏰ White time: ${whiteTime}s (deducted ${secondsToDeduct}s)`);
+          if (whiteTime === 0) {
+            console.log('⏰ White time up!');
+            handleTimeUp('white');
+            return;
+          }
+        } else {
+          blackTime = Math.max(0, blackTime - secondsToDeduct);
+          console.log(`⏰ Black time: ${blackTime}s (deducted ${secondsToDeduct}s)`);
+          if (blackTime === 0) {
+            console.log('⏰ Black time up!');
+            handleTimeUp('black');
+            return;
+          }
+        }
+        
+        // Update UI
+        callbacks.onTimeUpdate?.(whiteTime, blackTime);
+      }
+    }, 1000);
+  };
+
+  // UPDATED: Reset turn timer when player changes
+  const resetTurnTimer = () => {
+    console.log(`🔄 Resetting turn timer for ${currentPlayer}`);
+    turnStartTime = Date.now();
+    lastTimerUpdate = Date.now();
+  };
+
+
+  // NEW: Stop timer function
+  const stopTimer = () => {
+    if (timerInterval) {
+      console.log('🛑 Stopping game timer');
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  };
+
+
+
+
+
 
   // Update handleConnectionChange function
   const handleConnectionChange = (connected) => {
@@ -453,6 +529,10 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
         handlePlayerReady(response);
         return;
       }
+      if (response.timeUp) {
+        handleTimeUpResponse(response);
+        return;
+      }
 
       if(response.messageType === "SHOW_MOVE"){
         handleShowMove(response);
@@ -491,6 +571,27 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
       console.error('❌ Error processing server response:', error);
       callbacks.onMessageChange?.('Error processing server response');
     }
+  };
+
+  const handleTimeUpResponse = (response) => {
+    console.log('⏰ Time up response received:', response);
+    
+    gameStatus = 'ended';
+    gameReady = false;
+    isInActiveGame = false;
+    isWaitingForMatch = false;
+
+    callbacks.onGameStatusChange?.('ended');
+    callbacks.onGameReady?.(false);
+
+    const winner = response.winner;
+    const message = `Time's up! ${winner === 'white' ? 'White' : 'Black'} wins by timeout.`;
+    
+    callbacks.onMessageChange?.(message);
+    
+    // Clear possible moves
+    possibleMoves = [];
+    callbacks.onPossibleMovesChange?.([]);
   };
 
    // Update handleMatchFound function
@@ -540,6 +641,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
       currentPlayer = response.currentPlayer;
       callbacks.onPlayerChange?.(currentPlayer);
     }
+    startTimer();
   };
 
   // Handle highlight response (show possible moves)
@@ -887,6 +989,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     // Switch player
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
     callbacks.onPlayerChange?.(currentPlayer);
+    resetTurnTimer(); // Reset turn timer for new player
     // Update message
     const moveText = response.moveFrom && response.moveTo 
       ? `${response.moveFrom} → ${response.moveTo}` 
@@ -1051,7 +1154,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   // Update handleGameEnd function
   const handleGameEnd = (response) => {
     console.log('🏁 Game ended:', response);
-
+    stopTimer();
     gameStatus = 'ended';
     gameReady = false;
     isInActiveGame = false; // ✅ ADD THIS LINE
@@ -1236,7 +1339,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   // Update cleanup function
   const cleanup = () => {
     console.log('🧹 Cleaning up game manager');
-    
+    stopTimer(); 
     // ✅ Only cleanup if game is not active or explicitly requested
     if (!isGameActive || gameStatus === 'ended') {
       if (isWaitingForMatch && !isGameActive) {
@@ -1268,6 +1371,30 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
     }
   }
+  // NEW: Handle time up from frontend timer
+  const handleTimeUp = (color) => {
+    if (gameStatus !== 'active' || !gameReady || !actualGameId) {
+      console.log('🚫 Cannot handle time up - game not active');
+      return;
+    }
+    console.log(`⏰ ${color} time up! Sending to server...`);
+    
+    const timeUpMessage = {
+      messageType: "GAME_MOVE",
+      gameId: actualGameId,
+      playerEmail: actualPlayerEmail,
+      squareClicked: "a1", // Dummy value
+      color: color,
+      hasCircle: "no",
+      whiteTime: color === 'white' ? 0 : whiteTime,
+      blackTime: color === 'black' ? 0 : blackTime,
+      promoteTo: "no",
+      buttonClicked: "time_up", // NEW: Special button for time up
+      drawOffer: "NA"
+    };
+
+    websocketService.sendMove(actualGameId, timeUpMessage);
+  };
 
   // Initialize the connection
   initializeConnection();
@@ -1281,6 +1408,9 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     cancelMatchmaking,
     showPreviousMove,
     showNextMove,
+    handleTimeUp,
+    startTimer,
+    stopTimer,
     cleanup,
     
     // Getters for current state (if needed)

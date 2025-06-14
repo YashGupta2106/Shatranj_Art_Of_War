@@ -5,7 +5,8 @@ const EvalBar = ({
   evaluation = 0, // Evaluation in centipawns (positive = white advantage)
   isMate = false, 
   mateIn = 0,
-  height = 400 
+  height = 400 ,
+  isAnalyzing = false
 }) => {
   const [displayEval, setDisplayEval] = useState(0);
   const [isDramatic, setIsDramatic] = useState(false);
@@ -110,6 +111,13 @@ const EvalBar = ({
         {isMate && (
           <div className="eval-mate">
             {formatEvaluation(displayEval)}
+          </div>
+        )}
+
+        {/* Analysis indicator */}
+        {isAnalyzing && (
+          <div className="analysis-indicator">
+            <div className="analysis-spinner">🔍</div>
           </div>
         )}
         
