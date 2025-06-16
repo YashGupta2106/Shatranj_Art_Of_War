@@ -340,6 +340,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   let isGameActive=false;
   let currentMove = 0; // Track current move number that is being viewed
   let actualMoveNumber=0;
+  let actualPlayerColor = null;
   
   // Game ready state and matchmaking state
   let gameReady = gameMode === "practice"; // Practice is always ready
@@ -534,6 +535,12 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
         return;
       }
 
+      if(response.drawOffer==="yes" && response.gameEnded===false){
+        console.log("i have got a draw offer from my opponent");
+        handleDrawOffer(response);
+        return;
+      }
+
       if(response.messageType === "SHOW_MOVE"){
         handleShowMove(response);
         return;
@@ -603,7 +610,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     actualGameId = response.gameId;
     const opponentName = response.oppName || 'Opponent';
     const playerColor = response.color || 'white';
-    
+    actualPlayerColor = playerColor;
     isWaitingForMatch = false;
     isGameActive = true; // ✅ Mark game as active
     
@@ -1259,40 +1266,46 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     console.log(`🏳️ ${currentPlayer} resigned`);
     
     const resignMessage = {
-      messageType: "GAME_MOVE",
+      messageType: "GAME_END",
       gameId: actualGameId,
-      squareClicked: "a1", // Dummy value
-      color: currentPlayer,
+      playerEmail: actualPlayerEmail,
       hasCircle: "no",
       whiteTime: whiteTime,
       blackTime: blackTime,
-      promoteTo: "no",
       buttonClicked: "resign",
       drawOffer: "NA"
     };
 
-    websocketService.sendMove(actualGameId, resignMessage);
+    websocketService.sendMessage(resignMessage);
   };
 
-  const offerDraw = () => {
+  const offerDraw = (result) => {
     if (gameStatus !== 'active' || !gameReady) return;
 
     console.log(`🤝 ${currentPlayer} offered draw`);
     
     const drawMessage = {
-      messageType: "GAME_MOVE",
-      gameId: actualGameId,
-      squareClicked: "a1", // Dummy value
-      color: currentPlayer,
-      hasCircle: "no",
+      messageType: "GAME_END",
+      gameId: actualGameId,        
+      playerEmail: actualPlayerEmail,
       whiteTime: whiteTime,
       blackTime: blackTime,
-      promoteTo: "no",
       buttonClicked: "draw",
-      drawOffer: "yes"
+      drawOffer: result
     };
 
-    websocketService.sendMove(actualGameId, drawMessage);
+    websocketService.sendMessage(drawMessage);
+  };
+
+  const handleDrawOffer=(response)=>{
+    
+
+    // sending this to frontend
+    const opponentColor = actualPlayerColor === 'white' ? 'black' : 'white';
+    callbacks.onDrawOfferReceived?.(opponentColor);
+    return ;
+
+
   };
 
   const resetGame = () => {
@@ -1402,13 +1415,16 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
   const handleBackToHome=()=>{
     console.log('🏠 Back to home');
-    const message={
-      messageType:"Quit",
-      gameId:actualGameId,
-      playerEmail:actualPlayerEmail,
-      color:currentPlayer
-    };
-    websocketService.sendMessage(message);
+    if(gameReady===true){
+      const message={
+        messageType:"Quit",
+        gameId:actualGameId,
+        playerEmail:actualPlayerEmail,
+        color:currentPlayer
+      };
+      websocketService.sendMessage(message);
+    }
+    
     websocketService.disconnect();
     window.location.href = '/';
   }

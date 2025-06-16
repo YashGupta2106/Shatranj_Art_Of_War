@@ -479,3 +479,78 @@
   transform: none; /* Remove hover effects for warning state */
 }
 
+
+
+/* Draw Offer Modal Styles */
+.draw-offer-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.draw-offer-modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.draw-offer-modal h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.draw-offer-modal p {
+  margin: 1rem 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.draw-offer-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.draw-accept-btn, .draw-decline-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.draw-accept-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.draw-accept-btn:hover {
+  background-color: #45a049;
+  transform: translateY(-1px);
+}
+
+.draw-decline-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.draw-decline-btn:hover {
+  background-color: #da190b;
+  transform: translateY(-1px);
+}
+

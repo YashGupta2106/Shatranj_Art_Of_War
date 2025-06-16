@@ -52,6 +52,11 @@ public class OnlineGameController {
                     break;
                 case "Quit":
                     handleQuit(message);
+                    break;
+                case "GAME_END":
+                    System.out.println("going to the game end function");
+                    handleGameEnd(message);
+                    break;
                 default:
                     System.err.println("❌ Unknown message type: " + message.getMessageType());
             }
@@ -84,7 +89,7 @@ public class OnlineGameController {
         }
 
         game.setEndTime(LocalDateTime.now());
-        
+
         matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
         matchmakingService.removePlayerFromActiveGame(game.getBlackPlayer());
         gameRepository.save(game);
@@ -272,53 +277,7 @@ public class OnlineGameController {
             return response;
         }
 
-        // Handle draw offers
-        if(isPlayerWhite){
-            if(moveMessage.getDrawOffer().equals("yes")){
-                response.setGameEndCheck(true);
-                game.setWhiteDrawOffer("yes");
-                gameRepository.save(game);
-                if(game.getBlackDrawOffer().equals("yes") && game.getWhiteDrawOffer().equals("yes")){
-                    game.setGameEndReason("Draw");
-                    game.setWinner("draw");
-                    game.setActive(false);
-                    game.setEndTime(LocalDateTime.now());
-                    gameRepository.save(game);
-                    response.setGameEnded(true);
-                    response.setGameEndReason("Draw");
-                    response.setWinner("draw");
-                }
-            }
-            else if(moveMessage.getDrawOffer().equals("no")){
-                response.setGameEndCheck(false);
-                game.setBlackDrawOffer("no");
-                game.setWhiteDrawOffer("no");
-                gameRepository.save(game);
-            }
-        }
-        else if(!isPlayerWhite){
-            if(moveMessage.getDrawOffer().equals("yes")){
-                response.setGameEndCheck(true);
-                game.setBlackDrawOffer("yes");
-                gameRepository.save(game);
-                if(game.getBlackDrawOffer().equals("yes") && game.getWhiteDrawOffer().equals("yes")){
-                    game.setGameEndReason("Draw");
-                    game.setWinner("draw");
-                    game.setActive(false);
-                    game.setEndTime(LocalDateTime.now());
-                    gameRepository.save(game);
-                    response.setGameEnded(true);
-                    response.setGameEndReason("Draw");
-                    response.setWinner("draw");
-                }
-            }
-            else if(moveMessage.getDrawOffer().equals("no")){
-                response.setGameEndCheck(false);
-                game.setBlackDrawOffer("no");
-                game.setWhiteDrawOffer("no");
-                gameRepository.save(game);
-            } 
-        }
+        
 
         // Validate turn and process move
         if(isWhiteTurn && isPlayerWhite){
@@ -394,6 +353,169 @@ public class OnlineGameController {
             }
             
         }
+    }
+
+    private void handleGameEnd(WebSocketMessage message){
+        
+        Game game=gameRepository.findByGameId(message.getGameId());
+        MoveResponse response=new MoveResponse();
+        boolean isPlayerWhite =false;
+
+        if(game.getWhitePlayer().equals(message.getPlayerEmail())){
+            isPlayerWhite=true;
+        }
+        else{
+            isPlayerWhite=false;
+        }
+        // Handle draw offers
+        if(message.getButtonClicked().equals("draw")){
+            if(isPlayerWhite){
+                if(message.getDrawOffer().equals("yes")){
+                    response.setGameEndCheck(true);
+                    game.setWhiteDrawOffer("yes");
+                    gameRepository.save(game);
+                    if(game.getBlackDrawOffer().equals("yes") && game.getWhiteDrawOffer().equals("yes")){
+                        game.setGameEndReason("Draw");
+                        game.setWinner("draw");
+                        game.setActive(false);
+                        game.setEndTime(LocalDateTime.now());
+                        gameRepository.save(game);
+                        response.setGameEnded(true);
+                        response.setGameEndReason("Draw");
+                        response.setWinner("draw");
+                    }
+                }
+                else if(message.getDrawOffer().equals("no")){
+                    response.setGameEndCheck(false);
+                    game.setBlackDrawOffer("no");
+                    game.setWhiteDrawOffer("no");
+                    gameRepository.save(game);
+                }
+            }
+            if(isPlayerWhite){
+
+                // case 1: black has already offered draw and we are accepting it
+                if(game.getBlackDrawOffer().equals("yes")){
+                    if(message.getDrawOffer().equals("yes")){
+                        // we accepting the draw
+                        response.setGameEndCheck(true);
+                        game.setWhiteDrawOffer("yes");
+                        game.setGameEndReason("Draw");
+                        game.setWinner("draw");
+                        game.setActive(false);
+                        game.setEndTime(LocalDateTime.now());
+                        response.setGameEnded(true);
+                        response.setGameEndReason("Draw");
+                        response.setWinner("draw");
+                        gameRepository.save(game);
+                        // send this response to both the players
+                        matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
+                        matchmakingService.removePlayerFromActiveGame(game.getBlackPlayer());
+                        messagingTemplate.convertAndSend("/topic/game/" + message.getGameId(), response);
+                    }
+                    else{
+                        // we rejecting the draw
+                        response.setGameEndCheck(false);
+                        game.setBlackDrawOffer("no");
+                        game.setWhiteDrawOffer("no");
+                        gameRepository.save(game);
+                    }
+                }
+                // case 2: black has not offered so we are the one offering
+                else{
+                    if(message.getDrawOffer().equals("yes")){
+                        // we are the one offering draw
+                        response.setGameEndCheck(true);
+                        game.setWhiteDrawOffer("yes");
+                        gameRepository.save(game);
+                        response.setDrawOffer("yes");
+                        // now send this message to the player regarding draw offer
+                        messagingTemplate.convertAndSend("/topic/" + game.getBlackPlayer(), response);
+
+                    }
+                }
+
+
+
+            }
+
+
+
+            else if(!isPlayerWhite){
+                // case 1: white has already offered draw and we are accepting it
+                if(game.getWhiteDrawOffer().equals("yes")){
+                    if(message.getDrawOffer().equals("yes")){
+                        // we accepting the draw
+                        response.setGameEndCheck(true);
+                        game.setBlackDrawOffer("yes");
+                        game.setGameEndReason("Draw");
+                        game.setWinner("draw");
+                        game.setActive(false);
+                        game.setEndTime(LocalDateTime.now());
+                        response.setGameEnded(true);
+                        response.setGameEndReason("Draw");
+                        response.setWinner("draw");
+                        gameRepository.save(game);
+                        // send this response to both the players
+                        matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
+                        matchmakingService.removePlayerFromActiveGame(game.getBlackPlayer());
+                        messagingTemplate.convertAndSend("/topic/game/" + message.getGameId(), response);
+                    }
+                    else{
+                        // we rejecting the draw
+                        response.setGameEndCheck(false);
+                        game.setBlackDrawOffer("no");
+                        game.setWhiteDrawOffer("no");
+                        gameRepository.save(game);
+                    }
+                }
+                // case 2: white has not offered so we are the one offering
+                else{
+                    if(message.getDrawOffer().equals("yes")){
+                        // we are the one offering draw
+                        response.setGameEndCheck(true);
+                        game.setBlackDrawOffer("yes");
+                        gameRepository.save(game);
+                        response.setDrawOffer("yes");
+                        // now send this message to the player regarding draw offer
+                        messagingTemplate.convertAndSend("/topic/" + game.getWhitePlayer(), response);
+
+                    }
+                }
+            }
+            
+        }
+        else if(message.getButtonClicked().equals("resign")){
+            if(isPlayerWhite){
+                game.setWinner("black");
+                game.setActive(false);
+                game.setEndTime(LocalDateTime.now());
+                game.setGameEndReason("White Resigned");
+                response.setGameEnded(true);
+                response.setGameEndReason("White Resigned");
+                response.setWinner("black");
+                matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
+                matchmakingService.removePlayerFromActiveGame(game.getBlackPlayer());
+            }
+            else{
+                game.setWinner("white");
+                game.setActive(false);
+                game.setEndTime(LocalDateTime.now());
+                game.setGameEndReason("Black Resigned");
+                response.setGameEnded(true);
+                response.setGameEndReason("Black Resigned");
+                response.setWinner("white");
+                matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
+                matchmakingService.removePlayerFromActiveGame(game.getBlackPlayer());
+            }
+            gameRepository.save(game);
+            messagingTemplate.convertAndSend("/topic/game/" + message.getGameId(), response);
+
+
+        }
+            
+        gameRepository.save(game);
+        
     }
 
     private void handleShowMove(WebSocketMessage message){

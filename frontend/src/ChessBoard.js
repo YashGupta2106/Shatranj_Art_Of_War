@@ -103,6 +103,11 @@ export default function ChessBoard({ gameMode }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
 
+  // for draw offers
+  const [drawOfferReceived, setDrawOfferReceived] = useState(false);
+  const [drawOfferFrom, setDrawOfferFrom] = useState('');
+
+
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (gameReady && gameStatus === 'active') {
@@ -209,6 +214,11 @@ export default function ChessBoard({ gameMode }) {
             console.log(`🎮 Game ID: ${id}`);
             setGameId(id);
           },
+          onDrawOfferReceived: (fromPlayer) => {
+            console.log(`🤝 Draw offer received from ${fromPlayer}`);
+            setDrawOfferReceived(true);
+            setDrawOfferFrom(fromPlayer);
+          },
           onClickStatusChange: (status) => {
             console.log(`🖱️ Click status changed: ${status}`);
             setClickStatus(status);
@@ -244,6 +254,25 @@ export default function ChessBoard({ gameMode }) {
   }, []);
 
   
+
+  const handleDrawResponse = (accepted) => {
+    console.log(`Draw offer ${accepted ? 'accepted' : 'declined'}`);
+    
+    if (gameManager && gameReady) {
+      // Send response back to game manager
+      gameManager.offerDraw(accepted ? "yes" : "no");
+    }
+
+    // Hide the popup
+    setDrawOfferReceived(false);
+    setDrawOfferFrom('');
+  };
+
+  const handleModalOverlayClick = (e) => {
+    if (e.target.classList.contains('draw-offer-modal-overlay')) {
+      handleDrawResponse(false); // Treat clicking outside as declining
+    }
+  };
 
   const handleBackToHome = () => {
     // Check if game is active
@@ -460,7 +489,7 @@ export default function ChessBoard({ gameMode }) {
   const handleDrawOffer = () => {
     if (gameManager && gameStatus === 'active' && gameReady) {
       console.log(`🤝 ${currentPlayer} offered draw`);
-      gameManager.offerDraw();
+      gameManager.offerDraw("yes");
     }
   };
 
@@ -650,6 +679,32 @@ export default function ChessBoard({ gameMode }) {
             <div>
               Your color is: <strong>{playerColor.toUpperCase()}</strong>
             </div>
+
+            {drawOfferReceived && (
+              <div className="draw-offer-modal-overlay"
+                onClick={handleModalOverlayClick}>
+                
+                <div className="draw-offer-modal">
+                  <h3>Draw Offer</h3>
+                  <p>{drawOfferFrom} has offered a draw.</p>
+                  <p>Do you want to accept?</p>
+
+                  <div className="draw-offer-buttons">
+                    <button 
+                      className="draw-accept-btn"
+                      onClick={() => handleDrawResponse(true)}>
+                      ✅ Accept Draw
+                    </button>
+
+                    <button 
+                      className="draw-decline-btn"
+                      onClick={() => handleDrawResponse(false)}>
+                      ❌ Decline Draw
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             
           </div>
 
