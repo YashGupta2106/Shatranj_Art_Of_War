@@ -59,13 +59,8 @@ public class MatchmakingService {
             game.setActive(false); // Not active until both players ready
             // game.setGameStatus("waiting_for_players");
             
-            if(player1IsWhite){
-                game.setWhitePlayer(whitePlayerEmail);
-                game.setBlackPlayer(blackPlayerEmail);
-            } else {
-                game.setWhitePlayer(blackPlayerEmail);
-                game.setBlackPlayer(whitePlayerEmail);
-            }
+            game.setWhitePlayer(whitePlayerEmail);
+            game.setBlackPlayer(blackPlayerEmail);
             game.setId(gameId);
             gameRepository.save(game);
             System.out.println("📝 Game created with ID: " + gameId);

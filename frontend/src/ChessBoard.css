@@ -465,3 +465,17 @@
     margin: 15px 0;
   }
 }
+
+/* back button css */
+/* Add to your ChessBoard.css */
+.back-btn.warning {
+  background-color: #ff6b6b;
+  color: white;
+  border: 2px solid #ff5252;
+}
+
+.back-btn.warning:hover {
+  background-color: #ff5252;
+  transform: none; /* Remove hover effects for warning state */
+}
+

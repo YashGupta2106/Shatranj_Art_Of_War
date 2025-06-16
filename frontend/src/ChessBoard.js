@@ -103,6 +103,21 @@ export default function ChessBoard({ gameMode }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (gameReady && gameStatus === 'active') {
+        e.preventDefault();
+        e.returnValue = 'You are in an active game. Are you sure you want to leave?';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [gameReady, gameStatus]);
+  
   // Initialize Game Manager on component mount
   useEffect(() => {
     if(!isInitialized && currentUser?.email){
@@ -211,8 +226,7 @@ export default function ChessBoard({ gameMode }) {
     // Cleanup on component unmount
     return () => {
       console.log('🧹 Cleaning up game manager');
-      if (manager) {
-        manager.cleanup();
+      if (gameManagerRef.current) {  
         gameManagerRef.current.cleanup();
       }
     };
@@ -229,7 +243,27 @@ export default function ChessBoard({ gameMode }) {
     };
   }, []);
 
+  
+
   const handleBackToHome = () => {
+    // Check if game is active
+    if (gameReady && gameStatus === 'active' && gameMode === 'online') {
+      // Show confirmation dialog for active online games
+      const confirmLeave = window.confirm(
+        'You are in an active online game. Leaving will forfeit the game. Are you sure?'
+      );
+
+      if (!confirmLeave) {
+        return; // Don't navigate if user cancels
+      }
+    }
+    // here i will send message to backend that i quit
+    gameManager.handleBackToHome();
+
+    // Clean up and navigate
+    if (gameManagerRef.current) {
+      gameManagerRef.current.cleanup();
+    }
     navigate('/home');
   };
 
@@ -491,8 +525,17 @@ export default function ChessBoard({ gameMode }) {
           )}
 
           {/* Back Button */}
-          <button className="back-btn" onClick={handleBackToHome}>
-            Back to Home
+          <button 
+            className={`back-btn ${gameReady && gameStatus === 'active' && gameMode === 'online' ? 'warning' : ''}`}
+            onClick={handleBackToHome}
+            title={gameReady && gameStatus === 'active' && gameMode === 'online' 
+              ? 'Warning: This will forfeit your active game' 
+              : 'Back to Home'
+            }>
+            {gameReady && gameStatus === 'active' && gameMode === 'online' 
+              ? '⚠️ Forfeit & Exit' 
+              : 'Back to Home'
+            }
           </button>
         </div>
       </header>

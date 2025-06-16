@@ -50,6 +50,8 @@ public class OnlineGameController {
                 case "SHOW_MOVE":
                     handleShowMove(message);
                     break;
+                case "Quit":
+                    handleQuit(message);
                 default:
                     System.err.println("❌ Unknown message type: " + message.getMessageType());
             }
@@ -57,6 +59,36 @@ public class OnlineGameController {
             System.err.println("❌ Error processing STOMP message: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void handleQuit(WebSocketMessage message) {
+        System.out.println("🚪 Handling QUIT for: " + message.getPlayerEmail());
+
+        Game game=gameRepository.findByGameId(message.getGameId());
+        MoveResponse response=new MoveResponse();
+        game.setActive(false);
+        response.setGameEnded(true);
+        
+        response.setGameEndCheck(true);
+        if(game.getWhitePlayer().equals(message.getPlayerEmail())){
+            game.setWinner("black");
+            game.setGameEndReason("White quit the game");
+            response.setGameEndReason("White quit the game");
+            response.setWinner("black");
+        }
+        else{
+            game.setWinner("white");
+            game.setGameEndReason("Black quit the game");
+            response.setGameEndReason("Black quit the game");
+            response.setWinner("white");
+        }
+
+        game.setEndTime(LocalDateTime.now());
+        
+        matchmakingService.removePlayerFromActiveGame(game.getWhitePlayer());
+        matchmakingService.removePlayerFromActiveGame(game.getBlackPlayer());
+        gameRepository.save(game);
+        messagingTemplate.convertAndSend("/topic/game/" + message.getGameId(), response);
     }
 
     // Handle matchmaking requests

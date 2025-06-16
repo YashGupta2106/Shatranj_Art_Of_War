@@ -335,8 +335,8 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   let selectedSquare = null;
   let possibleMoves = [];
   let gameStatus = 'active';
-  let whiteTime = 10; // 10 minutes
-  let blackTime = 10; // 10 minutes
+  let whiteTime = 600; // 10 minutes
+  let blackTime = 600; // 10 minutes
   let isGameActive=false;
   let currentMove = 0; // Track current move number that is being viewed
   let actualMoveNumber=0;
@@ -539,10 +539,12 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
         return;
       }
 
-      // Handle existing game responses
-      if (response.isValid === false) {
-        callbacks.onMessageChange?.('Invalid move!');
-        return;
+
+      // Handle move responses
+      if (response.clickStatus === "highlight") {
+        handleHighlightResponse(response);
+      } else if (response.clickStatus === "move") {
+        handleMoveResponse(response);
       }
 
       // Handle game end conditions
@@ -552,11 +554,10 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
         return;
       }
 
-      // Handle move responses
-      if (response.clickStatus === "highlight") {
-        handleHighlightResponse(response);
-      } else if (response.clickStatus === "move") {
-        handleMoveResponse(response);
+      // Handle existing game responses
+      if (response.isValid === false) {
+        callbacks.onMessageChange?.('Invalid move!');
+        return;
       }
 
       // Update timers if provided
@@ -1398,6 +1399,19 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     websocketService.sendMove(actualGameId, timeUpMessage);
   };
 
+
+  const handleBackToHome=()=>{
+    console.log('🏠 Back to home');
+    const message={
+      messageType:"Quit",
+      gameId:actualGameId,
+      playerEmail:actualPlayerEmail,
+      color:currentPlayer
+    };
+    websocketService.sendMessage(message);
+    websocketService.disconnect();
+    window.location.href = '/';
+  }
   // Initialize the connection
   initializeConnection();
 
@@ -1413,6 +1427,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     handleTimeUp,
     startTimer,
     stopTimer,
+    handleBackToHome,
     cleanup,
     
     // Getters for current state (if needed)

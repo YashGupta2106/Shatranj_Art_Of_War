@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./ChessBoard.css"; // Reuse existing chess board styles
 import { useNavigate } from "react-router-dom";
-import EvalBar from "./EvalBar"; // for eval bar
 
 
 
@@ -502,15 +501,7 @@ const parseStockfishResponse = (response) => {
       )}
 
       <main className="chess-main">
-        <div className="eval-bar-section">
-          <EvalBar 
-            evaluation={currentEvaluation}
-            isMate={isMatePosition}
-            mateIn={mateInMoves}
-            height={400}
-            isAnalyzing={isAnalyzing}
-          />
-        </div>
+        
 
         <div className="chess-board-container">
           <div className={`chess-board ${gameData.userColor === 'white' ? 'rotated' : ''}`}>
