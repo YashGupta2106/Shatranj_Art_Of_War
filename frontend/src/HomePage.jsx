@@ -11,10 +11,10 @@ export default function HomePage() {
   const navigate = useNavigate(); // ADD THIS
   const { currentUser } = useAuth(); // ADD THIS
 
-  const handlePracticeMode = () => {
-    console.log("Practice Mode clicked");
-    navigate('/practice'); // CHANGE: use navigate instead of callback
-  };
+  // const handlePracticeMode = () => {
+  //   console.log("Practice Mode clicked");
+  //   navigate('/practice'); // CHANGE: use navigate instead of callback
+  // };
 
   const handlePlayOnline = () => {
     console.log("Play Online clicked");
@@ -58,11 +58,11 @@ export default function HomePage() {
         </div>
 
         <div className="game-modes">
-          <button className="mode-btn practice-btn" onClick={handlePracticeMode}>
+          {/* <button className="mode-btn practice-btn" onClick={handlePracticeMode}>
             <div className="btn-icon">🎯</div>
             <h3>Practice Mode</h3>
             <p>Sharpen your skills against AI</p>
-          </button>
+          </button> */}
 
           <button className="mode-btn online-btn" onClick={handlePlayOnline}>
             <div className="btn-icon">⚔️</div>

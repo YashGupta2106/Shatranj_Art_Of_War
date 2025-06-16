@@ -27,11 +27,11 @@ function App() {
               </ProtectedRoute>
             } />
             
-            <Route path="/practice" element={
+            {/* <Route path="/practice" element={
               <ProtectedRoute>
                 <ChessBoard gameMode="practice" />
               </ProtectedRoute>
-            } />
+            } /> */}
             
             <Route path="/online" element={
               <ProtectedRoute>
