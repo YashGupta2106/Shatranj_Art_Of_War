@@ -90,21 +90,25 @@ class WebSocketService {
     }
   }
 
+  // In the WebSocketService class, update the handleReconnect method
   handleReconnect() {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+    // ✅ Don't reconnect if we're not supposed to be waiting for a match
+    if (this.reconnectAttempts < this.maxReconnectAttempts && this.playerEmail) {
       this.reconnectAttempts++;
       console.log(`🔄 Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
-      
+
       setTimeout(() => {
+        // ✅ Only reconnect if we still need to be connected
         if (!this.isConnected && this.playerEmail) {
           this.connect(this.playerEmail, this.onMessageCallback, this.onConnectionCallback);
         }
-      }, 3000 * this.reconnectAttempts); // Exponential backoff
+      }, 3000 * this.reconnectAttempts);
     } else {
-      console.error('❌ Max reconnection attempts reached');
+      console.error('❌ Max reconnection attempts reached or no player email');
       this.onConnectionCallback?.(false);
     }
   }
+
 
   // Subscribe to player-specific topic for matchmaking responses
   subscribeToPlayerTopic() {
@@ -452,7 +456,6 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
 
 
-  // Update handleConnectionChange function
   const handleConnectionChange = (connected) => {
     console.log(`🔌 Connection status: ${connected ? 'Connected' : 'Disconnected'}`);
     callbacks.onConnectionChange?.(connected);
@@ -462,21 +465,24 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
         callbacks.onMessageChange?.('Practice mode - Play against yourself!');
         callbacks.onGameReady?.(true);
       } else if (gameMode === "online") {
-        // ✅ FIXED: Only start matchmaking if we're waiting AND not in an active game
-        if (isWaitingForMatch && !isInActiveGame) {
+        // ✅ FIXED: Only start matchmaking if we're waiting AND not in an active game AND game hasn't ended
+        if (isWaitingForMatch && !isInActiveGame && gameStatus !== 'ended') {
           callbacks.onMessageChange?.('Connected! Looking for opponent...');
           setTimeout(() => {
             startMatchmaking();
           }, 1000);
-        } else if (isInActiveGame) {
-          // ✅ ADD THIS: If we're in an active game, just reconnect to it
+        } else if (isInActiveGame && gameStatus === 'active') {
+          // ✅ If we're in an active game, just reconnect to it
           callbacks.onMessageChange?.('Reconnected to game!');
+        } else if (gameStatus === 'ended') {
+          // ✅ If game has ended, don't start matchmaking
+          callbacks.onMessageChange?.('Connected to server');
         } else {
           callbacks.onMessageChange?.('Connected to server');
         }
       }
     } else {
-      if (gameMode === "online") {
+      if (gameMode === "online" && gameStatus === 'active') {
         callbacks.onMessageChange?.('Connection lost. Trying to reconnect...');
         callbacks.onGameReady?.(false);
       }
@@ -585,10 +591,11 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   const handleTimeUpResponse = (response) => {
     console.log('⏰ Time up response received:', response);
     
+    // ✅ Set all flags to prevent auto-matchmaking
     gameStatus = 'ended';
     gameReady = false;
     isInActiveGame = false;
-    isWaitingForMatch = false;
+    isWaitingForMatch = false; // ✅ Stop any matchmaking attempts
 
     callbacks.onGameStatusChange?.('ended');
     callbacks.onGameReady?.(false);
@@ -601,6 +608,9 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     // Clear possible moves
     possibleMoves = [];
     callbacks.onPossibleMovesChange?.([]);
+    // setTimeout(() => {
+    //   cleanup();
+    // }, 2000);
   };
 
    // Update handleMatchFound function
@@ -1160,18 +1170,19 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     
   };
 
-  // Update handleGameEnd function
   const handleGameEnd = (response) => {
     console.log('🏁 Game ended:', response);
     stopTimer();
+    
+    // ✅ Set all the flags to prevent auto-matchmaking
     gameStatus = 'ended';
     gameReady = false;
-    isInActiveGame = false; // ✅ ADD THIS LINE
-    isWaitingForMatch = false; // ✅ ADD THIS LINE
+    isInActiveGame = false;
+    isWaitingForMatch = false; // ✅ This is crucial - stops auto-matchmaking
 
     callbacks.onGameStatusChange?.('ended');
     callbacks.onGameReady?.(false);
-    console.log(" i got command to end the game")
+    console.log("Game has ended - no more matchmaking will occur");
 
     let message = 'Game Over! ';
     if (response.winner === 'draw') {
@@ -1184,6 +1195,9 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
     possibleMoves = [];
     callbacks.onPossibleMovesChange?.([]);
+    // setTimeout(() => {
+    //   cleanup();
+    // }, 2000);
   };
 
     // Handle square click - main entry point
@@ -1352,21 +1366,31 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   };
 
   
-  // Update cleanup function
   const cleanup = () => {
     console.log('🧹 Cleaning up game manager');
+    console.log(`🔍 Cleanup state check: gameStatus=${gameStatus}, isInActiveGame=${isInActiveGame}, isWaitingForMatch=${isWaitingForMatch}`);
+    
     stopTimer(); 
-    // ✅ Only cleanup if game is not active or explicitly requested
-    if (!isGameActive || gameStatus === 'ended') {
-      if (isWaitingForMatch && !isGameActive) {
+    
+    // Always disconnect if game has ended or if we're not in an active game
+    if (gameStatus === 'ended' || !isInActiveGame) {
+      console.log('✅ Game ended or not active - proceeding with cleanup');
+
+      if (isWaitingForMatch) {
+        console.log('🚫 Canceling matchmaking');
         cancelMatchmaking();
       }
-      
-      websocketService.disconnect();
+
+      console.log('🔌 Disconnecting WebSocket');
+      websocketService.disconnect('cleanup');
+    } else if (isInActiveGame && gameStatus === 'active') {
+      console.log('⚠️ Skipping cleanup - game is still active');
     } else {
-      console.log('⚠️ Skipping cleanup - game is active');
+      console.log('🤔 Unclear state - disconnecting to be safe');
+      websocketService.disconnect('cleanup_fallback');
     }
   };
+
 
   const showPreviousMove = () => {
     console.log('🔙 Showing previous move');
@@ -1424,8 +1448,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
       };
       websocketService.sendMessage(message);
     }
-    
-    websocketService.disconnect();
+    cleanup();
     window.location.href = '/';
   }
   // Initialize the connection

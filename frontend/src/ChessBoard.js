@@ -240,7 +240,7 @@ export default function ChessBoard({ gameMode }) {
         gameManagerRef.current.cleanup();
       }
     };
-  }, [gameMode, currentUser?.email]);
+  }, []);
 
   
 
@@ -275,24 +275,21 @@ export default function ChessBoard({ gameMode }) {
   };
 
   const handleBackToHome = () => {
-    // Check if game is active
+    console.log('🏠 Navigating back to home');
+    
     if (gameReady && gameStatus === 'active' && gameMode === 'online') {
-      // Show confirmation dialog for active online games
       const confirmLeave = window.confirm(
         'You are in an active online game. Leaving will forfeit the game. Are you sure?'
       );
-
-      if (!confirmLeave) {
-        return; // Don't navigate if user cancels
-      }
+      if (!confirmLeave) return;
     }
-    // here i will send message to backend that i quit
-    gameManager.handleBackToHome();
-
-    // Clean up and navigate
+  
+    // Clean up BEFORE navigation
     if (gameManagerRef.current) {
+      console.log('🧹 Calling cleanup before navigation');
       gameManagerRef.current.cleanup();
     }
+    
     navigate('/home');
   };
 
@@ -579,7 +576,7 @@ export default function ChessBoard({ gameMode }) {
       <main className="chess-main">
         {/* Chess Board Container with overlay support */}
         <div className="chess-board-container">
-          <div className={`chess-board ${!gameReady ? 'disabled' : ''} ${playerColor === 'white' ? 'rotated' : ''}`}>
+          <div className={`chess-board ${!gameReady ? 'disabled' : ''} ${gameStatus === 'ended' ? 'disabled' : ''} ${playerColor === 'white' ? 'rotated' : ''}`}>
             {board.map((row, rowIndex) =>
               row.map((piece, colIndex) => (
                 <div
@@ -587,16 +584,15 @@ export default function ChessBoard({ gameMode }) {
                   className={`chess-square ${getSquareColor(rowIndex, colIndex)} ${
                     isSelected(rowIndex, colIndex) ? 'selected' : ''
                   } ${hasPossibleMove(rowIndex, colIndex) ? 'possible-move' : ''}`}
-                  onClick={() => handleSquareClick(rowIndex, colIndex)}
-                >
+                  onClick={gameStatus === 'ended' ? undefined : () => handleSquareClick(rowIndex, colIndex)}>
                   {/* Square coordinates for debugging */}
                   <div className="square-notation">
                     {getSquareNotation(rowIndex, colIndex)}
                   </div>
-                  
+
                   {/* Chess Piece */}
                   {renderPiece(piece)}
-                  
+
                   {/* Possible Move Indicator */}
                   {hasPossibleMove(rowIndex, colIndex) && (
                     <div className="move-indicator">●</div>
@@ -605,9 +601,10 @@ export default function ChessBoard({ gameMode }) {
               ))
             )}
           </div>
+
           
           {/* NEW: Overlay when game is not ready (online mode only) */}
-          {!gameReady && gameMode === "online" && (
+          {!gameReady && gameMode === "online" && gameStatus!== 'ended' &&(
             <div className="game-overlay">
               <div className="waiting-message">
                 <h3>{gameMessage}</h3>
