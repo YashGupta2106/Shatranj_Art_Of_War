@@ -1394,7 +1394,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
   const showPreviousMove = () => {
     console.log('🔙 Showing previous move');
-    if(currentMove>1){
+    if(currentMove>0){
       console.log(currentMove,actualMoveNumber);
       websocketService.showMove(actualGameId,currentMove,playerEmail,-1);
       currentMove--;

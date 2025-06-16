@@ -79,7 +79,7 @@ export default function ChessBoard({ gameMode }) {
   const [blackTime, setBlackTime] = useState(600);
   const [isConnected, setIsConnected] = useState(false);
   const [playerColor, setPlayerColor] = useState('null'); // Default to white
-  const [gameId, setGameId] = useState("practice-game"); // Default game ID for practice mode
+  const [gameId, setGameId] = useState("null"); // Default game ID for practice mode
   const [clickStatus, setClickStatus] = useState('highlight'); // Track click status for highlight/move
   // Add timer refs to track intervals
   const timerIntervalRef = useRef(null);
@@ -93,7 +93,7 @@ export default function ChessBoard({ gameMode }) {
   const [promotionPosition, setPromotionPosition] = useState(null);
   // let gameId = "practice-game";
   // NEW: Game ready state for online games
-  const [gameReady, setGameReady] = useState(gameMode === "practice"); // Practice is always ready
+  const [gameReady, setGameReady] = useState(false); // Practice is always ready
 
   // Game Manager instance
   const [gameManager, setGameManager] = useState(null);
@@ -138,9 +138,9 @@ export default function ChessBoard({ gameMode }) {
       // Set initial message based on mode
       if (gameMode === "online") {
         setGameMessage('Finding opponent...');
-      } else {
-        setGameMessage('Practice mode - Play against yourself!');
-      }
+      }//  else {
+      //   setGameMessage('Practice mode - Play against yourself!');
+      // }
 
       // Create game manager with callback functions
       const manager = createGameManager({
@@ -623,7 +623,6 @@ export default function ChessBoard({ gameMode }) {
             <p><strong>Status:</strong> {gameStatus}</p>
             <p><strong>Mode:</strong> {gameMode}</p>
             <p><strong>Ready:</strong> {gameReady ? '✅' : '⏳'}</p>
-            {gameId && <p><strong>Game ID:</strong> {gameId}</p>}
           </div>
 
           {/* Move History */}
@@ -706,7 +705,7 @@ export default function ChessBoard({ gameMode }) {
           </div>
 
           {/* Debug Info (remove in production) */}
-          {process.env.NODE_ENV === 'development' && (
+          {/* {process.env.NODE_ENV === 'development' && (
             <div className="debug-info">
               <h4>Debug Info</h4>
               <p>Selected: {selectedSquare ? `${selectedSquare[0]},${selectedSquare[1]}` : 'None'}</p>
@@ -714,7 +713,7 @@ export default function ChessBoard({ gameMode }) {
               <p>Game Manager: {gameManager ? '✅' : '❌'}</p>
               <p>Game Ready: {gameReady ? '✅' : '❌'}</p>
             </div>
-          )}
+          )} */}
         </div>
       </main>
       {(showPromotionModal &&
