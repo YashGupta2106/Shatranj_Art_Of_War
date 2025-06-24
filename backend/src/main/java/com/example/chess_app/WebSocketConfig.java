@@ -12,10 +12,13 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Value("${app.cors.allowed-origins}")
-    private String[] allowedOrigins;
+    private String allowedOriginsString;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        // Split the comma-separated string into an array
+        String[] allowedOrigins = allowedOriginsString.split(",");
+        
         registry.addEndpoint("/ws")
                 .setAllowedOrigins(allowedOrigins)
                 .withSockJS();

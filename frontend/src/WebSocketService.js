@@ -10,8 +10,8 @@ class WebSocketService {
   }
 
   connect(gameId, onMoveReceived, onMatchFound) {
-    // Create SockJS connection
-    const socket = new SockJS(`${WEBSOCKET_URL}/chess-game`);
+    // Use /ws endpoint as defined in your WebSocketConfig.java
+    const socket = new SockJS(`${WEBSOCKET_URL}/ws`);
     
     // Create STOMP client
     this.client = new Client({
