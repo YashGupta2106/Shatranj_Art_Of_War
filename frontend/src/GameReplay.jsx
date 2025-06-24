@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import ReplayBoard from "./ReplayBoard"; // Changed from ChessBoard to ReplayBoard
+import ReplayBoard from "./ReplayBoard";
 import "./GameHistory.css";
+
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
 
 export default function GameReplay() {
   const { gameId } = useParams();
@@ -13,65 +15,14 @@ export default function GameReplay() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Mock game data for development
-  const gameReplayData = {
-    gameId: gameId,
-    players: {
-      white: { email: currentUser?.email, name: "Player1" },
-      black: { email: "player2@example.com", name: "Player2" }
-    },
-    result: "white_wins",
-    endReason: "checkmate",
-    startTime: "2024-01-15T10:00:00Z",
-    endTime: "2024-01-15T10:45:00Z",
-    userColor: "white",
-    moves: [
-      {
-        moveNumber: 1,
-        from_sq: "e2",
-        to_sq: "e4",
-        pieceMoved: "pawn",
-        pieceCaptured: "no",
-        castling: false,
-        enPassant: false,
-        promotion: false,
-        promotionPiece: "no"
-      },
-      {
-        moveNumber: 2,
-        from_sq: "e7",
-        to_sq: "e5",
-        pieceMoved: "pawn",
-        pieceCaptured: "no",
-        castling: false,
-        enPassant: false,
-        promotion: false,
-        promotionPiece: "no"
-      },
-      {
-        moveNumber: 3,
-        from_sq: "g1",
-        to_sq: "f3",
-        pieceMoved: "knight",
-        pieceCaptured: "no",
-        castling: false,
-        enPassant: false,
-        promotion: false,
-        promotionPiece: "no"
-      }
-      // Add more moves as needed for testing
-    ]
-  };
-
+  
   useEffect(() => {
     const fetchGameData = async () => {
       try {
         setLoading(true);
         console.log(`🎮 Loading game replay for: ${gameId}`);
-        // Real API call to fetch game replay data
         
-        
-        const response = await fetch(`/api/games/replay/${gameId}`);
+        const response = await fetch(`${API_BASE_URL}/api/games/replay/${gameId}`);
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -84,7 +35,6 @@ export default function GameReplay() {
         }
         
         const gameReplayData = await response.json();
-
 
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -175,7 +125,6 @@ export default function GameReplay() {
 
   return (
     <div className="game-history-container">
-      {/* Simple header using existing styles */}
       <header className="game-history-header">
         <div>
           <h1>Game Replay</h1>
@@ -195,7 +144,6 @@ export default function GameReplay() {
         </div>
       </header>
 
-      {/* Use ReplayBoard instead of ChessBoard */}
       <ReplayBoard gameData={gameData} />
     </div>
   );

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "${app.cors.allowed-origins}")
+@CrossOrigin(origins = {"${app.cors.allowed-origins}", "http://localhost:3000"})
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -39,7 +39,6 @@ public class AuthController {
         }
         
         try {
-            // Validate auth header format
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 logger.warn("Invalid authorization header format");
                 return ResponseEntity.status(401).body("Invalid authorization header");
@@ -47,12 +46,10 @@ public class AuthController {
 
             String idToken = authHeader.replace("Bearer ", "");
             
-            // Only log token length for debugging, never the actual token
             if (debugEnabled) {
                 logger.info("Processing token of length: {}", idToken.length());
             }
 
-            // Verify with Firebase
             FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
             String uid = decodedToken.getUid();
             String email = decodedToken.getEmail();
@@ -61,7 +58,6 @@ public class AuthController {
                 logger.info("Firebase verification successful for user: {}", email);
             }
 
-            // Lookup or create Player
             Player player = playerRepository.findByUid(uid);
             if (player == null) {
                 if (debugEnabled) {
@@ -82,7 +78,6 @@ public class AuthController {
         } catch (Exception e) {
             logger.error("Token verification failed: {}", e.getMessage());
             
-            // Don't expose detailed error messages in production
             if (debugEnabled) {
                 return ResponseEntity.status(401).body("Token verification failed: " + e.getMessage());
             } else {

@@ -5,19 +5,17 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { sendTokenToBackend } from "./authHelp";
-import { useNavigate, useLocation } from "react-router-dom"; // ADD THIS LINE
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function LoginRegister() {
 
   const navigate = useNavigate();
   const location = useLocation();
 
-
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-
 
   // Get the page user was trying to access, default to /home
   const from = location.state?.from?.pathname || '/home';

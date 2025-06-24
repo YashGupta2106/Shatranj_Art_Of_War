@@ -1,6 +1,8 @@
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 
+const WEBSOCKET_URL = process.env.REACT_APP_WEBSOCKET_URL || 'http://localhost:8080';
+
 class WebSocketService {
   constructor() {
     this.stompClient = null;
@@ -23,7 +25,7 @@ class WebSocketService {
 
     try {
       // Create SockJS connection
-      const socket = new SockJS('http://localhost:8080/ws');
+      const socket = new SockJS(`${WEBSOCKET_URL}/ws`);
       
       // Create STOMP client with proper configuration
       this.stompClient = Stomp.over(() => socket);

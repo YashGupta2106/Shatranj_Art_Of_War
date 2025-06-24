@@ -1,20 +1,21 @@
 import { getAuth } from "firebase/auth";
+
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
 
 const sendTokenToBackend = async () => {
   const auth = getAuth();
   const user = auth.currentUser;
   
-  console.log("Current user:", user); // Debug log
+  console.log("Current user:", user);
   
   if (!user) {
     throw new Error("No authenticated user found");
   }
 
   try {
-    console.log("Getting token for user:", user.email); // Debug log
+    console.log("Getting token for user:", user.email);
     const token = await user.getIdToken(true);
-    console.log("Token obtained, sending to backend..."); // Debug log
+    console.log("Token obtained, sending to backend...");
 
     const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
       method: "POST",
@@ -25,7 +26,7 @@ const sendTokenToBackend = async () => {
       body: JSON.stringify({ message: "hello server" })
     });
 
-    console.log("Response status:", response.status); // Debug log
+    console.log("Response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();

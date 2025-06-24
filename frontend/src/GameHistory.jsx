@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import "./GameHistory.css";
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
 
 export default function GameHistory() {
   const navigate = useNavigate();
@@ -10,74 +11,7 @@ export default function GameHistory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Mock data for development
-  const mockGames = [
-    {
-      gameId: "game_001",
-      opponent: {
-        name: "ChessMaster2024",
-        email: "master@chess.com"
-      },
-      userColor: "white",
-      result: "win",
-      endReason: "checkmate",
-      date: "2024-01-15T14:30:00Z",
-      duration: 1530, // 25 minutes 30 seconds
-      totalMoves: 42
-    },
-    {
-      gameId: "game_002", 
-      opponent: {
-        name: "RookiePlayer",
-        email: "rookie@example.com"
-      },
-      userColor: "black",
-      result: "loss",
-      endReason: "resignation",
-      date: "2024-01-14T10:15:00Z",
-      duration: 890, // 14 minutes 50 seconds
-      totalMoves: 28
-    },
-    {
-      gameId: "game_003",
-      opponent: {
-        name: "DrawMaster",
-        email: "draw@chess.com"
-      },
-      userColor: "white", 
-      result: "draw",
-      endReason: "stalemate",
-      date: "2024-01-13T16:45:00Z",
-      duration: 2100, // 35 minutes
-      totalMoves: 67
-    },
-    {
-      gameId: "game_004",
-      opponent: {
-        name: "QuickPlayer",
-        email: "quick@speed.com"
-      },
-      userColor: "black",
-      result: "win",
-      endReason: "timeout",
-      date: "2024-01-12T09:20:00Z", 
-      duration: 600, // 10 minutes
-      totalMoves: 35
-    },
-    {
-      gameId: "game_005",
-      opponent: {
-        name: "TacticalGenius",
-        email: "tactics@chess.org"
-      },
-      userColor: "white",
-      result: "loss",
-      endReason: "checkmate",
-      date: "2024-01-11T20:10:00Z",
-      duration: 1800, // 30 minutes
-      totalMoves: 55
-    }
-  ];
+  
 
   useEffect(() => {
     // Simulate API call with mock data
@@ -86,7 +20,7 @@ export default function GameHistory() {
         setLoading(true);
         
         
-        const response = await fetch(`/api/games/results/${currentUser.email}`)        // const gamesData = await response.json();
+        const response = await fetch(`${API_BASE_URL}/api/games/results/${currentUser.email}`)        // const gamesData = await response.json();
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
