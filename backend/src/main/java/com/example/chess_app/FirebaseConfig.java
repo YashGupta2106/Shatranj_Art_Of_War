@@ -46,6 +46,8 @@ public class FirebaseConfig {
                         logger.info("Initializing Firebase with environment variable credentials");
                     }
                     try {
+                        firebaseConfigJson = firebaseConfigJson.replace("\\n", "\n");
+
                         ByteArrayInputStream credentialsStream = new ByteArrayInputStream(
                             firebaseConfigJson.getBytes(StandardCharsets.UTF_8)
                         );
