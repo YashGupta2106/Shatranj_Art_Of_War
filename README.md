@@ -39,32 +39,7 @@ A modern, real-time multiplayer chess application built with React frontend and 
 - **Firebase Admin SDK** - Server-side Firebase integration
 - **Maven** - Dependency management
 
-## 🏗️ Project Structure
 
-```
-Shatranj_Art_Of_War/
-├── frontend/                 # React frontend application
-│   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── AuthContext.js   # Authentication context
-│   │   ├── firebase-config.js # Firebase configuration
-│   │   ├── WebSocketService.js # WebSocket service
-│   │   └── ...
-│   ├── public/
-│   └── package.json
-├── backend/                 # Spring Boot backend
-│   ├── src/main/java/com/example/chess_app/
-│   │   ├── AuthController.java    # Authentication endpoints
-│   │   ├── FirebaseConfig.java    # Firebase setup
-│   │   ├── WebSocketConfig.java   # WebSocket configuration
-│   │   ├── CorsConfig.java        # CORS configuration
-│   │   └── ...
-│   ├── src/main/resources/
-│   │   ├── application.properties
-│   │   └── firebase-service-account.json
-│   └── pom.xml
-└── README.md
-```
 
 ## 🚀 Getting Started
 
