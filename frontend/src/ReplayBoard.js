@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./ChessBoard.css"; // Reuse existing chess board styles
 import { useNavigate } from "react-router-dom";
 
-
-
 // Chess piece Unicode symbols (same as ChessBoard)
 const PIECES = {
   white: {
@@ -111,7 +109,7 @@ export default function ReplayBoard({ gameData }) {
       const currentFEN = getBoardFEN(board, currentMoveIndex);
       analyzePosition(currentFEN);
     }
-  }, [currentMoveIndex]); // ✅ Only analyze when move changes
+  }, [currentMoveIndex]);
 
   // Convert row, col to chess notation
   const getSquareNotation = (row, col) => {

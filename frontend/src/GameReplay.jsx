@@ -6,6 +6,9 @@ import "./GameHistory.css";
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
 
+
+
+
 export default function GameReplay() {
   const { gameId } = useParams();
   const navigate = useNavigate();
@@ -22,7 +25,9 @@ export default function GameReplay() {
         setLoading(true);
         console.log(`🎮 Loading game replay for: ${gameId}`);
         
-        const response = await fetch(`${API_BASE_URL}/api/games/replay/${gameId}`);
+        const response = await fetch(`${API_BASE_URL}/api/games/replay/${gameId}`,{
+          credentials:"include",
+        });
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -67,11 +72,41 @@ export default function GameReplay() {
     }
   }, [gameId, currentUser]);
 
-  const handleBackToGames = () => {
+  const checkSessionValidity = async () => {
+    try {
+      const checkSession = await fetch(`${API_BASE_URL}/api/auth/sessionVerify`, {
+        credentials: 'include',
+      });
+      if (!checkSession.ok) {
+        alert("Session expired. Please log in again.");
+        navigate('/login');
+        return false; // session invalid
+      }
+      return true; // session valid
+    } catch (err) {
+      console.log("Error checking session validity:", err);
+      navigate('/login');
+      return false;
+    }
+  };
+
+  const handleBackToGames = async() => {
+    const valid = await checkSessionValidity();
+    if(valid===false){
+      alert("Session expired. Please log in again.");
+      navigate('/login');
+      return;
+    }
     navigate('/my-games');
   };
 
-  const handleBackToHome = () => {
+  const handleBackToHome = async() => {
+    const valid = await checkSessionValidity();
+    if(valid===false){
+      alert("Session expired. Please log in again.");
+      navigate('/login');
+      return;
+    }
     navigate('/home');
   };
 

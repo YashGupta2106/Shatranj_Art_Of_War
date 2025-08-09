@@ -8,10 +8,11 @@ public abstract class Piece {
     private String Square;
     private String pinnedBy="no"; //sqaure it got pinned by
     private String pins="no";    //sqaure it pinned
-
-    public Piece( String Color, String Square) {
+    private String pieceType;
+    public Piece( String Color, String Square, String pieceType) {
         this.Color = Color;
         this.Square = Square;
+        this.pieceType = pieceType;
     }
 
     public boolean getIsAlive() {
@@ -50,6 +51,12 @@ public abstract class Piece {
     public void setPins(String pins) {
         this.pins = pins;
     }
+    public String getPieceType() {
+        return pieceType;
+    }
+    public void setPieceType(String pieceType) {
+        this.pieceType = pieceType;
+    }
 }
 
 
@@ -60,7 +67,7 @@ class Pawn extends Piece {
     private int firstMoveCount;
     private String getEnPassant; // can it be enpassanted
     public Pawn(String Color, String Square,String enPassant) {
-        super(Color, Square);
+        super(Color, Square,"pawn");
         firstMove="no";
         this.enPassant=enPassant;
         getEnPassant="no";
@@ -95,7 +102,7 @@ class Pawn extends Piece {
 
 class Knight extends Piece {
     public Knight(String Color, String Square) {
-        super(Color, Square);
+        super(Color, Square,"knight");
     }
 
     
@@ -103,7 +110,7 @@ class Knight extends Piece {
 
 class Bishop extends Piece {
     public Bishop(String Color, String Square) {
-        super(Color, Square);
+        super(Color, Square,"bishop");
     }
 
     
@@ -113,7 +120,7 @@ class Rook extends Piece{
     private String firstMove;
     private String castleTo;    // square it will castle to
     public Rook(String Color, String Square) {
-        super(Color, Square);
+        super(Color, Square,"rook");
         firstMove="no";
         // this.castleTo=castleTo;
     }
@@ -133,7 +140,7 @@ class Rook extends Piece{
 
 class Queen extends Piece{
     public Queen(String Color, String Square) {
-        super(Color, Square);
+        super(Color, Square,"queen");
     }
 }
 
@@ -142,7 +149,7 @@ class King extends Piece{
     private Boolean underCheck=false; 
     private ArrayList<String> checkByWhom=new ArrayList<String>();
     public King(String Color, String Square) {
-        super(Color, Square);
+        super(Color, Square,"king");
         firstMove="no";
         // checkByWhom="no";
     }
