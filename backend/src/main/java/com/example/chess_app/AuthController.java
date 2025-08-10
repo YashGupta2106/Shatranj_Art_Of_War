@@ -50,16 +50,24 @@ public class AuthController {
         return ResponseEntity.ok("Backend is working!");
     }
     
+
+    // this endpoint is used to verify the session of the user that is already logged in
     @GetMapping("/sessionVerify")
     public ResponseEntity<?> verifySession(HttpServletRequest request, HttpServletResponse response){
         Cookie cookies[] = request.getCookies();
         String sessionId=null;
-        for(Cookie cookie:cookies){
-            if("sessionId".equals(cookie.getName())){
-                sessionId=cookie.getValue();
-                break;
+        if(cookies==null || cookies.length==0){
+            
+        }
+        else{
+            for(Cookie cookie:cookies){
+                if("sessionId".equals(cookie.getName())){
+                    sessionId=cookie.getValue();
+                    break;
+                }
             }
         }
+        
         if(sessionId!=null){
             System.out.println("i found the cookie so the session is valid");
             System.out.println("now lets see if the session lasts for how long");
@@ -101,6 +109,8 @@ public class AuthController {
         }
     }
 
+
+    // this is used when user opens the app to check if they have a valid session
     @PostMapping("/login")
     public ResponseEntity<?>verifyCookie(HttpServletRequest request, HttpServletResponse response){
         System.out.println("this is the time when i am starting the session");
@@ -162,6 +172,7 @@ public class AuthController {
 
     }
 
+    //  this endpoint is used when user logs in/ registers
     @PostMapping("/verify")
     public ResponseEntity<Map<String,String>> login(HttpServletResponse response,@RequestHeader("Authorization") String authHeader) {
         if (debugEnabled) {
@@ -241,21 +252,24 @@ public class AuthController {
     public void logout(HttpServletRequest request,HttpServletResponse response) {
         Cookie cookies[]=request.getCookies();
         String sessionId=null;
-        for(Cookie cookie:cookies){
-            if("sessionId".equals(cookie.getName())){
-                sessionId=cookie.getValue();
-                redisService.deleteSession(sessionId);  
-                ResponseCookie clearedCookie = ResponseCookie.from("sessionId", "")
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(0)
-                .build();
-                response.addHeader(HttpHeaders.SET_COOKIE, clearedCookie.toString());
-                break;
+        if(cookies!=null && cookies.length!=0){
+            for(Cookie cookie:cookies){
+                if("sessionId".equals(cookie.getName())){
+                    sessionId=cookie.getValue();
+                    redisService.deleteSession(sessionId);  
+                    ResponseCookie clearedCookie = ResponseCookie.from("sessionId", "")
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .sameSite("Lax")
+                    .maxAge(0)
+                    .build();
+                    response.addHeader(HttpHeaders.SET_COOKIE, clearedCookie.toString());
+                    break;
+                }
             }
         }
+        
     }
 }
 
