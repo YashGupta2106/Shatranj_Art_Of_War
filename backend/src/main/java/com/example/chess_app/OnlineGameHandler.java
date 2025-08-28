@@ -190,7 +190,7 @@ public class OnlineGameHandler {
 
                             }
                             if(rank==8){
-                                System.out.println("its promotion time baby");
+                                // System.out.println("its promotion time baby");
                                 // removePiece(square.getSquare(),squarePanes);
                                 for(Piece bp: blackPieces){
                                     if(bp.getSquare().equals(squareClicked)){
@@ -304,7 +304,7 @@ public class OnlineGameHandler {
                         // removePiece(square.getSquare(),squarePanes);
                         // movePiece(gameState.getSquareSelected(),square.getSquare(),squarePanes);
                         p.setSquare(squareClicked);
-                        System.out.println("done moving the piece and setting it to: "+p.getSquare());
+                        // System.out.println("done moving the piece and setting it to: "+p.getSquare());
                         // lets see if something exists on g8
                         break;
 
@@ -440,7 +440,7 @@ public class OnlineGameHandler {
 
                             }
                             if(rank==1){
-                                System.out.println("its promotion time baby");
+                                // System.out.println("its promotion time baby");
                                 // removePiece(square.getSquare(),squarePanes);
                                 for(Piece bp: whitePieces){
                                     if(bp.getSquare().equals(squareClicked)){
@@ -549,7 +549,7 @@ public class OnlineGameHandler {
                         // removePiece(square.getSquare(),squarePanes);
                         // movePiece(gameState.getSquareSelected(),square.getSquare(),squarePanes);
                         p.setSquare(squareClicked);
-                        System.out.println("done moving the piece and setting it to: "+p.getSquare());
+                        //System.out.println("done moving the piece and setting it to: "+p.getSquare());
                         // lets see if something exists on g8
                         break;
 
@@ -581,58 +581,58 @@ public class OnlineGameHandler {
                     if(piece.getSquare().equals(squareClicked)){
                         if(piece instanceof Pawn){
                             // pawn logic
-                            System.out.println("its a pawn");
+                            //System.out.println("its a pawn");
                             Pawn pawn=(Pawn)piece;
                             possibleMoves=PawnMoves(pawn,whiteKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                         }
                         else if(piece instanceof Rook){
                             // rook logic
-                            System.out.println("its a rook");
+                            //System.out.println("its a rook");
                             Rook rook=(Rook)piece;
                             possibleMoves=RookMoves(rook,whiteKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
 
                         }
                         else if(piece instanceof Knight){
                             // knight logic
-                            System.out.println("its a knight");
+                            //System.out.println("its a knight");
                             Knight knight=(Knight)piece;
                             possibleMoves=KnightMoves(knight,whiteKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                         }
                         else if(piece instanceof Bishop){
                             // bishop logic
-                            System.out.println("its a bishop");
+                            //System.out.println("its a bishop");
                             Bishop bishop=(Bishop)piece;
                             possibleMoves=BishopMoves(bishop,whiteKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                             
                         }
                         else if(piece instanceof Queen){
                             // queen logic
-                            System.out.println("its a queen");
+                            //System.out.println("its a queen");
                             Queen queen=(Queen)piece;
                             possibleMoves=QueenMoves(queen,whiteKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                         }
                         else if(piece instanceof King){
                             // king logic
-                            System.out.println("its a king");
+                            //System.out.println("its a king");
                             King king=(King)piece;
                             possibleMoves=KingMoves(king);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                         }
                     }
@@ -645,58 +645,58 @@ public class OnlineGameHandler {
                     if(piece.getSquare().equals(squareClicked)){
                         if(piece instanceof Pawn){
                             // pawn logic
-                            System.out.println("its a pawn");
+                            //System.out.println("its a pawn");
                             Pawn pawn=(Pawn)piece;
                             possibleMoves=PawnMoves(pawn,blackKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                         }
                         else if(piece instanceof Rook){
                             // rook logic
-                            System.out.println("its a rook");
+                            //System.out.println("its a rook");
                             Rook rook=(Rook)piece;
                             possibleMoves=RookMoves(rook,blackKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
 
                         }
                         else if(piece instanceof Knight){
                             // knight logic
-                            System.out.println("its a knight");
+                            //System.out.println("its a knight");
                             Knight knight=(Knight)piece;
                             possibleMoves=KnightMoves(knight,blackKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                         }
                         else if(piece instanceof Bishop){
                             // bishop logic
-                            System.out.println("its a bishop");
+                            //System.out.println("its a bishop");
                             Bishop bishop=(Bishop)piece;
                             possibleMoves=BishopMoves(bishop,blackKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                             
                         }
                         else if(piece instanceof Queen){
                             // queen logic
-                            System.out.println("its a queen");
+                            //System.out.println("its a queen");
                             Queen queen=(Queen)piece;
                             possibleMoves=QueenMoves(queen,blackKing);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                         }
                         else if(piece instanceof King){
                             // king logic
-                            System.out.println("its a king");
+                            //System.out.println("its a king");
                             King king=(King)piece;
                             possibleMoves=KingMoves(king);
                             for(String move:possibleMoves){
-                                System.out.println(move);
+                                //System.out.println(move);
                             }
                         }
                     }
@@ -718,12 +718,12 @@ public class OnlineGameHandler {
 
 
     public void PinsAndChecks(Move newMove){
-        System.out.println("");
-        System.out.println("--------------------------------------------------------------------------------------");
-        System.out.println("i did enter pinsAndChecks");
-        System.out.println("");
-        System.out.println("");
-        System.out.println("now lets do some imp shit");
+        //System.out.println("");
+        //System.out.println("--------------------------------------------------------------------------------------");
+        //System.out.println("i did enter pinsAndChecks");
+        //System.out.println("");
+        //System.out.println("");
+        //System.out.println("now lets do some imp shit");
 
         // here we first see if its checkmate/stalemate or not
         King whiteKing=null;
@@ -762,26 +762,26 @@ public class OnlineGameHandler {
             p.setPins("no");
             p.setIsPinned(false);
         }
-        System.out.println("done setting the everything to no");
+        //System.out.println("done setting the everything to no");
         // first we check for white pieces and then the same for black pieces
         // doing for white pieces
         
-        System.out.println("set the king to no checks");
-        System.out.println("time to look out for these pawns");
-        System.out.println("");
-        System.out.println("");
+        //System.out.println("set the king to no checks");
+        //System.out.println("time to look out for these pawns");
+        //System.out.println("");
+        //System.out.println("");
         // now i will remove the can get enpassanted from pawns
         for(Piece p:game.getWhitePieces()){
             if(p instanceof Pawn){
                 Pawn piece=(Pawn)p;
                 if(piece.getGetEnPassant().equals("yes")){
                     if(piece.getFirstMoveCount()!=game.getMoveNumber()){
-                        System.out.println("mera move set is: "+piece.getFirstMoveCount());
-                        System.out.println("current move ongoing is: "+game.getMoveNumber());
+                        //System.out.println("mera move set is: "+piece.getFirstMoveCount());
+                        //System.out.println("current move ongoing is: "+game.getMoveNumber());
                         piece.setGetEnPassant("no");
                     }
                     else{
-                        System.out.println(" i can get enpassanted at this move");
+                        //System.out.println(" i can get enpassanted at this move");
                     }
                 }
             }
@@ -792,35 +792,35 @@ public class OnlineGameHandler {
 
                 if(piece.getGetEnPassant().equals("yes")){
                     if(piece.getFirstMoveCount()!=game.getMoveNumber()){
-                        System.out.println("mera move set is: "+piece.getFirstMoveCount());
-                        System.out.println("current move ongoing is: "+game.getMoveNumber());
+                        //System.out.println("mera move set is: "+piece.getFirstMoveCount());
+                        //System.out.println("current move ongoing is: "+game.getMoveNumber());
                         piece.setGetEnPassant("no");
                     }
                     else{
-                        System.out.println(" i can get enpassanted at this move");
+                        //System.out.println(" i can get enpassanted at this move");
                     }
                 }
             }
         }
-        System.out.println("done looking enpassant of pawns");
+        //System.out.println("done looking enpassant of pawns");
         
         ArrayList<Piece> opponentPieces=new ArrayList<Piece>();
         for(Piece p:game.getBlackPieces()){
             if(p instanceof Bishop || p instanceof Rook || p instanceof Queen){
                 opponentPieces.add(p);
-                // System.out.println("i will print the black opp squares");
-                // System.out.println(p.getSquare());
+                // //System.out.println("i will print the black opp squares");
+                // //System.out.println(p.getSquare());
             }
         }
-        // System.out.println("outside the printing loop of opp pieces");
-        // System.out.println("done3");
+        // //System.out.println("outside the printing loop of opp pieces");
+        // //System.out.println("done3");
         // now we start checking for pins
         String[] col = {"a", "b", "c", "d","e", "f", "g", "h"};
         String[] row = {"1", "2", "3", "4", "5", "6", "7", "8"};
         for(Piece p:opponentPieces){
-            System.out.println("-------------------------------------------------------------------------------");
-            System.out.println("current opp piece is: "+p.getSquare());
-            System.out.println("-------------------------------------------------------------------------------");
+            //System.out.println("-------------------------------------------------------------------------------");
+            //System.out.println("current opp piece is: "+p.getSquare());
+            //System.out.println("-------------------------------------------------------------------------------");
             String[]squares=p.getSquare().split("");
             int opp_letter=0;
             int opp_int=0;
@@ -926,29 +926,29 @@ public class OnlineGameHandler {
             allDirections.add(new ArrayList<>(directionMoves));
             directionMoves.clear();
 
-            System.out.println("done with all the directions");
-            System.out.println("now i will check for pins and checks");
-            System.out.println("---------------------------------------------------");
+            //System.out.println("done with all the directions");
+            //System.out.println("now i will check for pins and checks");
+            //System.out.println("---------------------------------------------------");
             if(p instanceof Bishop || p instanceof Queen){
-                System.out.println("doing for bishop or queen");
-                // System.out.println("the square is: "+p.getSquare());
+                //System.out.println("doing for bishop or queen");
+                // //System.out.println("the square is: "+p.getSquare());
                 for(int i=0;i<4;i++){
                     int flag_opp=0; // this is to check if opp(Black) piece found
                     int flag_friend=0; // find for friend (white is found)
                     int flag=0; // tells when to break out of loop after checking white pin
                     String friend_square="no";
-                    System.out.println("starting new direction");
+                    //System.out.println("starting new direction");
                     for(String square:allDirections.get(i)){
-                        System.out.println("");
-                        System.out.println("");
-                        System.out.println("");
-                        System.out.println("current square is: "+square);
+                        //System.out.println("");
+                        //System.out.println("");
+                        //System.out.println("");
+                        //System.out.println("current square is: "+square);
                         if(flag_opp==0){
-                            System.out.println("entering inside as flagopp=0");
+                            //System.out.println("entering inside as flagopp=0");
                             for(Piece p1:game.getBlackPieces()){
                                 if(p1.getSquare().equals(square)){
                                     // no pin or check from this piece
-                                    System.out.println("no pin from this piece in this direction");
+                                    //System.out.println("no pin from this piece in this direction");
                                     flag_opp=1;
                                     break;
                                 }
@@ -962,7 +962,7 @@ public class OnlineGameHandler {
                                             if(flag_friend==0){
                                                 friend_square=p1.getSquare();
                                             }
-                                            System.out.println("friend square is: "+friend_square);
+                                            //System.out.println("friend square is: "+friend_square);
                                             flag_friend++;
                                         }
                                         else{
@@ -975,7 +975,7 @@ public class OnlineGameHandler {
                                                         pp.setPinnedBy(p.getSquare());
                                                         p.setPins(pp.getSquare());
                                                         flag=1;
-                                                        System.out.println("setting the pin for this piece at square: "+pp.getSquare());
+                                                        //System.out.println("setting the pin for this piece at square: "+pp.getSquare());
                                                         break;
                                                     }
                                                 }
@@ -984,11 +984,11 @@ public class OnlineGameHandler {
                                             }
                                             else{
                                                 // king is in check
-                                                System.out.println("king is in check");
+                                                //System.out.println("king is in check");
                                                 whiteKing.setUnderCheck(true);
-                                                System.out.println("setting the check for white king by "+p.getSquare());
+                                                //System.out.println("setting the check for white king by "+p.getSquare());
                                                 whiteKing.setCheckByWhom(p.getSquare());
-                                                System.out.println("king in check from :"+whiteKing.getCheckByWhom());
+                                                //System.out.println("king in check from :"+whiteKing.getCheckByWhom());
                                                 newMove.setWhiteKingInCheck(true);
 
                                                 flag=1;
@@ -998,7 +998,7 @@ public class OnlineGameHandler {
                                     }
                                     else{
                                         // no point checking anymore
-                                        System.out.println("no check in this direction");
+                                        //System.out.println("no check in this direction");
                                         friend_square="no";
                                         break;
         
@@ -1012,7 +1012,7 @@ public class OnlineGameHandler {
                             
                         }
                         else{
-                            System.out.println("end of search in this direction");
+                            //System.out.println("end of search in this direction");
                             break;
                         }
                     }
@@ -1094,8 +1094,8 @@ public class OnlineGameHandler {
             }
 
         }
-        System.out.println("came out doing for white pieces");
-        // System.out.println("done4");
+        //System.out.println("came out doing for white pieces");
+        // //System.out.println("done4");
         opponentPieces.clear();
 //-----------------------------------------------------
         // now checking for black pieces
@@ -1104,7 +1104,7 @@ public class OnlineGameHandler {
                 opponentPieces.add(p);
             }
         }
-        // System.out.println("done5");
+        // //System.out.println("done5");
 
         // now we start checking for pins
         for(Piece p:opponentPieces){
@@ -1364,10 +1364,10 @@ public class OnlineGameHandler {
 
         }
 
-        System.out.println("done doing for black pieces");
+        //System.out.println("done doing for black pieces");
 
-        System.out.println("now we write for pawns and knight checks"); 
-        System.out.println("first for knight against white king");
+        //System.out.println("now we write for pawns and knight checks"); 
+        //System.out.println("first for knight against white king");
         opponentPieces.clear();
         for(Piece p:game.getBlackPieces()){
             if(p instanceof Knight){
@@ -1413,19 +1413,19 @@ public class OnlineGameHandler {
             }
             for(String s:directionalmoves){
                 if(s.equals(whiteKing.getSquare())){
-                    System.out.println("yes this knight is checking the king");
+                    //System.out.println("yes this knight is checking the king");
                     whiteKing.setUnderCheck(true);
                     whiteKing.setCheckByWhom(p.getSquare());
-                    System.out.println("the knight that is checking is "+p.getSquare());
+                    //System.out.println("the knight that is checking is "+p.getSquare());
                     break;
 
                 }
             }
 
         }
-        // System.out.println("done7");
+        // //System.out.println("done7");
 
-        System.out.println("now knight against black king");
+        //System.out.println("now knight against black king");
         opponentPieces.clear();
         for(Piece p:game.getWhitePieces()){
             if(p instanceof Knight){
@@ -1470,10 +1470,10 @@ public class OnlineGameHandler {
             }
             for(String s:directionalmoves){
                 if(s.equals(blackKing.getSquare())){
-                    System.out.println("yes this knight is checking the king");
+                    //System.out.println("yes this knight is checking the king");
                     blackKing.setUnderCheck(true);
                     blackKing.setCheckByWhom(p.getSquare());
-                    System.out.println("the knight that is checking is "+p.getSquare());
+                    //System.out.println("the knight that is checking is "+p.getSquare());
                     break;
 
                 }
@@ -1481,9 +1481,9 @@ public class OnlineGameHandler {
 
         }
 
-        // System.out.println("done8");
+        // //System.out.println("done8");
 
-        System.out.println("now pawns attacking white king");
+        //System.out.println("now pawns attacking white king");
         opponentPieces.clear();
         for(Piece p:game.getBlackPieces()){
             if(p instanceof Pawn){
@@ -1510,7 +1510,7 @@ public class OnlineGameHandler {
             }
             for(String s:directionalmoves){
                 if(s.equals(whiteKing.getSquare())){
-                    System.out.println("yes this pawn is checking the king");
+                    //System.out.println("yes this pawn is checking the king");
                     whiteKing.setUnderCheck(true);
                     whiteKing.setCheckByWhom(p.getSquare());
                     break;
@@ -1520,7 +1520,7 @@ public class OnlineGameHandler {
         }
 
 
-        System.out.println("now pawns attacking black king");
+        //System.out.println("now pawns attacking black king");
         opponentPieces.clear();
         for(Piece p:game.getWhitePieces()){
             if(p instanceof Pawn){
@@ -1528,7 +1528,7 @@ public class OnlineGameHandler {
             }
         }
         for(Piece p:opponentPieces){
-            System.out.println("this pawn is on square: "+p.getSquare());
+            //System.out.println("this pawn is on square: "+p.getSquare());
             String[] squares=p.getSquare().split("");
             int file=0;
             int pos=0;
@@ -1548,7 +1548,7 @@ public class OnlineGameHandler {
             }
             for(String s:directionalmoves){
                 if(s.equals(blackKing.getSquare())){
-                    System.out.println("yes this pawn is checking the king");
+                    //System.out.println("yes this pawn is checking the king");
                     blackKing.setUnderCheck(true);
                     blackKing.setCheckByWhom(p.getSquare());
                     break;
@@ -1558,7 +1558,7 @@ public class OnlineGameHandler {
         }
 
 
-        System.out.println("checking for checkmate");
+        //System.out.println("checking for checkmate");
         int whiteCheckmateFlag=0;
         ArrayList<String>checkmateMoves=new ArrayList<String>();
         
@@ -1582,7 +1582,7 @@ public class OnlineGameHandler {
                 checkmateMoves=QueenMoves((Queen)p,whiteKing);
             }
             if(checkmateMoves.size()>0){
-                System.out.println("no checkmate dear white has moves");
+                //System.out.println("no checkmate dear white has moves");
                 whiteCheckmateFlag=1;
                 break;
             }
@@ -1590,7 +1590,7 @@ public class OnlineGameHandler {
         if(whiteKing.getUnderCheck()){
             
             if(whiteCheckmateFlag==0){
-                System.out.println("white got checkmated as no moves for it");
+                //System.out.println("white got checkmated as no moves for it");
                 moveResponse.setGameEnded(true);
                 moveResponse.setGameEndReason("Checkmate");
                 moveResponse.setWinner("black");
@@ -1601,12 +1601,12 @@ public class OnlineGameHandler {
                 return ;
             }
             else{
-                System.out.println("white in check but has moves to save it");
+                //System.out.println("white in check but has moves to save it");
             }    
 
         }
         else{
-            System.out.println("white not in check so no checkmate");
+            //System.out.println("white not in check so no checkmate");
         }
         checkmateMoves.clear();
         int blackCheckmateFlag=0;
@@ -1630,7 +1630,7 @@ public class OnlineGameHandler {
                 checkmateMoves=QueenMoves((Queen)p,blackKing);
             }
             if(checkmateMoves.size()>0){
-                System.out.println("no checkmate dear black has moves");
+                //System.out.println("no checkmate dear black has moves");
                 blackCheckmateFlag=1;
                 break;
             }
@@ -1638,7 +1638,7 @@ public class OnlineGameHandler {
         if(blackKing.getUnderCheck()){
             
             if(blackCheckmateFlag==0){
-                System.out.println("black got checkmated as no moves for it");
+                //System.out.println("black got checkmated as no moves for it");
                 moveResponse.setGameEnded(true);
                 moveResponse.setGameEndReason("Checkmate");
                 moveResponse.setWinner("white");
@@ -1654,12 +1654,12 @@ public class OnlineGameHandler {
 
         }
         else{
-            System.out.println("black not in check so no checkmate");
+            //System.out.println("black not in check so no checkmate");
         }
         if(playerColor.equals("white")){
-            System.out.println("now checking for stalemate for black");
+            //System.out.println("now checking for stalemate for black");
             if(blackCheckmateFlag==0){
-                System.out.println("game ended in draw");
+                //System.out.println("game ended in draw");
                 moveResponse.setGameEnded(true);
                 moveResponse.setGameEndReason("draw");
                 moveResponse.setWinner("draw");
@@ -1673,9 +1673,9 @@ public class OnlineGameHandler {
             }
         }
         else{
-            System.out.println("now checking for stalemate for white");
+            //System.out.println("now checking for stalemate for white");
             if(whiteCheckmateFlag==0){
-                System.out.println("game ended in draw");
+                //System.out.println("game ended in draw");
                 moveResponse.setGameEnded(true);
                 moveResponse.setGameEndReason("draw");
                 moveResponse.setWinner("draw");
@@ -1704,14 +1704,14 @@ public class OnlineGameHandler {
         if(pawn.getIsAlive()){
             String square[]=pawn.getSquare().split("");
             if(pawn.getColor().equals("white")){
-                System.out.println("white pawn");
+                //System.out.println("white pawn");
                 for(int i=0;i<8;i++){
                     if(square[1].equals(row[i])){
                         if(i+1<8){
                             // yes it can move ahead if unobstructed
                             int flag=0;
                             String sqAhead=square[0]+row[i+1];
-                            // System.out.println("the square ahead is: "+sqAhead);
+                            // //System.out.println("the square ahead is: "+sqAhead);
                             for(Piece p:game.getWhitePieces()){
                                 if(p.getSquare().equals(sqAhead)){
                                     flag=1;
@@ -1736,7 +1736,7 @@ public class OnlineGameHandler {
 
                 if(pawn.getFirstMove().equals("no")){
                     // it can move 2 squares
-                    System.out.println("it can make 2 squares at this point");
+                    //System.out.println("it can make 2 squares at this point");
                     String sqAhead=square[0]+"4";
                     int flag=0;
                     for(Piece p:game.getWhitePieces()){
@@ -1823,11 +1823,11 @@ public class OnlineGameHandler {
                         tempmoves.add(sqRight);
                     }
                 }
-                System.out.println("time to see if i can enpassant");
+                //System.out.println("time to see if i can enpassant");
 //----------------------------------------------------------------------------
                 // now i see for en passant
                 // i gotta search which one it can attack
-                System.out.println("entered the block to check it");
+                //System.out.println("entered the block to check it");
                 sqLeft="";
                 sqRight="";
                 String sqAboveLeft="";
@@ -1867,20 +1867,20 @@ public class OnlineGameHandler {
                         break;
                     }
                 }
-                System.out.println("the squares are: "+sqLeft+" "+sqRight+" "+sqAboveLeft+" "+sqAboveRight);
+                //System.out.println("the squares are: "+sqLeft+" "+sqRight+" "+sqAboveLeft+" "+sqAboveRight);
                 if(!sqLeft.equals("no")){
                     int flag=0;
 
                     for(Piece p:game.getBlackPieces()){
-                        // System.out.println("opponent piece square is : "+p.getSquare());
+                        // //System.out.println("opponent piece square is : "+p.getSquare());
                         if(p.getSquare().equals(sqLeft) && p instanceof Pawn){
-                            System.out.println("opponent pawn found");
+                            //System.out.println("opponent pawn found");
                             if(((Pawn)p).getGetEnPassant().equals("yes")){
-                                System.out.println("yes it can enpassant");
+                                //System.out.println("yes it can enpassant");
                                 flag=1;
                                 break;
                             }
-                            System.out.println(((Pawn)p).getGetEnPassant());
+                            //System.out.println(((Pawn)p).getGetEnPassant());
                             
                         }
                     }
@@ -1895,7 +1895,7 @@ public class OnlineGameHandler {
                     for(Piece p:game.getBlackPieces()){
                         if(p.getSquare().equals(sqRight) && p instanceof Pawn){
                             if(((Pawn)p).getGetEnPassant().equals("yes")){
-                                System.out.println("yes it can enpassant");
+                                //System.out.println("yes it can enpassant");
                                 flag=1;
                                 break;
                             }
@@ -1909,20 +1909,20 @@ public class OnlineGameHandler {
                 // if(pawn.getEnPassant().equals("yes")){
                     
                 // }
-                System.out.println("came out of the checking");
+                //System.out.println("came out of the checking");
 // -------------------------------------------------------------------------------------------------
                 // now i will start eliminating the moves that are not possible
                 
                 if(king.getUnderCheck()){
                     List<String> block=new ArrayList<String>();
                     // pawn can save king only by attacking the checking piece.. but first make sure that it is not pinned by some other piece
-                    System.out.println("----------------------------------------");
-                    System.out.println("haaalp king is in check");
-                    System.out.println("---------------------------------------");
+                    //System.out.println("----------------------------------------");
+                    //System.out.println("haaalp king is in check");
+                    //System.out.println("---------------------------------------");
                     String attackSq="";
                     int flagfind=0;
                     if(king.getCheckByWhom().size()>1){
-                        System.out.println("double check cant do anything");
+                        //System.out.println("double check cant do anything");
                         moves.clear();
                         return moves;
                     }
@@ -1932,19 +1932,19 @@ public class OnlineGameHandler {
                         if(p.getSquare().equals(king.getCheckByWhom().get(0))){
                             
                             // in this case you can either kill it or not help.
-                            System.out.println("lets see if it can attack the piece");
+                            //System.out.println("lets see if it can attack the piece");
                             
                             for(String saveKing:tempmoves){
                                 if(saveKing.equals(p.getSquare())){
                                     // it might attack the piece
-                                    System.out.println("yes it can attack less goooooooo");
+                                    //System.out.println("yes it can attack less goooooooo");
                                     flagfind=1;
                                     attackSq=saveKing;
                                     break;
                                 }
                             }
                             if(flagfind==1){
-                                System.out.println("getting out of this looooop");
+                                //System.out.println("getting out of this looooop");
                                 break;
                                 
                             }
@@ -1955,7 +1955,7 @@ public class OnlineGameHandler {
                     if(flagfind==1){ // you might attack
                         if(!pawn.getIsPinned()){// check if pinned or not
                             // tempmoves.clear();
-                            System.out.println("added to possible moves as it can attack the piece");
+                            //System.out.println("added to possible moves as it can attack the piece");
                             block.add(attackSq);
                         }
                         else{
@@ -1971,7 +1971,7 @@ public class OnlineGameHandler {
                     // find the path of check and see if it can land on any of those squares
                         // Piece attacker=null;  
                     flagfind=0;
-                    System.out.println("lets see if it can obstruct the attacker");
+                    //System.out.println("lets see if it can obstruct the attacker");
                     String king_square[]=king.getSquare().split("");
                     if(pawn.getIsPinned()){ // in this case pawn cant move
                         tempmoves.clear();
@@ -2303,18 +2303,18 @@ public class OnlineGameHandler {
                 }
                 else if(pawn.getIsPinned()){
                     // if its pinned then i have to check
-                    System.out.println("-------------------------------------------------------------");
-                    System.out.println("this piece is pinned... lets see what it can do now");
-                    System.out.println("----------------------------------------------------------------");
+                    //System.out.println("-------------------------------------------------------------");
+                    //System.out.println("this piece is pinned... lets see what it can do now");
+                    //System.out.println("----------------------------------------------------------------");
                     String pawn_square[]=pawn.getSquare().split("");
-                    System.out.println("its pinned by :"+pawn.getPinnedBy());
+                    //System.out.println("its pinned by :"+pawn.getPinnedBy());
                     for(Piece p:game.getBlackPieces()){
                         if(p.getSquare().equals(pawn.getPinnedBy())){
-                            System.out.println("yes it matched");
+                            //System.out.println("yes it matched");
                             String attacker_square[]=p.getSquare().split("");
                             // i have to see if it can move in the direction of the pin
                             if(p instanceof Rook){
-                                System.out.println("attacker is rook");
+                                //System.out.println("attacker is rook");
                                 if(attacker_square[1].equals(pawn_square[1])){
                                     // then we cant do anything
                                     tempmoves.clear();
@@ -2354,7 +2354,7 @@ public class OnlineGameHandler {
 
                             }
                             else if(p instanceof Bishop){
-                                System.out.println("attacker is bishop");
+                                //System.out.println("attacker is bishop");
                                 // in this case i can move only to attack the piece
                                 ArrayList<String> checkMoves=new ArrayList<>(tempmoves);
                                 tempmoves.clear();
@@ -2367,7 +2367,7 @@ public class OnlineGameHandler {
                                 
                             }
                             else if(p instanceof Queen){
-                                System.out.println("attacker is queen");
+                                //System.out.println("attacker is queen");
                                 // first lets see for attack as rook
                                 if(attacker_square[1].equals(pawn_square[1])){
                                     // then we cant do anything
@@ -2434,7 +2434,7 @@ public class OnlineGameHandler {
 
 
             else{ // here you write for black pawn
-                System.out.println("black pawn");
+                //System.out.println("black pawn");
                 for(int i=0;i<8;i++){
                     if(square[1].equals(row[i])){
                         if(i-1>=0){
@@ -2464,7 +2464,7 @@ public class OnlineGameHandler {
                 }
                 if(pawn.getFirstMove().equals("no")){
                     // it can move 2 squares
-                    System.out.println("it can make 2 squares at this point");
+                    //System.out.println("it can make 2 squares at this point");
 
                     String sqAhead=square[0]+"5";
                     int flag=0;
@@ -2638,7 +2638,7 @@ public class OnlineGameHandler {
                     int flagfind=0;
                     List<String> block=new ArrayList<String>();
                     if(king.getCheckByWhom().size()>1){
-                        System.out.println("double check cant do anything");
+                        //System.out.println("double check cant do anything");
                         moves.clear();
                         return moves;
                     }
@@ -3159,7 +3159,7 @@ public class OnlineGameHandler {
                 // now i check this arraylist;
                 int flag1=0; // if its zero then i can check for further piece
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getBlackPieces()){
@@ -3182,7 +3182,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -3210,7 +3210,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getBlackPieces()){
@@ -3233,7 +3233,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -3260,7 +3260,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getBlackPieces()){
@@ -3283,7 +3283,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -3311,7 +3311,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getBlackPieces()){
@@ -3334,7 +3334,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -3353,7 +3353,7 @@ public class OnlineGameHandler {
                 String king_square[]=king.getSquare().split("");
                 if(king.getUnderCheck()){
                     if(king.getCheckByWhom().size()>1){
-                        System.out.println("double check cant do anything");
+                        //System.out.println("double check cant do anything");
                         moves.clear();
                         return moves;
                     }
@@ -3856,7 +3856,7 @@ public class OnlineGameHandler {
                 // now i check this arraylist;
                 int flag1=0; // if its zero then i can check for further piece
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getWhitePieces()){
@@ -3879,7 +3879,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -3906,7 +3906,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getWhitePieces()){
@@ -3929,7 +3929,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -3955,7 +3955,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getWhitePieces()){
@@ -3978,7 +3978,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -4005,7 +4005,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getWhitePieces()){
@@ -4028,7 +4028,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -4047,7 +4047,7 @@ public class OnlineGameHandler {
                 String king_square[]=king.getSquare().split("");
                 if(king.getUnderCheck()){
                     if(king.getCheckByWhom().size()>1){
-                        System.out.println("double check cant do anything");
+                        //System.out.println("double check cant do anything");
                         moves.clear();
                         return moves;
                     }
@@ -4533,7 +4533,7 @@ public class OnlineGameHandler {
         return moves;
     }
     public ArrayList<String> KnightMoves(Knight knight,King king){
-        System.out.println("hi there i am entering knight function");
+        //System.out.println("hi there i am entering knight function");
         ArrayList<String> moves=new ArrayList<String>();
         ArrayList<String> tempmoves=new ArrayList<String>();
         String[] col = {"a", "b", "c", "d","e", "f", "g", "h"};
@@ -4576,39 +4576,39 @@ public class OnlineGameHandler {
             }
 
             tempmoves.addAll(directionalmoves);
-            System.out.println("we got all knight moves");
+            //System.out.println("we got all knight moves");
 
             if(knight.getColor().equals("white")){
-                System.out.println("white knight it is");
+                //System.out.println("white knight it is");
                 
                 // now we see if these moves are valid
 
 //-----------------------------------------------------------
                 if(king.getUnderCheck()){
-                    System.out.println("-------------------------------------------------------------------");
-                    System.out.println("king is under check");
-                    System.out.println("-------------------------------------------------------------------");
+                    //System.out.println("-------------------------------------------------------------------");
+                    //System.out.println("king is under check");
+                    //System.out.println("-------------------------------------------------------------------");
                     if(king.getCheckByWhom().size()>1){
-                        System.out.println("double check cant do anything");
+                        //System.out.println("double check cant do anything");
                         moves.clear();
                         return moves;
                     }
                     String attackSq=king.getCheckByWhom().get(0);
-                    System.out.println("the attacking square is :"+attackSq);
+                    //System.out.println("the attacking square is :"+attackSq);
                     List <String> block=new ArrayList<String>();
                     if(!knight.getIsPinned()){
-                        System.out.println("knight is not pinned....it might defend");
+                        //System.out.println("knight is not pinned....it might defend");
                         // in this case it can attack the piece or block it
                         // first lets see for attack chances
                         for(String s:tempmoves){
                             if(s.equals(attackSq)){
-                                System.out.println("knight can attack the piece");
-                                System.out.println("adding this sq to its move");
+                                //System.out.println("knight can attack the piece");
+                                //System.out.println("adding this sq to its move");
                                 block.add(s);
                                 break;
                             }
                         }
-                        System.out.println("reached here after checking attack sq ");
+                        //System.out.println("reached here after checking attack sq ");
                         // now lets see if it can block
                         String king_square[]=king.getSquare().split("");
                         for(Piece p:game.getBlackPieces()){
@@ -4743,17 +4743,17 @@ public class OnlineGameHandler {
                                     else{
                                         // attacker is on left
                                         if(attacker_int>king_int){
-                                            System.out.println("attacker belongs to this region");
+                                            //System.out.println("attacker belongs to this region");
                                             // attacker is on top
                                             int int_inc=attacker_int-1;
-                                            System.out.println("now we check if knight can come on any of the square");
+                                            //System.out.println("now we check if knight can come on any of the square");
                                             for(int i=attacker_letter+1;i<king_letter;i++){
                                                 eachmove=col[i]+row[int_inc];
-                                                System.out.println("checking for "+eachmove);
+                                                //System.out.println("checking for "+eachmove);
                                                 int_inc--;
                                                 for(String s:tempmoves){
                                                     if(s.equals(eachmove)){
-                                                        System.out.println("yes it can come on "+eachmove);
+                                                        //System.out.println("yes it can come on "+eachmove);
                                                         block.add(eachmove);
                                                     }
                                                 }
@@ -4925,7 +4925,7 @@ public class OnlineGameHandler {
                         for(Piece p:game.getWhitePieces()){
                             if(p.getSquare().equals(sq)){
                                 flag=1;
-                                System.out.println("white piece found");
+                                //System.out.println("white piece found");
                                 break;
                             }
                         }
@@ -4956,7 +4956,7 @@ public class OnlineGameHandler {
 
                 if(king.getUnderCheck()){
                     if(king.getCheckByWhom().size()>1){
-                        System.out.println("double check cant do anything");
+                        //System.out.println("double check cant do anything");
                         moves.clear();
                         return moves;
                     }
@@ -5281,7 +5281,7 @@ public class OnlineGameHandler {
                         for(Piece p:game.getBlackPieces()){
                             if(p.getSquare().equals(sq)){
                                 flag=1;
-                                System.out.println("black piece found");
+                                //System.out.println("black piece found");
                                 break;
                             }
                         }
@@ -5342,7 +5342,7 @@ public class OnlineGameHandler {
                 int flag1=0; // if its zero then i can check for further piece
                 for(String sq:directionalmoves){
                     int flag2=0; //this is for internal round check for white/black/no piece
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     if(flag1==0){
                         for(Piece p:game.getBlackPieces()){
                             if(p.getSquare().equals(sq)){
@@ -5350,14 +5350,14 @@ public class OnlineGameHandler {
                                     tempmoves.add(sq);
                                     flag1=1; // this means no more adding
                                     flag2=1;
-                                    System.out.println("black piece found no more squares");
-                                    System.out.println("adding this square though");
+                                    //System.out.println("black piece found no more squares");
+                                    //System.out.println("adding this square though");
                                     break;
                                 }
                                 else{
                                     flag1=1;
                                     flag2=1;
-                                    System.out.println("black king collision");
+                                    //System.out.println("black king collision");
                                     break;
                                 }
                                 
@@ -5367,7 +5367,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -5375,7 +5375,7 @@ public class OnlineGameHandler {
                         }
                         if(flag2==0){
                             tempmoves.add(sq);
-                            System.out.println("move added");
+                            //System.out.println("move added");
                         }
                     }
                     else{
@@ -5388,14 +5388,14 @@ public class OnlineGameHandler {
                 for(int i=file+1;i<8;i++){
                     if(j<=8){
                         String sqAhead=col[i]+j;
-                        System.out.println("the square is "+sqAhead);
+                        //System.out.println("the square is "+sqAhead);
                         directionalmoves.add(sqAhead);
                         j++;
                     }
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for hi "+sq);
+                    //System.out.println("checking for hi "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getBlackPieces()){
@@ -5404,15 +5404,15 @@ public class OnlineGameHandler {
                                     tempmoves.add(sq);
                                     flag1=1; // this means no more adding
                                     flag2=1;
-                                    System.out.println("hi1");
-                                    System.out.println("black piece found no more squares");
-                                    System.out.println("adding this square though");
+                                    //System.out.println("hi1");
+                                    //System.out.println("black piece found no more squares");
+                                    //System.out.println("adding this square though");
                                     break;
                                 }
                                 else{
                                     flag1=1;
                                     flag2=1;
-                                    System.out.println("black king collision");
+                                    //System.out.println("black king collision");
                                     break;
                                 }
                                 
@@ -5422,7 +5422,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -5430,7 +5430,7 @@ public class OnlineGameHandler {
                         }
                         if(flag2==0){
                             tempmoves.add(sq);
-                            System.out.println("move added");
+                            //System.out.println("move added");
                         }
                     }
                     else{
@@ -5449,7 +5449,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getBlackPieces()){
@@ -5458,14 +5458,14 @@ public class OnlineGameHandler {
                                     tempmoves.add(sq);
                                     flag1=1; // this means no more adding
                                     flag2=1;
-                                    System.out.println("black piece found no more squares");
-                                    System.out.println("adding this square though");
+                                    //System.out.println("black piece found no more squares");
+                                    //System.out.println("adding this square though");
                                     break;
                                 }
                                 else{
                                     flag1=1;
                                     flag2=1;
-                                    System.out.println("black king collision");
+                                    //System.out.println("black king collision");
                                     break;
                                 }
                                 
@@ -5475,7 +5475,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -5483,7 +5483,7 @@ public class OnlineGameHandler {
                         }
                         if(flag2==0){
                             tempmoves.add(sq);
-                            System.out.println("move added");
+                            //System.out.println("move added");
                         }
                     }
                     else{
@@ -5502,7 +5502,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getBlackPieces()){
@@ -5511,14 +5511,14 @@ public class OnlineGameHandler {
                                     tempmoves.add(sq);
                                     flag1=1; // this means no more adding
                                     flag2=1;
-                                    System.out.println("black piece found no more squares");
-                                    System.out.println("adding this square though");
+                                    //System.out.println("black piece found no more squares");
+                                    //System.out.println("adding this square though");
                                     break;
                                 }
                                 else{
                                     flag1=1;
                                     flag2=1;
-                                    System.out.println("black king collision");
+                                    //System.out.println("black king collision");
                                     break;
                                 }
                                 
@@ -5528,7 +5528,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -5536,7 +5536,7 @@ public class OnlineGameHandler {
                         }
                         if(flag2==0){
                             tempmoves.add(sq);
-                            System.out.println("move added");
+                            //System.out.println("move added");
                         }
                     }
                     else{
@@ -5549,14 +5549,14 @@ public class OnlineGameHandler {
                 String king_square[]=king.getSquare().split("");
                 if(king.getUnderCheck()){
                     if(king.getCheckByWhom().size()>1){
-                        System.out.println("double check cant do anything");
+                        //System.out.println("double check cant do anything");
                         moves.clear();
                         return moves;
                     }
                     List <String> block=new ArrayList<String>();
-                    System.out.println("-----------------------------------------------");
-                    System.out.println("HAAAAALP kING IN CHECK");
-                    System.out.println("-----------------------------------------------");
+                    //System.out.println("-----------------------------------------------");
+                    //System.out.println("HAAAAALP kING IN CHECK");
+                    //System.out.println("-----------------------------------------------");
                     for(Piece p:game.getBlackPieces()){
                         if(p.getSquare().equals(king.getCheckByWhom().get(0))){
                             String eachmove="";
@@ -5565,7 +5565,7 @@ public class OnlineGameHandler {
                             int king_letter=0;
                             int attacker_int=0;
                             int king_int=0;
-                            System.out.println("got the piece that checked the king");
+                            //System.out.println("got the piece that checked the king");
                             for(int i=0;i<8;i++){
                                 if(col[i].equals(attacker_square[0])){
                                     attacker_letter=i;
@@ -5594,7 +5594,7 @@ public class OnlineGameHandler {
                             // see if you can attack or just pinned
                             if(bishop.getIsPinned()){
                                 // we cant stop it
-                                System.out.println("bishop is pinned cant move");
+                                //System.out.println("bishop is pinned cant move");
                                 // tempmoves.clear();
                                 break;
                             }
@@ -5602,7 +5602,7 @@ public class OnlineGameHandler {
                                 if(p instanceof Pawn || p instanceof Knight){
                                         for(String s:tempmoves){
                                             if(s.equals(p.getSquare())){
-                                                System.out.println("got the stupid pawn/knight at "+s);
+                                                //System.out.println("got the stupid pawn/knight at "+s);
                                                 block.add(s);
                                                 // break;
                                             }
@@ -5890,9 +5890,9 @@ public class OnlineGameHandler {
                             
                         }
                     }
-                    System.out.println("the moves in block is: ");
+                    //System.out.println("the moves in block is: ");
                     for(String s:block){
-                        System.out.println("here is the mve "+s);
+                        //System.out.println("here is the mve "+s);
                     }
                     tempmoves.clear();
                     tempmoves.addAll(block);
@@ -6103,7 +6103,7 @@ public class OnlineGameHandler {
                 int flag1=0; // if its zero then i can check for further piece
                 for(String sq:directionalmoves){
                     int flag2=0; //this is for internal round check for white/black/no piece
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     if(flag1==0){
                         for(Piece p:game.getWhitePieces()){
                             if(p.getSquare().equals(sq)){
@@ -6111,13 +6111,13 @@ public class OnlineGameHandler {
                                     tempmoves.add(sq);
                                     flag1=1; // this means no more adding
                                     flag2=1;
-                                    System.out.println("black piece found no more squares");
+                                    //System.out.println("black piece found no more squares");
                                     break;
                                 }
                                 else{
                                     flag1=1;
                                     flag2=1;
-                                    System.out.println("black king collision");
+                                    //System.out.println("black king collision");
                                     break;
                                 }
                                 
@@ -6127,7 +6127,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -6135,7 +6135,7 @@ public class OnlineGameHandler {
                         }
                         if(flag2==0){
                             tempmoves.add(sq);
-                            System.out.println("move added");
+                            //System.out.println("move added");
                         }
                     }
                     else{
@@ -6148,14 +6148,14 @@ public class OnlineGameHandler {
                 for(int i=file+1;i<8;i++){
                     if(j<=8){
                         String sqAhead=col[i]+j;
-                        System.out.println("the square is "+sqAhead);
+                        //System.out.println("the square is "+sqAhead);
                         directionalmoves.add(sqAhead);
                         j++;
                     }
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getWhitePieces()){
@@ -6164,13 +6164,13 @@ public class OnlineGameHandler {
                                     tempmoves.add(sq);
                                     flag1=1; // this means no more adding
                                     flag2=1;
-                                    System.out.println("black piece found no more squares");
+                                    //System.out.println("black piece found no more squares");
                                     break;
                                 }
                                 else{
                                     flag1=1;
                                     flag2=1;
-                                    System.out.println("black king collision");
+                                    //System.out.println("black king collision");
                                     break;
                                 }
                                 
@@ -6180,7 +6180,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -6188,7 +6188,7 @@ public class OnlineGameHandler {
                         }
                         if(flag2==0){
                             tempmoves.add(sq);
-                            System.out.println("move added");
+                            //System.out.println("move added");
                         }
                     }
                     else{
@@ -6208,7 +6208,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getWhitePieces()){
@@ -6217,13 +6217,13 @@ public class OnlineGameHandler {
                                     tempmoves.add(sq);
                                     flag1=1; // this means no more adding
                                     flag2=1;
-                                    System.out.println("black piece found no more squares");
+                                    //System.out.println("black piece found no more squares");
                                     break;
                                 }
                                 else{
                                     flag1=1;
                                     flag2=1;
-                                    System.out.println("black king collision");
+                                    //System.out.println("black king collision");
                                     break;
                                 }
                                 
@@ -6233,7 +6233,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -6241,7 +6241,7 @@ public class OnlineGameHandler {
                         }
                         if(flag2==0){
                             tempmoves.add(sq);
-                            System.out.println("move added");
+                            //System.out.println("move added");
                         }
                     }
                     else{
@@ -6261,7 +6261,7 @@ public class OnlineGameHandler {
                 }
                 flag1=0;
                 for(String sq:directionalmoves){
-                    System.out.println("checking for "+sq);
+                    //System.out.println("checking for "+sq);
                     int flag2=0; //this is for internal round check for white/black/no piece
                     if(flag1==0){
                         for(Piece p:game.getWhitePieces()){
@@ -6270,13 +6270,13 @@ public class OnlineGameHandler {
                                     tempmoves.add(sq);
                                     flag1=1; // this means no more adding
                                     flag2=1;
-                                    System.out.println("black piece found no more squares");
+                                    //System.out.println("black piece found no more squares");
                                     break;
                                 }
                                 else{
                                     flag1=1;
                                     flag2=1;
-                                    System.out.println("black king collision");
+                                    //System.out.println("black king collision");
                                     break;
                                 }
                                 
@@ -6286,7 +6286,7 @@ public class OnlineGameHandler {
                             if(p.getSquare().equals(sq)){
                                 flag2=1;
                                 flag1=1;
-                                System.out.println("collision ho jaayega");
+                                //System.out.println("collision ho jaayega");
                                 break;
                                 
                                 
@@ -6294,7 +6294,7 @@ public class OnlineGameHandler {
                         }
                         if(flag2==0){
                             tempmoves.add(sq);
-                            System.out.println("move added");
+                            //System.out.println("move added");
                         }
                     }
                     else{
@@ -6307,7 +6307,7 @@ public class OnlineGameHandler {
                 String king_square[]=king.getSquare().split("");
                 if(king.getUnderCheck()){
                     if(king.getCheckByWhom().size()>1){
-                        System.out.println("double check cant do anything");
+                        //System.out.println("double check cant do anything");
                         moves.clear();
                         return moves;
                     }
@@ -6830,9 +6830,9 @@ public class OnlineGameHandler {
         return moves;
     }
     public ArrayList<String> QueenMoves(Queen queen,King king){
-        System.out.println("---------------------------------------------");
-        System.out.println("entered into queen moves");
-        System.out.println("---------------------------------------------");
+        //System.out.println("---------------------------------------------");
+        //System.out.println("entered into queen moves");
+        //System.out.println("---------------------------------------------");
         ArrayList<String> moves=new ArrayList<String>();
         String[] col = {"a", "b", "c", "d","e", "f", "g", "h"};
         String[] row = {"1", "2", "3", "4", "5", "6", "7", "8"};
@@ -6866,7 +6866,7 @@ public class OnlineGameHandler {
         for(int i=file+1;i<8;i++){
             if(j<=8){
                 String sqAhead=col[i]+j;
-                // System.out.println("the square is "+sqAhead);
+                // //System.out.println("the square is "+sqAhead);
                 directionalmoves.add(sqAhead);
                 j++;
             }
@@ -6933,14 +6933,14 @@ public class OnlineGameHandler {
         directionalmoves.clear();        
         // int flag1=0; // if its zero then i can check for further piece
         if(queen.getColor().equals("white")){
-            System.out.println("doing for white queen");
+            //System.out.println("doing for white queen");
             for(ArrayList<String> movesList:allMoves){
-                // System.out.println("entered into allmoves array");
+                // //System.out.println("entered into allmoves array");
                 int flag_array=0; // this is for entire sublist
                 
                 for(String sq:movesList){
-                    // System.out.println("checking for this square in loop "+sq);
-                    // System.out.println("");
+                    // //System.out.println("checking for this square in loop "+sq);
+                    // //System.out.println("");
 
                     int flag_move=0; // this is for a move
                     
@@ -6955,8 +6955,8 @@ public class OnlineGameHandler {
                                     flag_array=1;
                                     flag_move=1;
                                     tempmoves.add(sq);
-                                    // System.out.println("added to possible moves");
-                                    // System.out.println("");
+                                    // //System.out.println("added to possible moves");
+                                    // //System.out.println("");
                                 }
                                 
                                 break;
@@ -6970,22 +6970,22 @@ public class OnlineGameHandler {
                             }
                         }
                         if(flag_move==0){
-                            // System.out.println("added to possible moves");
-                            // System.out.println("");
+                            // //System.out.println("added to possible moves");
+                            // //System.out.println("");
                             tempmoves.add(sq);
                         }
                     }
                     else{
-                        // System.out.println("no more moves from this array");
-                        // System.out.println("");
+                        // //System.out.println("no more moves from this array");
+                        // //System.out.println("");
                         break;
                     }
     
                 }
             }
-            System.out.println("before elimination here are the moves in tempmoves");
+            //System.out.println("before elimination here are the moves in tempmoves");
             for(String shit:tempmoves){
-                System.out.println("the move is "+shit);
+                //System.out.println("the move is "+shit);
             }
             
 //------------------------------------------------------------------
@@ -6994,7 +6994,7 @@ public class OnlineGameHandler {
             String king_square[]=king.getSquare().split("");
             if(king.getUnderCheck()){ // this is if king in check
                 if(king.getCheckByWhom().size()>1){
-                    System.out.println("double check cant do anything");
+                    //System.out.println("double check cant do anything");
                     moves.clear();
                     return moves;
                 }
@@ -7593,20 +7593,20 @@ public class OnlineGameHandler {
 
             else{      //this is for normal queen
 
-                // System.out.println("i added all moves to queen");
+                // //System.out.println("i added all moves to queen");
                 // moves.addAll(tempmoves);
-                // System.out.println("the moves are:");
+                // //System.out.println("the moves are:");
                 // for(String shit:moves){
-                //     System.out.println("move is: "+shit);
+                //     //System.out.println("move is: "+shit);
                 // }
-                // System.out.println("now printing tempmoves");
+                // //System.out.println("now printing tempmoves");
                 // for(String shit:tempmoves){
-                //     System.out.println("tempmove is: "+shit);
+                //     //System.out.println("tempmove is: "+shit);
                 // }
-                // System.out.println("i am done for white queen now next is black queen");
-                // System.out.println("");
-                // System.out.println("");
-                // System.out.println("");
+                // //System.out.println("i am done for white queen now next is black queen");
+                // //System.out.println("");
+                // //System.out.println("");
+                // //System.out.println("");
                 // return moves;
 
             }
@@ -7617,7 +7617,7 @@ public class OnlineGameHandler {
 //----------------------------------------------------------------
 
         else{ // this is for black queen
-            System.out.println("i am in black queen");
+            //System.out.println("i am in black queen");
             for(ArrayList<String> movesList:allMoves){
                 int flag_array=0; // this is for entire sublist
                 
@@ -7661,7 +7661,7 @@ public class OnlineGameHandler {
             String king_square[]=king.getSquare().split("");
             if(king.getUnderCheck()){ // this is if king in check
                 if(king.getCheckByWhom().size()>1){
-                    System.out.println("double check cant do anything");
+                    //System.out.println("double check cant do anything");
                     moves.clear();
                     return moves;
                 }
@@ -7705,7 +7705,7 @@ public class OnlineGameHandler {
                              if(p instanceof Pawn || p instanceof Knight){
                                  for(String s:tempmoves){
                                         if(s.equals(p.getSquare())){
-                                            System.out.println("got this stupid pawn/knight at :"+s);
+                                            //System.out.println("got this stupid pawn/knight at :"+s);
                                             block.add(s);
                                             // break;
                                         }
@@ -8274,22 +8274,22 @@ public class OnlineGameHandler {
 
         }
          
-        System.out.println("i reached here");
-        System.out.println("i will printf moves");
+        //System.out.println("i reached here");
+        //System.out.println("i will printf moves");
         for(String shit:moves){
-            System.out.println("move possible is :"+shit);
+            //System.out.println("move possible is :"+shit);
         }
-        System.out.println("i will print tempmoves");
+        //System.out.println("i will print tempmoves");
         for(String shit:tempmoves){
-            System.out.println("move possible is :"+shit);
+            //System.out.println("move possible is :"+shit);
         } 
-        System.out.println("returning to main function");
+        //System.out.println("returning to main function");
         
         moves.addAll(tempmoves);
         return moves;
     }
     public ArrayList<String> KingMoves(King king){
-        System.out.println("i am in king moves");
+        //System.out.println("i am in king moves");
         ArrayList<String> moves=new ArrayList<String>();
         ArrayList<String> tempmoves=new ArrayList<String>();
         ArrayList<String> possibleMove= new ArrayList<String>();
@@ -8636,7 +8636,7 @@ public class OnlineGameHandler {
             castleMoves.add("g1");
             castleMoves.add("c1");
             if(king.getFirstMove().equals("no") && !(king.getUnderCheck()) ){
-                System.out.println("i am not in check... i will castle");
+                //System.out.println("i am not in check... i will castle");
                 // it means it might castle
                 for(String s:castleMoves){
                     if(s.equals("g1")){
@@ -8971,7 +8971,7 @@ public class OnlineGameHandler {
             for(int i=file+1;i<8;i++){
                 if(j<=8){
                     String sqAhead=col[i]+j;
-                    // System.out.println("the square is "+sqAhead);
+                    // //System.out.println("the square is "+sqAhead);
                     directionalmoves.add(sqAhead);
                     j++;
                 }
@@ -9042,11 +9042,11 @@ public class OnlineGameHandler {
                     for(int i=0;i<4;i++){
                         int flag_array=0; // this is for entire sublist
                         for(String sq:allMoves.get(i)){
-                            // System.out.println("entered into allmoves array");
+                            // //System.out.println("entered into allmoves array");
                             
                             
-                            // System.out.println("checking for this square in loop "+sq);
-                            // System.out.println("");
+                            // //System.out.println("checking for this square in loop "+sq);
+                            // //System.out.println("");
         
                             int flag_move=0; // this is for a move
                             
@@ -9061,8 +9061,8 @@ public class OnlineGameHandler {
                                             flag_array=1;
                                             flag_move=1;
                                             tempmoves.add(sq);
-                                            // System.out.println("added to possible moves");
-                                            // System.out.println("");
+                                            // //System.out.println("added to possible moves");
+                                            // //System.out.println("");
                                         }
                                         
                                         break;
@@ -9077,14 +9077,14 @@ public class OnlineGameHandler {
                                     }
                                 }
                                 if(flag_move==0){
-                                    // System.out.println("added to possible moves");
-                                    // System.out.println("");
+                                    // //System.out.println("added to possible moves");
+                                    // //System.out.println("");
                                     tempmoves.add(sq);
                                 }
                             }
                             else{
-                                // System.out.println("no more moves from this array");
-                                // System.out.println("");
+                                // //System.out.println("no more moves from this array");
+                                // //System.out.println("");
                                 break;
                             }
                 
@@ -9099,11 +9099,11 @@ public class OnlineGameHandler {
                     for(int i=0;i<4;i++){
                         int flag_array=0; // this is for entire sublist
                         for(String sq:allMoves.get(i)){
-                            // System.out.println("entered into allmoves array");
+                            // //System.out.println("entered into allmoves array");
                             
                             
-                            // System.out.println("checking for this square in loop "+sq);
-                            // System.out.println("");
+                            // //System.out.println("checking for this square in loop "+sq);
+                            // //System.out.println("");
         
                             int flag_move=0; // this is for a move
                             
@@ -9118,8 +9118,8 @@ public class OnlineGameHandler {
                                             flag_array=1;
                                             flag_move=1;
                                             tempmoves.add(sq);
-                                            // System.out.println("added to possible moves");
-                                            // System.out.println("");
+                                            // //System.out.println("added to possible moves");
+                                            // //System.out.println("");
                                         }
                                         
                                         break;
@@ -9134,14 +9134,14 @@ public class OnlineGameHandler {
                                     }
                                 }
                                 if(flag_move==0){
-                                    // System.out.println("added to possible moves");
-                                    // System.out.println("");
+                                    // //System.out.println("added to possible moves");
+                                    // //System.out.println("");
                                     tempmoves.add(sq);
                                 }
                             }
                             else{
-                                // System.out.println("no more moves from this array");
-                                // System.out.println("");
+                                // //System.out.println("no more moves from this array");
+                                // //System.out.println("");
                                 break;
                             }
                 
@@ -9157,11 +9157,11 @@ public class OnlineGameHandler {
                     for(int i=4;i<8;i++){
                         int flag_array=0; // this is for entire sublist
                         for(String sq:allMoves.get(i)){
-                            // System.out.println("entered into allmoves array");
+                            // //System.out.println("entered into allmoves array");
                             
                             
-                            // System.out.println("checking for this square in loop "+sq);
-                            // System.out.println("");
+                            // //System.out.println("checking for this square in loop "+sq);
+                            // //System.out.println("");
         
                             int flag_move=0; // this is for a move
                             
@@ -9176,8 +9176,8 @@ public class OnlineGameHandler {
                                             flag_array=1;
                                             flag_move=1;
                                             tempmoves.add(sq);
-                                            // System.out.println("added to possible moves");
-                                            // System.out.println("");
+                                            // //System.out.println("added to possible moves");
+                                            // //System.out.println("");
                                         }
                                         
                                         break;
@@ -9192,14 +9192,14 @@ public class OnlineGameHandler {
                                     }
                                 }
                                 if(flag_move==0){
-                                    // System.out.println("added to possible moves");
-                                    // System.out.println("");
+                                    // //System.out.println("added to possible moves");
+                                    // //System.out.println("");
                                     tempmoves.add(sq);
                                 }
                             }
                             else{
-                                // System.out.println("no more moves from this array");
-                                // System.out.println("");
+                                // //System.out.println("no more moves from this array");
+                                // //System.out.println("");
                                 break;
                             }
                 
@@ -9214,11 +9214,11 @@ public class OnlineGameHandler {
                     for(int i=4;i<8;i++){
                         int flag_array=0; // this is for entire sublist
                         for(String sq:allMoves.get(i)){
-                            // System.out.println("entered into allmoves array");
+                            // //System.out.println("entered into allmoves array");
                             
                             
-                            // System.out.println("checking for this square in loop "+sq);
-                            // System.out.println("");
+                            // //System.out.println("checking for this square in loop "+sq);
+                            // //System.out.println("");
         
                             int flag_move=0; // this is for a move
                             
@@ -9233,8 +9233,8 @@ public class OnlineGameHandler {
                                             flag_array=1;
                                             flag_move=1;
                                             tempmoves.add(sq);
-                                            // System.out.println("added to possible moves");
-                                            // System.out.println("");
+                                            // //System.out.println("added to possible moves");
+                                            // //System.out.println("");
                                         }
                                         
                                         break;
@@ -9249,14 +9249,14 @@ public class OnlineGameHandler {
                                     }
                                 }
                                 if(flag_move==0){
-                                    // System.out.println("added to possible moves");
-                                    // System.out.println("");
+                                    // //System.out.println("added to possible moves");
+                                    // //System.out.println("");
                                     tempmoves.add(sq);
                                 }
                             }
                             else{
-                                // System.out.println("no more moves from this array");
-                                // System.out.println("");
+                                // //System.out.println("no more moves from this array");
+                                // //System.out.println("");
                                 break;
                             }
                 

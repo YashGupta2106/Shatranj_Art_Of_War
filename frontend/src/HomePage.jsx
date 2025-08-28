@@ -1,29 +1,55 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // ADD THIS
+import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase-config";
-import { useAuth } from "./AuthContext"; // ADD THIS
+import { useAuth } from "./AuthContext";
 import "./HomePage.css";
-
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
 
 export default function HomePage() {
 
-  const navigate = useNavigate(); // ADD THIS
-  const { currentUser } = useAuth(); // ADD THIS
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   // const handlePracticeMode = () => {
   //   console.log("Practice Mode clicked");
-  //   navigate('/practice'); // CHANGE: use navigate instead of callback
+  //   navigate('/practice');
   // };
 
-  const handlePlayOnline = () => {
-    console.log("Play Online clicked");
-    navigate('/online'); // CHANGE: use navigate instead of callback
+  const checkSessionValidity = async () => {
+    try {
+      console.log("Checking session validity... by sending a request to backend");
+      const checkSession = await fetch(`${API_BASE_URL}/api/auth/sessionVerify`, {
+        credentials: 'include',
+      });
+
+      if (!checkSession.ok) {
+        alert("Session expired. Please log in again.");
+        navigate('/login');
+        return false; // session invalid
+      }
+
+      return true; // session valid
+    } 
+    catch (err) {
+      console.log("Error checking session validity:", err);
+      navigate('/login');
+      return false;
+    }
   };
 
-  const handleMyGames = () => {
+  const handlePlayOnline = async() => {
+    const valid= await checkSessionValidity();
+    if (valid===false) return;
+    console.log("Play Online clicked");
+    navigate('/online');
+  };
+
+  const handleMyGames = async() => {
+    console.log("Checking session validity before navigating to My Games");
+    const valid= await checkSessionValidity();
+    if (valid===false) return;
     console.log("My Games clicked");
-    // TODO: Navigate to game history
     
     navigate('/my-games');
     
@@ -31,10 +57,16 @@ export default function HomePage() {
 
   const handleLogout = async () => {
     try {
+      await fetch(`${API_BASE_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include', // so browser sends the cookie
+      });
+      
       await signOut(auth);
       console.log("User logged out successfully");
       navigate('/login'); // Redirect to login page after logout
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Logout error:", error);
     }
   };

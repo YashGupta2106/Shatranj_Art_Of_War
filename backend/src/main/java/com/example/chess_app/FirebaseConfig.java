@@ -14,6 +14,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
 @Configuration
 public class FirebaseConfig {
 
@@ -63,10 +66,10 @@ public class FirebaseConfig {
                         logger.info("Initializing Firebase with service account file");
                     }
                     try {
-                        FileInputStream serviceAccount = new FileInputStream(serviceAccountPath);
-                        credentials = GoogleCredentials.fromStream(serviceAccount);
+                        Resource resource = new ClassPathResource(serviceAccountPath);
+                        credentials = GoogleCredentials.fromStream(resource.getInputStream());
                     } catch (Exception e) {
-                        logger.error("Failed to load service account file: {}", e.getMessage());
+                        logger.error("Failed to load service account file: {} ({})", serviceAccountPath, e.getMessage());
                     }
                 }
 

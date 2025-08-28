@@ -1,5 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import {browserSessionPersistence, setPersistence } from "firebase/auth";
+
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -21,4 +23,11 @@ if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.proj
 }
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+const auth = getAuth(app);
+
+setPersistence(auth, browserSessionPersistence)
+  .catch((error) => {
+    console.error("Error setting auth persistence:", error);
+  });
+
+export { auth };

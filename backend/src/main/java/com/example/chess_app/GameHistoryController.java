@@ -16,6 +16,11 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.*;
 
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+
 @RestController
 @RequestMapping("/api/games")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -27,10 +32,30 @@ public class GameHistoryController {
     @Autowired
     private PlayerRepository playerRepository;
 
+    @Autowired
+    private RedisService redisService;
+
     // Endpoint 1: Get game history/results for a user
-    @GetMapping("/results/{email}")
-    public ResponseEntity<?> getUserGameHistory(@PathVariable String email) {
+    @GetMapping("/results")
+    public ResponseEntity<?> getUserGameHistory(HttpServletRequest request) {
+        
         try {
+            String sessionId=null;
+            String email=null;
+            Cookie cookies[]= request.getCookies();
+            if(cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("sessionId".equals(cookie.getName())) {
+                        sessionId= cookie.getValue();
+                        break;
+                    }
+                }
+            }
+            else{
+                System.out.println("❌ No cookies found in request");
+                return ResponseEntity.status(401).body("Unauthorized: No session cookie found");
+            }
+            email= redisService.getUserIdBySession(sessionId);
             System.out.println("🎮 Fetching game history for: " + email);
             
             // Find all completed games where user participated
@@ -95,7 +120,8 @@ public class GameHistoryController {
             System.out.println("✅ Found " + gameHistory.size() + " games for user: " + email);
             return ResponseEntity.ok(gameHistory);
             
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             System.err.println("❌ Error fetching game history: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error fetching game history");

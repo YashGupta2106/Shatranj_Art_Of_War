@@ -283,7 +283,7 @@ export default function ChessBoard({ gameMode }) {
       );
       if (!confirmLeave) return;
     }
-  
+    gameManager.resign();
     // Clean up BEFORE navigation
     if (gameManagerRef.current) {
       console.log('🧹 Calling cleanup before navigation');

@@ -4,6 +4,9 @@ import { useAuth } from "./AuthContext";
 import "./GameHistory.css";
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
 
+
+
+
 export default function GameHistory() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -14,13 +17,13 @@ export default function GameHistory() {
   
 
   useEffect(() => {
-    // Simulate API call with mock data
     const fetchGames = async () => {
       try {
         setLoading(true);
         
-        
-        const response = await fetch(`${API_BASE_URL}/api/games/results/${currentUser.email}`)        // const gamesData = await response.json();
+        const response = await fetch(`${API_BASE_URL}/api/games/results`,{
+          credentials:"include",
+        })
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -48,7 +51,32 @@ export default function GameHistory() {
     navigate('/home');
   };
 
-  const handleGameClick = (gameId) => {
+
+  const checkSessionValidity = async () => {
+    try {
+      const checkSession = await fetch(`${API_BASE_URL}/api/auth/sessionVerify`, {
+        credentials: 'include',
+      });
+      if (!checkSession.ok) {
+        alert("Session expired. Please log in again.");
+        navigate('/login');
+        return false; // session invalid
+      }
+      return true; // session valid
+    } catch (err) {
+      console.log("Error checking session validity:", err);
+      navigate('/login');
+      return false;
+    }
+  };
+
+  const handleGameClick = async(gameId) => {
+    const valid = await checkSessionValidity();
+    if(valid===false){
+      alert("Session expired. Please log in again.");
+      navigate('/login');
+      return;
+    }
     console.log(`🎮 Opening replay for game: ${gameId}`);
     navigate(`/replay/${gameId}`);
   };

@@ -4,11 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Set;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 public class OnlineGameController {
@@ -23,40 +27,58 @@ public class OnlineGameController {
     private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
+    private SessionRegistry sessionAccessor;
+
+    @Autowired
     private PlayerRepository playerRepository;
     
     // Track ready states per game
     private final Map<String, Integer> gameReadyCount = new ConcurrentHashMap<>();
 
+    @MessageMapping("/auth")
+    public void storeMail(PlayerInfo info, Message<?> message) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        String sessionId = accessor.getSessionId();
+        String email = info.getPlayerEmail();
+
+        System.out.println("Storing player email in session: " + sessionId + " -> " + email);
+        sessionAccessor.register(sessionId, email);
+    }
+
     // Handle all WebSocket messages (main entry point)
     @MessageMapping("/chess-game")
-    public void handleWebSocketMessage(WebSocketMessage message) {
+    public void handleWebSocketMessage(WebSocketMessage message, Message<?> msg) {
         System.out.println("📥 Received STOMP message type: " + message.getMessageType());
-        
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(msg);
+        String sessionId = accessor.getSessionId();
+        String playerEmail=sessionAccessor.getEmail(sessionId);
         try {
             switch (message.getMessageType()) {
                 case "FIND_MATCH":
-                    handleFindMatch(message);
+                    handleFindMatch(message,playerEmail);
                     break;
                 case "CANCEL_MATCH":
-                    handleCancelMatch(message);
+                    handleCancelMatch(message, playerEmail);
                     break;
                 case "PLAYER_READY":
                     handlePlayerReady(message);
                     break;
                 case "GAME_MOVE":
-                    handleGameMove(message);
+                    handleGameMove(message,playerEmail);
                     break;
                 case "SHOW_MOVE":
-                    handleShowMove(message);
+                    handleShowMove(message,playerEmail);
                     break;
                 case "Quit":
-                    handleQuit(message);
+                    handleQuit(message,playerEmail);
                     break;
                 case "GAME_END":
                     System.out.println("going to the game end function");
-                    handleGameEnd(message);
+                    handleGameEnd(message,playerEmail);
                     break;
+                case "BOARD_STATUS":
+                    System.out.println("gotta send the board status to player");
+                    sendBoardStatus(message,playerEmail);
                 default:
                     System.err.println("❌ Unknown message type: " + message.getMessageType());
             }
@@ -66,8 +88,22 @@ public class OnlineGameController {
         }
     }
 
-    private void handleQuit(WebSocketMessage message) {
-        System.out.println("🚪 Handling QUIT for: " + message.getPlayerEmail());
+    private void sendBoardStatus(WebSocketMessage message,String playerEmail){
+        Game game= gameRepository.findByGameId(message.getGameId());
+        System.out.println("now lets send the current piece positions to the player");
+        BoardStatus boardStatus = new BoardStatus();
+        boardStatus.setIsActive(game.isActive());
+        boardStatus.setWhitePieces(game.getWhitePieces());
+        boardStatus.setBlackPieces(game.getBlackPieces());
+        boardStatus.setWinner(game.getWinner());
+        boardStatus.setGameEndReason(game.getGameEndReason());
+        boardStatus.setMoveNumber(game.getMoveNumber());
+        messagingTemplate.convertAndSend("/topic/" + playerEmail, boardStatus);
+
+    }
+
+    private void handleQuit(WebSocketMessage message, String playerEmail) {
+        System.out.println("🚪 Handling QUIT for: " + playerEmail);
 
         Game game=gameRepository.findByGameId(message.getGameId());
         MoveResponse response=new MoveResponse();
@@ -75,7 +111,7 @@ public class OnlineGameController {
         response.setGameEnded(true);
         
         response.setGameEndCheck(true);
-        if(game.getWhitePlayer().equals(message.getPlayerEmail())){
+        if(game.getWhitePlayer().equals(playerEmail)){
             game.setWinner("black");
             game.setGameEndReason("White quit the game");
             response.setGameEndReason("White quit the game");
@@ -97,10 +133,10 @@ public class OnlineGameController {
     }
 
     // Handle matchmaking requests
-    private void handleFindMatch(WebSocketMessage message) {
-        System.out.println("🔍 Processing FIND_MATCH for: " + message.getPlayerEmail());
+    private void handleFindMatch(WebSocketMessage message, String playerEmail) {
+        System.out.println("🔍 Processing FIND_MATCH for: " + playerEmail);
         
-        Player player = playerRepository.findByEmail(message.getPlayerEmail());
+        Player player = playerRepository.findByEmail(playerEmail);
         // player.setUsername(message.getPlayerName());
         
         // Call matchmaking service (it will send MATCH_FOUND notifications)
@@ -108,11 +144,11 @@ public class OnlineGameController {
     }
 
     // Handle cancel matchmaking
-    private void handleCancelMatch(WebSocketMessage message) {
-        System.out.println("❌ Processing CANCEL_MATCH for: " + message.getPlayerEmail());
+    private void handleCancelMatch(WebSocketMessage message, String playerEmail) {
+        System.out.println("❌ Processing CANCEL_MATCH for: " + playerEmail);
         
         Player player = new Player();
-        player.setEmail(message.getPlayerEmail());
+        player.setEmail(playerEmail);
         player.setUsername(message.getPlayerName());
         
         matchmakingService.removePlayerFromQueue(player);
@@ -122,7 +158,7 @@ public class OnlineGameController {
         response.setMessageType("MATCH_CANCELLED");
         response.setMessage("Matchmaking cancelled");
         
-        messagingTemplate.convertAndSend("/topic/" + message.getPlayerEmail(), response);
+        messagingTemplate.convertAndSend("/topic/" + playerEmail, response);
     }
 
     // Handle player ready signals
@@ -183,7 +219,8 @@ public class OnlineGameController {
     }
 
     // Handle game moves (existing logic, but adapted)
-    private void handleGameMove(WebSocketMessage message) {
+    private void handleGameMove(WebSocketMessage message, String playerEmail) {
+
         System.out.println("🎯 Processing GAME_MOVE for game: " + message.getGameId());
         
         // Convert WebSocketMessage to MoveMessage for existing logic
@@ -202,8 +239,8 @@ public class OnlineGameController {
 
         if(response.getClickStatus().equals("highlight")){
             System.out.println("its a highlight move... send to respective player only");
-            System.out.println("sending message to player: " + message.getPlayerEmail());
-            messagingTemplate.convertAndSend("/topic/" + message.getPlayerEmail(),response);
+            System.out.println("sending message to player: " + playerEmail);
+            messagingTemplate.convertAndSend("/topic/" + playerEmail,response);
         }
         else{
             System.out.println("sending this game response for the move played");
@@ -245,6 +282,7 @@ public class OnlineGameController {
             game.setGameEndReason("White ran out of Time");
             game.setWinner("black");
             game.setEndTime(LocalDateTime.now());
+            gameRepository.save(game);
             response.setGameEnded(true);
             response.setGameEndReason("White ran out of Time");
             response.setWinner("black");
@@ -263,6 +301,7 @@ public class OnlineGameController {
             game.setGameEndReason("Black ran out of Time");
             game.setWinner("white");
             game.setEndTime(LocalDateTime.now());
+            gameRepository.save(game);
             response.setGameEnded(true);
             response.setGameEndReason("Black ran out of Time");
             response.setWinner("white");
@@ -355,13 +394,12 @@ public class OnlineGameController {
         }
     }
 
-    private void handleGameEnd(WebSocketMessage message){
-        
+    private void handleGameEnd(WebSocketMessage message, String playerEmail){
         Game game=gameRepository.findByGameId(message.getGameId());
         MoveResponse response=new MoveResponse();
         boolean isPlayerWhite =false;
 
-        if(game.getWhitePlayer().equals(message.getPlayerEmail())){
+        if(game.getWhitePlayer().equals(playerEmail)){
             isPlayerWhite=true;
         }
         else{
@@ -438,8 +476,6 @@ public class OnlineGameController {
 
 
             }
-
-
 
             else if(!isPlayerWhite){
                 // case 1: white has already offered draw and we are accepting it
@@ -518,7 +554,7 @@ public class OnlineGameController {
         
     }
 
-    private void handleShowMove(WebSocketMessage message){
+    private void handleShowMove(WebSocketMessage message, String playerEmail){
         Game game=gameRepository.findByGameId(message.getGameId());
         int currentGameMove=game.getMoveNumber();
         ShowMove showMove = new ShowMove();
@@ -573,7 +609,7 @@ public class OnlineGameController {
                 }
         }
         
-            messagingTemplate.convertAndSend("/topic/" + message.getPlayerEmail(),showMove);
+            messagingTemplate.convertAndSend("/topic/" + playerEmail,showMove);
     }
    
     // Helper method to create error responses
@@ -584,10 +620,74 @@ public class OnlineGameController {
         return response;
     }
 
+    public static class BoardStatus{
+        private String messageType = "BOARD_STATUS";
+        private boolean isActive;
+        private List<Piece> whitePieces;
+        private List<Piece> blackPieces;
+        private String winner;
+        private String gameEndReason;
+        private int moveNumber=0;
+
+        public boolean getIsActive() {
+            return isActive;
+        }
+        public void setIsActive(boolean isActive) {
+            this.isActive = isActive;
+        }
+        public List<Piece> getWhitePieces() {
+            return whitePieces;
+        }
+        public void setWhitePieces(List<Piece> whitePieces) {
+            this.whitePieces = whitePieces;
+        }
+        public List<Piece> getBlackPieces() {
+            return blackPieces;
+        }
+        public void setBlackPieces(List<Piece> blackPieces) {
+            this.blackPieces = blackPieces;
+        }
+        public String getWinner() {
+            return winner;
+        }
+        public void setWinner(String winner) {
+            this.winner = winner;
+        }
+        public String getGameEndReason() {
+            return gameEndReason;
+        }
+        public void setGameEndReason(String gameEndReason) {
+            this.gameEndReason = gameEndReason;
+        }
+        public int getMoveNumber() {
+            return moveNumber;
+        }
+        public void setMoveNumber(int moveNumber) {
+            this.moveNumber = moveNumber;
+        }
+        public String getMessageType() {
+            return messageType;
+        }
+        public void setMessageType(String messageType) {
+            this.messageType = messageType;
+        }
+
+    }
+    public static class PlayerInfo{
+        private String playerEmail;
+
+        public String getPlayerEmail() {
+            return playerEmail;
+        }
+        public void setPlayerEmail(String playerEmail) {
+            this.playerEmail = playerEmail;
+        }
+    }
+    
     // Response classes (you'll need to create these)
     public static class WebSocketMessage {
         private String messageType;
-        private String playerEmail;
+        // private String playerEmail;
         private String playerName;
         private String gameId;
         private String squareClicked;
@@ -605,8 +705,8 @@ public class OnlineGameController {
         public String getMessageType() { return messageType; }
         public void setMessageType(String messageType) { this.messageType = messageType; }
         
-        public String getPlayerEmail() { return playerEmail; }
-        public void setPlayerEmail(String playerEmail) { this.playerEmail = playerEmail; }
+        // public String getPlayerEmail() { return playerEmail; }
+        // public void setPlayerEmail(String playerEmail) { this.playerEmail = playerEmail; }
         
         public String getPlayerName() { return playerName; }
         public void setPlayerName(String playerName) { this.playerName = playerName; }

@@ -37,9 +37,19 @@ class WebSocketService {
           console.log('🌐 STOMP connected:', frame);
           this.isConnected = true;
           this.reconnectAttempts = 0;
-          
+
+          this.stompClient.publish({
+            destination: '/app/auth',
+            body: JSON.stringify({ playerEmail: this.playerEmail }) // Add more if needed
+          });
+
           // Subscribe to player-specific topic for matchmaking
           this.subscribeToPlayerTopic();
+          if(this.gameId) {
+            this.subscribeToGameTopic(this.gameId);
+            this.sendBoardStatus(this.gameId);
+
+          }
           
           this.onConnectionCallback?.(true);
         },
@@ -85,7 +95,8 @@ class WebSocketService {
       // Activate the connection
       this.stompClient.activate();
       
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('❌ Failed to create WebSocket connection:', error);
       this.onConnectionCallback?.(false);
       this.handleReconnect();
@@ -95,19 +106,32 @@ class WebSocketService {
   // In the WebSocketService class, update the handleReconnect method
   handleReconnect() {
     // ✅ Don't reconnect if we're not supposed to be waiting for a match
-    if (this.reconnectAttempts < this.maxReconnectAttempts && this.playerEmail) {
+    if (this.reconnectAttempts < this.maxReconnectAttempts && !this.isConnected) {
       this.reconnectAttempts++;
       console.log(`🔄 Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+      this.subscriptions.forEach(sub => {
+        try {
+          sub.unsubscribe();
+        }
+        catch (error) {
+          console.warn('⚠️ Error unsubscribing:', error);
+        }
+      });
+      this.subscriptions = [];
+    
 
       setTimeout(() => {
         // ✅ Only reconnect if we still need to be connected
-        if (!this.isConnected && this.playerEmail) {
+        if (!this.isConnected) {
           this.connect(this.playerEmail, this.onMessageCallback, this.onConnectionCallback);
         }
       }, 3000 * this.reconnectAttempts);
-    } else {
-      console.error('❌ Max reconnection attempts reached or no player email');
+    } 
+    else {
+      console.error('❌ Max reconnection attempts reached. Giving up.');
       this.onConnectionCallback?.(false);
+      this.isConnected = false;
+      this.disconnect();
     }
   }
 
@@ -134,7 +158,8 @@ class WebSocketService {
           }
           
           this.onMessageCallback?.(response);
-        } catch (error) {
+        } 
+        catch (error) {
           console.error('❌ Error parsing player topic message:', error);
         }
       });
@@ -208,10 +233,9 @@ class WebSocketService {
   }
 
   // Send matchmaking request
-  sendMatchmakingRequest(playerEmail, playerName) {
+  sendMatchmakingRequest( playerName) {
     const message = {
       messageType: "FIND_MATCH",
-      playerEmail: playerEmail,
       playerName: playerName
     };
     
@@ -220,33 +244,39 @@ class WebSocketService {
   }
 
   // Send player ready
-  sendPlayerReady(gameId, playerEmail) {
+  sendPlayerReady(gameId) {
     const message = {
       messageType: "PLAYER_READY",
       gameId: gameId,
-      playerEmail: playerEmail
+    };
+    
+    this.sendMessage(message);
+  }
+
+  sendBoardStatus(gameId){
+    const message = {
+      messageType: "BOARD_STATUS",
+      gameId: gameId,
     };
     
     this.sendMessage(message);
   }
 
   // Cancel matchmaking
-  cancelMatchmaking(playerEmail) {
+  cancelMatchmaking() {
     const message = {
       messageType: "CANCEL_MATCH",
-      playerEmail: playerEmail
     };
     
     this.sendMessage(message);
   }
 
-  showMove(gameId,currentMove, playerEmail,number) {
+  showMove(gameId,currentMove,number) {
     
     const message = {
       messageType: "SHOW_MOVE",
       gameId: gameId,
       currentMove: currentMove,
-      playerEmail: playerEmail,
       number: number
     };
 
@@ -363,7 +393,8 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   // Generate appropriate game ID based on mode
   if (gameMode === "practice") {
     actualGameId = `practice-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  } else {
+  } 
+  else {
     // For online games, we'll get the actual gameId from matchmaking
     actualGameId = null;
   }
@@ -414,7 +445,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
         // Update the current player's time
         if (currentPlayer === 'white') {
           whiteTime = Math.max(0, whiteTime - secondsToDeduct);
-          console.log(`⏰ White time: ${whiteTime}s (deducted ${secondsToDeduct}s)`);
+          // console.log(`⏰ White time: ${whiteTime}s (deducted ${secondsToDeduct}s)`);
           if (whiteTime === 0) {
             console.log('⏰ White time up!');
             handleTimeUp('white');
@@ -422,7 +453,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
           }
         } else {
           blackTime = Math.max(0, blackTime - secondsToDeduct);
-          console.log(`⏰ Black time: ${blackTime}s (deducted ${secondsToDeduct}s)`);
+          // console.log(`⏰ Black time: ${blackTime}s (deducted ${secondsToDeduct}s)`);
           if (blackTime === 0) {
             console.log('⏰ Black time up!');
             handleTimeUp('black');
@@ -466,7 +497,8 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
       if (gameMode === "practice") {
         callbacks.onMessageChange?.('Practice mode - Play against yourself!');
         callbacks.onGameReady?.(true);
-      } else if (gameMode === "online") {
+      } 
+      else if (gameMode === "online") {
         // ✅ FIXED: Only start matchmaking if we're waiting AND not in an active game AND game hasn't ended
         if (isWaitingForMatch && !isInActiveGame && gameStatus !== 'ended') {
           callbacks.onMessageChange?.('Connected! Looking for opponent...');
@@ -483,7 +515,9 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
           callbacks.onMessageChange?.('Connected to server');
         }
       }
-    } else {
+    } 
+    
+    else {
       if (gameMode === "online" && gameStatus === 'active') {
         callbacks.onMessageChange?.('Connection lost. Trying to reconnect...');
         callbacks.onGameReady?.(false);
@@ -502,7 +536,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     console.log(`👤 Player: ${actualPlayerName} (${actualPlayerEmail})`);
     
     // Send matchmaking request with actual player info
-    websocketService.sendMatchmakingRequest(actualPlayerEmail, actualPlayerName);
+    websocketService.sendMatchmakingRequest(actualPlayerName);
     
     callbacks.onMessageChange?.('Looking for opponent...');
   };
@@ -521,6 +555,14 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
       if (response.messageType === "MATCH_FOUND") { 
         handleMatchFound(response);
         return;
+      }
+      if(response.messageType === "BOARD_STATUS"){
+        updateBoard(response);
+        if(message.isActive===false){
+          // add here the game end logic
+          handleGameEnd(response); 
+        }
+        return ;      
       }
       
       if (response.messageType === "MATCH_CANCELLED") {
@@ -610,9 +652,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     // Clear possible moves
     possibleMoves = [];
     callbacks.onPossibleMovesChange?.([]);
-    // setTimeout(() => {
-    //   cleanup();
-    // }, 2000);
+    
   };
 
    // Update handleMatchFound function
@@ -630,7 +670,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     callbacks.onColorDecide?.(playerColor);
     callbacks.onGameId?.(actualGameId);
     
-    websocketService.sendPlayerReady(actualGameId, playerEmail);
+    websocketService.sendPlayerReady(actualGameId);
   };
 
   // Handle player ready notification
@@ -1023,6 +1063,32 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     
   };
 
+  const updateBoard=(response)=>{
+    console.log("time to update the board to the current state");
+
+    // first lets clear the board
+
+    for(let i=0;i<8;i++){
+      for(let j=0;j<8;j++){
+        board[i][j]=null;
+      }
+    }
+    // now lets set the white pieces
+
+    for(let piece of response.whitePieces){
+      const [toRow, toCol] = getRowColFromNotation(piece.Square);
+      board[toRow][toCol]=createPiece(piece.pieceType,"white");
+    }
+    // now for black pieces
+
+    for(let piece of response.blackPieces){
+      const [toRow, toCol] = getRowColFromNotation(piece.Square);
+      board[toRow][toCol]=createPiece(piece.pieceType,"black");
+    }
+    callbacks.onBoardUpdate?.(board.map(row => [...row]));
+
+  }
+
   // Update board based on move
   const updateBoardFromMove = (response) => {
     console.log(`🔄 Updating board: response.fromSquare → response.toSquare`);
@@ -1189,7 +1255,8 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     let message = 'Game Over! ';
     if (response.winner === 'draw') {
       message += `Draw - ${response.gameEndReason}`;
-    } else {
+    } 
+    else {
       message += `${response.winner} wins! ${response.gameEndReason}`;
     }
 
@@ -1239,7 +1306,6 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
       const moveMessage = {
         messageType: "GAME_MOVE", // Add message type
         gameId: actualGameId,
-        playerEmail: actualPlayerEmail,
         squareClicked: square,
         color: currentPlayer,
         hasCircle: hasCircle,
@@ -1284,7 +1350,6 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     const resignMessage = {
       messageType: "GAME_END",
       gameId: actualGameId,
-      playerEmail: actualPlayerEmail,
       hasCircle: "no",
       whiteTime: whiteTime,
       blackTime: blackTime,
@@ -1302,8 +1367,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     
     const drawMessage = {
       messageType: "GAME_END",
-      gameId: actualGameId,        
-      playerEmail: actualPlayerEmail,
+      gameId: actualGameId,
       whiteTime: whiteTime,
       blackTime: blackTime,
       buttonClicked: "draw",
@@ -1360,7 +1424,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     console.log('❌ Canceling matchmaking');
     
     // ✅ CORRECTED: Use the WebSocketService method
-    websocketService.cancelMatchmaking(playerEmail);
+    websocketService.cancelMatchmaking();
     
     // Reset state
     isWaitingForMatch = false;
@@ -1398,7 +1462,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     console.log('🔙 Showing previous move');
     if(currentMove>0){
       console.log(currentMove,actualMoveNumber);
-      websocketService.showMove(actualGameId,currentMove,playerEmail,-1);
+      websocketService.showMove(actualGameId,currentMove,-1);
       currentMove--;
     }
 
@@ -1409,7 +1473,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     if(currentMove<actualMoveNumber){
       currentMove++;
       console.log("current and actual",currentMove,actualMoveNumber);
-      websocketService.showMove(actualGameId,currentMove, playerEmail,1);
+      websocketService.showMove(actualGameId,currentMove,1);
 
     }
   }
@@ -1424,7 +1488,6 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     const timeUpMessage = {
       messageType: "GAME_MOVE",
       gameId: actualGameId,
-      playerEmail: actualPlayerEmail,
       squareClicked: "a1", // Dummy value
       color: color,
       hasCircle: "no",
@@ -1445,7 +1508,6 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
       const message={
         messageType:"Quit",
         gameId:actualGameId,
-        playerEmail:actualPlayerEmail,
         color:currentPlayer
       };
       websocketService.sendMessage(message);
