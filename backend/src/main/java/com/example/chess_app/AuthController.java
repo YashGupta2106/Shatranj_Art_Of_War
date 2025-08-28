@@ -71,7 +71,7 @@ public class AuthController {
         if(sessionId!=null){
             System.out.println("i found the cookie so the session is valid");
             System.out.println("now lets see if the session lasts for how long");
-            Long ttl = redisService.getSessionTTL(sessionId);
+            Long ttl = redisService.getSessionTTL("session"+sessionId);
             if(ttl<=0){
                 System.out.println("session has expired so moving back to login page");
                 ResponseCookie clearedCookie = ResponseCookie.from("sessionId", "")
@@ -86,7 +86,7 @@ public class AuthController {
             }
             else if(ttl<=300){
                 
-                redisService.refreshSessionTTL(sessionId);
+                redisService.refreshSessionTTL("session"+sessionId);
                 ResponseCookie cookie = ResponseCookie.from("sessionId", sessionId)
                     .httpOnly(true)
                     .secure(false)
@@ -142,7 +142,7 @@ public class AuthController {
         }
         else{
             System.out.println("sessionId found now lets find it in the redis");
-            userMail=redisService.getUserIdBySession(sessionId);
+            userMail=redisService.getUserIdBySession("session"+sessionId);
             if(userMail==null){
                 System.out.println("redis did not find session so back to login page");
                 Map<String,String> reply=new HashMap<>();
@@ -151,7 +151,7 @@ public class AuthController {
             }
             else{
                 System.out.println("yayy user is found... so now lets send back the user mail ");
-                redisService.refreshSessionTTL(sessionId);
+                redisService.refreshSessionTTL("session"+sessionId);
                 Map<String, String> reply = new HashMap<>();
                 reply.put("userMail", userMail);
                 ResponseCookie cookie = ResponseCookie.from("sessionId", sessionId)
@@ -224,10 +224,10 @@ public class AuthController {
                     .maxAge(3600)
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-            redisService.saveSession(sessionId, email);
+            redisService.saveSession("session"+sessionId, email);
             System.out.println("sending new cookie with sessionId "+sessionId);
             System.out.println("now lets check if i have that cookie in redis");
-            String redisEmail = redisService.getUserIdBySession(sessionId);
+            String redisEmail = redisService.getUserIdBySession("session"+sessionId);
             System.out.println("the player mail is "+email+" and the mail i got in redis is: "+redisEmail);
             if(debugEnabled){
                 String ans="success+: "+sessionId;
@@ -256,7 +256,7 @@ public class AuthController {
             for(Cookie cookie:cookies){
                 if("sessionId".equals(cookie.getName())){
                     sessionId=cookie.getValue();
-                    redisService.deleteSession(sessionId);  
+                    redisService.deleteSession("session"+sessionId);  
                     ResponseCookie clearedCookie = ResponseCookie.from("sessionId", "")
                     .httpOnly(true)
                     .secure(false)

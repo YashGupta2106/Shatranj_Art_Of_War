@@ -9,6 +9,8 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.env.dev
+
 
 # Firebase service account files
 **/firebase-service-account*.json
@@ -65,3 +67,21 @@ Thumbs.db
 
 # Logs
 *.log
+
+// ...existing code...
+
+# Redis dump files
+dump.rdb
+*.rdb
+
+# IDE specific
+.history/
+*.code-workspace
+
+# Environment variables backups
+*.env.bak
+*.env.*.bak
+
+# Test coverage reports
+coverage/
+.nyc_output/
