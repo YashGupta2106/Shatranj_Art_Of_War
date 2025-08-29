@@ -42,6 +42,12 @@ public class AuthController {
     @Value("${app.debug.enabled:false}")
     private boolean debugEnabled;
 
+    @Value("${auth.secure}")
+    private boolean secure;
+
+    @Value("${auth.cross.site}")
+    private String sameSite;
+
     @GetMapping("/test")
     public ResponseEntity<String> test() {
         if (debugEnabled) {
@@ -76,8 +82,8 @@ public class AuthController {
                 System.out.println("session has expired so moving back to login page");
                 ResponseCookie clearedCookie = ResponseCookie.from("sessionId", "")
                         .httpOnly(true)
-                        .secure(false)
-                        .sameSite("Lax")
+                        .secure(secure)
+                        .sameSite(sameSite)
                         .path("/")
                         .maxAge(0)
                         .build();
@@ -89,9 +95,9 @@ public class AuthController {
                 redisService.refreshSessionTTL("session"+sessionId);
                 ResponseCookie cookie = ResponseCookie.from("sessionId", sessionId)
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(secure)
                     .path("/")
-                    .sameSite("Lax")
+                    .sameSite(sameSite)
                     .maxAge(3600)
                     .build();
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -156,9 +162,9 @@ public class AuthController {
                 reply.put("userMail", userMail);
                 ResponseCookie cookie = ResponseCookie.from("sessionId", sessionId)
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(secure)
                     .path("/")
-                    .sameSite("Lax")
+                    .sameSite(sameSite)
                     .maxAge(3600)
                     .build();
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -218,9 +224,9 @@ public class AuthController {
             String sessionId = SessionUtil.generateSessionId();
             ResponseCookie cookie = ResponseCookie.from("sessionId", sessionId)
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(secure)
                     .path("/")
-                    .sameSite("Lax")
+                    .sameSite(sameSite)
                     .maxAge(3600)
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -259,9 +265,9 @@ public class AuthController {
                     redisService.deleteSession("session"+sessionId);  
                     ResponseCookie clearedCookie = ResponseCookie.from("sessionId", "")
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(secure)
                     .path("/")
-                    .sameSite("Lax")
+                    .sameSite(sameSite)
                     .maxAge(0)
                     .build();
                     response.addHeader(HttpHeaders.SET_COOKIE, clearedCookie.toString());
