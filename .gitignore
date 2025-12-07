@@ -4,13 +4,15 @@
 *.iml
 
 # Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.dev
-application.dev.properties
+
+# ADD THESE LATER
+# .env
+# .env.local
+# .env.development.local
+# .env.test.local
+# .env.production.local
+# .env.dev
+# application.dev.properties
 
 # Firebase service account files
 **/firebase-service-account*.json
@@ -52,14 +54,15 @@ build/
 
 node_modules/
 /backend/target/
-/backend/.env
+# /backend/.env    ADD THIS LATER
 
 # Frontend
 /frontend/node_modules/
 /frontend/build/
 
 # Firebase service account key (DO NOT COMMIT THIS FILE)
-backend/src/main/resources/firebase-service-account.json
+ADD THESE LATER
+# backend/src/main/resources/firebase-service-account.json
 
 # OS
 .DS_Store
@@ -79,8 +82,8 @@ dump.rdb
 *.code-workspace
 
 # Environment variables backups
-*.env.bak
-*.env.*.bak
+# *.env.bak
+# *.env.*.bak       ADD THESE LATER
 
 # Test coverage reports
 coverage/
