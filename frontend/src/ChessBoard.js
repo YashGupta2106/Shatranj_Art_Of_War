@@ -69,17 +69,17 @@ export default function ChessBoard({ gameMode }) {
   const { currentUser } = useAuth();  // get user from context
 
   // UI State - managed by ChessBoard
-  const [board, setBoard] = useState(createInitialBoard()); // Show board immediately
+  const [board, setBoard] = useState(createInitialBoard());
   const [selectedSquare, setSelectedSquare] = useState(null);
   const [currentPlayer, setCurrentPlayer] = useState('white');
   const [gameStatus, setGameStatus] = useState('active');
   const [gameMessage, setGameMessage] = useState('');
   const [possibleMoves, setPossibleMoves] = useState([]);
-  const [whiteTime, setWhiteTime] = useState(600); // 10 minutes
+  const [whiteTime, setWhiteTime] = useState(600);
   const [blackTime, setBlackTime] = useState(600);
   const [isConnected, setIsConnected] = useState(false);
   const [playerColor, setPlayerColor] = useState('null'); // Default to white
-  const [gameId, setGameId] = useState("null"); // Default game ID for practice mode
+  const [gameId, setGameId] = useState("null"); 
   const [clickStatus, setClickStatus] = useState('highlight'); // Track click status for highlight/move
   // Add timer refs to track intervals
   const timerIntervalRef = useRef(null);
@@ -112,7 +112,9 @@ export default function ChessBoard({ gameMode }) {
     const handleBeforeUnload = (e) => {
       if (gameReady && gameStatus === 'active') {
         e.preventDefault();
-        e.returnValue = 'You are in an active game. Are you sure you want to leave?';
+        // e.returnValue = 'You are in an active game. Are you sure you want to leave?';
+        console.log("refreshing time... lets call backend to get current status")
+        gameManager.getStatus();
       }
     };
 

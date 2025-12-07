@@ -47,6 +47,7 @@ public class GameHistoryController {
                 for (Cookie cookie : cookies) {
                     if ("sessionId".equals(cookie.getName())) {
                         sessionId= cookie.getValue();
+                        System.out.println("🔑 Found sessionId cookie: " + sessionId);
                         break;
                     }
                 }
@@ -55,8 +56,14 @@ public class GameHistoryController {
                 System.out.println("❌ No cookies found in request");
                 return ResponseEntity.status(401).body("Unauthorized: No session cookie found");
             }
-            email= redisService.getUserIdBySession(sessionId);
-            System.out.println("🎮 Fetching game history for: " + email);
+            email= redisService.getUserIdBySession("session"+sessionId);
+            if(email==null){
+                System.out.println("invalid session id i cant find any email associated");
+            }
+            else{
+
+                System.out.println("🎮 Fetching game history for: " + email);
+            }
             
             // Find all completed games where user participated
             List<Game> userGames = gameRepository.findCompletedGamesByPlayerEmail(email);
