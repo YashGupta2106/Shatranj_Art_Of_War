@@ -270,57 +270,6 @@ class RedisServiceTest {
 **Java 21:**
 ```bash
 # Download from https://www.oracle.com/java/technologies/downloads/#java21
-# Verify: java -version (should show 21.x)
-
-**Maven:**
-```bash
-# Download from https://maven.apache.org/download.cgi
-# Verify: mvn -version
-```
-
-**Node.js:**
-```bash
-# Download from https://nodejs.org/ (LTS version)
-# Verify: node --version (should be v16+)
-```
-
-#### Step 2: Get Project Files
-
-```bash
-git clone https://github.com/YashGupta2106/Shatranj_Art_Of_War.git
-cd Shatranj_Art_Of_War
-```
-
-#### Step 3: Install Dependencies
-
-**Backend:**
-```bash
-cd backend
-mvn clean install
-```
-
-**Frontend:**
-```bash
-cd frontend
-npm install
-```
-
-### 5.3 Important Notes
-
-> **⚠️ MongoDB & Redis:**  
-> Both are cloud-hosted (MongoDB Atlas + Redis Cloud).  
-> Credentials provided in `EVALUATOR_CREDENTIALS.txt`.  
-> NO local installation needed!
-
-> **⚠️ Firebase:**  
-> Uses cloud Firebase project.  
-> All configuration provided.  
-> NO account creation needed!
-
-> **⚠️ Internet Required:**  
-> Application connects to cloud services.  
-> Stable internet connection required.
-
 ---
 
 ## 6. Running the Application
@@ -559,33 +508,6 @@ These exclusions are configured in `pom.xml`:
 
 ---
 
-## 10. Future Enhancements
-
-### 10.1 Planned Features
-
-- [ ] AI opponent using Stockfish engine
-- [ ] Chess clock with time controls
-- [ ] Rating system (ELO)
-- [ ] Tournament mode
-- [ ] Spectator mode
-- [ ] Game analysis tools
-- [ ] Mobile app (React Native)
-
-### 10.2 Technical Improvements
-
-- [ ] Add controller integration tests
-- [ ] Implement E2E testing suite
-- [ ] Add performance testing
-- [ ] Improve error handling
-- [ ] Add logging framework
-- [ ] Implement rate limiting
-- [ ] Add API documentation (Swagger)
-
-### 10.3 Testing Enhancements
-
-- [ ] Increase coverage to 80%+
-- [ ] Add mutation testing
-- [ ] Performance benchmarking
 - [ ] Load testing
 - [ ] Security testing
 

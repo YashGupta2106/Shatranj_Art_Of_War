@@ -121,11 +121,17 @@ Shatranj: Art of War is a full-stack web application that enables users to play 
 
 ### Quick Setup (5 minutes)
 
+**Step 3: Install Dependencies & Run Backend**
+```bash
+cd backend
+mvn clean install
+mvn spring-boot:run
+
 # Backend will start on http://localhost:8080
 # All credentials already configured in application.properties
 ```
 
-**Step 3: Install Dependencies & Run Frontend**
+**Step 4: Install Dependencies & Run Frontend**
 ```bash
 cd frontend
 npm install
@@ -134,7 +140,8 @@ npm start
 # Frontend will start on http://localhost:3000
 # All credentials already configured in .env file
 ```
-```bash
+
+**Step 5: Verify Tests**
 cd backend
 mvn test
 
@@ -377,12 +384,248 @@ RECEIVE  /topic/game-update      - Game state updates
 ## 📄 License
 
 This project is licensed under the MIT License.
+4. Game board appears for both players
+5. Take turns making moves
+6. Moves sync in real-time!
+
+---
+
+## 🧪 Running Tests
+
+### Test Suite Overview
+
+This project includes **59 comprehensive unit tests** covering:
+- **Domain Models** - Game, Move, Player, all Piece types
+- **Service Layer** - RedisService with mocks
+- **Business Logic** - Game state, move validation, session management
+
+### Running All Tests
+
+```bash
+cd backend
+
+# Run all tests
+mvn test
+
+# Expected output:
+# Tests run: 59, Failures: 0, Errors: 0, Skipped: 1
+# BUILD SUCCESS
+```
+
+### Generate Coverage Report
+
+```bash
+cd backend
+mvn clean test jacoco:report
+
+# Open coverage report:
+# backend/target/site/jacoco/index.html
+# Expected coverage: 65-70%
+```
+
+### Test Structure
+
+```
+backend/src/test/java/com/example/chess_app/
+├── GameTest.java (12 tests)
+│   └── Game state management, move tracking
+├── PieceTest.java (21 tests)  
+│   └── All chess pieces (Pawn, Rook, Knight, Bishop, Queen, King)
+├── TestPieceFactory.java (Helper class)
+│
+└── unit/
+    ├── model/
+    │   ├── MoveTest.java (12 tests)
+    │   └── PlayerTest.java (7 tests)
+    └── service/
+        └── RedisServiceTest.java (7 tests - with Mockito mocks)
+```
+
+### Testing Technologies
+
+- **JUnit 5** - Testing framework
+- **Mockito** - Mocking external dependencies  
+- **AssertJ** - Fluent assertions
+- **JaCoCo** - Code coverage analysis
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**1. Backend won't start**
+```bash
+# Check Java version
+java -version  # Must be Java 21
+
+# Clean and rebuild
+mvn clean install
+```
+
+**2. "Cannot connect to MongoDB"**
+- Verify credentials in `application.properties` match `EVALUATOR_CREDENTIALS.txt`
+- Check internet connection (using cloud MongoDB)
+
+**3. "Cannot connect to Redis"**
+- Verify Redis configuration in `application.properties`
+- Redis is required - check cloud Redis credentials
+
+**4. Tests failing**
+```bash
+# Clean and run
+mvn clean test
+
+# Tests should pass without MongoDB/Redis (uses mocks)
+```
+
+**5. Frontend won't connect to backend**
+- Ensure backend is running on port 8080
+- Check `REACT_APP_BACKEND_URL` in frontend `.env`
+- Verify CORS settings in backend `application.properties`
+
+**6. Can't login/register**
+- Check Firebase configuration in frontend `.env`
+- Verify Firebase project ID matches in backend
+- Ensure internet connection (Firebase is cloud-based)
+
+**7. Matchmaking not working**
+- You need **TWO users** logged in simultaneously
+- Use two different browsers (Chrome + Firefox)
+- **DO NOT use incognito mode** (JWT tokens won't persist)
+- Both users must click "Find Match"
+- Wait 2-3 seconds for automatic pairing
+
+---
+
+## 📁 Project Structure
+
+```
+Shatranj_Art_Of_War/
+├── backend/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/example/chess_app/
+│   │   │   │   ├── AuthController.java
+│   │   │   │   ├── GameHistoryController.java
+│   │   │   │   ├── OnlineGameController.java
+│   │   │   │   ├── MatchmakingService.java
+│   │   │   │   ├── RedisService.java
+│   │   │   │   ├── Game.java, Player.java, Move.java
+│   │   │   │   └── Piece.java (+ subclasses)
+│   │   │   └── resources/
+│   │   │       └── application.properties
+│   │   └── test/
+│   │       └── java/com/example/chess_app/
+│   │           └── [59 test files]
+│   ├── pom.xml
+│   └── target/site/jacoco/  # Coverage reports
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── firebase/
+│   │   └── App.js
+│   └── .env
+│
+├── README.md (this file)
+└── PROJECT_REPORT.md
+```
+
+---
+
+## 📊 API Endpoints
+
+### Authentication
+```
+POST   /api/auth/login          - User login with Firebase token
+POST   /api/auth/verify-session - Verify active session  
+POST   /api/auth/logout         - End user session
+```
+
+### Game History
+```
+GET    /api/game-history        - Get user's game history
+GET    /api/game/{id}           - Get specific game details
+```
+
+### WebSocket
+```
+CONNECT  /ws                     - Establish WebSocket connection
+SEND     /app/game/find-match    - Join matchmaking queue
+SEND     /app/game/move          - Send game move
+RECEIVE  /topic/match-found      - Match notification
+RECEIVE  /topic/game-update      - Game state updates
+```
+
+---
+
+
+## 🎯 Evaluation Checklist
+
+- [ ] Java 21 installed
+- [ ] Node.js v16+ installed
+- [ ] Maven 3.6+ installed
+- [ ] Copied credentials from `EVALUATOR_CREDENTIALS.txt`
+- [ ] Backend runs: `mvn spring-boot:run`
+- [ ] Frontend runs: `npm start`
+- [ ] Tests pass: `mvn test` (59/59)
+- [ ] Coverage generated: `mvn test jacoco:report`
+- [ ] Tested with 2 browsers/users
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 
 **Yash Gupta**
 - GitHub: [@YashGupta2106](https://github.com/YashGupta2106)
 - Project: [Shatranj Art of War](https://github.com/YashGupta2106/Shatranj_Art_Of_War)
+**Step 1: Clone the Repository**
+```bash
+git clone https://github.com/YashGupta2106/Shatranj_Art_Of_War.git
+cd Shatranj_Art_Of_War
+```
+
+**Step 2: Create Firebase Service Account File** ⚠️ **REQUIRED**
+
+> **This file cannot be in GitHub for security. You must create it manually.**
+
+```bash
+cd backend/src/main/resources
+
+# Windows:
+notepad firebase_service.json
+
+# Mac/Linux:
+nano firebase_service.json
+```
+
+**Copy this template and fill in the credentials from `EVALUATOR_CREDENTIALS.txt`:**
+
+```json
+{
+  "type": "service_account",
+  "project_id": "[FROM EVALUATOR_CREDENTIALS.txt]",
+  "private_key_id": "[FROM EVALUATOR_CREDENTIALS.txt]",
+  "private_key": "[FROM EVALUATOR_CREDENTIALS.txt]",
+  "client_email": "[FROM EVALUATOR_CREDENTIALS.txt]",
+  "client_id": "[FROM EVALUATOR_CREDENTIALS.txt]",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "[FROM EVALUATOR_CREDENTIALS.txt]"
+}
+```
+
+> **See `EVALUATOR_CREDENTIALS.txt` for complete credentials and detailed instructions.**  
+> **Template file:** `backend/src/main/resources/firebase_service.json.template`
+
+**Step 3: Install Dependencies & Run Backend**
 
 ---
 
@@ -391,4 +634,3 @@ This project is licensed under the MIT License.
 For detailed information about testing methodology, architecture decisions, and development phases, please refer to `PROJECT_REPORT.md`.
 
 ---
-

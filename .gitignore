@@ -15,11 +15,10 @@
 # application.dev.properties
 
 # Firebase service account files
-# ADD THESE LATER
-# **/firebase-service-account*.json
-# **/firebase_service.json
-# **/serviceAccountKey*.json
-# **/*-firebase-adminsdk-*.json
+**/firebase-service-account*.json
+**/firebase_service.json
+**/serviceAccountKey*.json
+**/*-firebase-adminsdk-*.json
 
 ### IntelliJ IDEA ###
 *.iws
