@@ -66,9 +66,11 @@ public class AuthController {
             
         }
         else{
+            
             for(Cookie cookie:cookies){
                 if("sessionId".equals(cookie.getName())){
                     sessionId=cookie.getValue();
+                    System.out.println("the session id is: "+sessionId);
                     break;
                 }
             }
@@ -91,7 +93,7 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Session expired. Please log in again."));
             }
             else if(ttl<=300){
-                
+                System.out.println("less time remaining so refreshing the ttl");
                 redisService.refreshSessionTTL("session"+sessionId);
                 ResponseCookie cookie = ResponseCookie.from("sessionId", sessionId)
                     .httpOnly(true)
@@ -106,6 +108,7 @@ public class AuthController {
                 
             }
             else{
+                System.out.println("session is valid and has sufficient time left");
                 return ResponseEntity.ok(Map.of("message", "Session is valid and has sufficient time left"));
             }
         }

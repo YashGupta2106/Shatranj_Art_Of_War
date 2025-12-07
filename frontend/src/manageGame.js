@@ -40,7 +40,7 @@ class WebSocketService {
 
           this.stompClient.publish({
             destination: '/app/auth',
-            body: JSON.stringify({ playerEmail: this.playerEmail }) // Add more if needed
+            body: JSON.stringify({ playerEmail: this.playerEmail })
           });
 
           // Subscribe to player-specific topic for matchmaking
@@ -156,7 +156,10 @@ class WebSocketService {
           if (response.messageType === "MATCH_FOUND") {
             this.subscribeToGameTopic(response.gameId);
           }
-          
+          else if(response.messageType==="GAME_EXISTS"){
+            this.subscribeToGameTopic(response.gameId);
+          }
+          console.log("the messageType is: "+response.messageType);
           this.onMessageCallback?.(response);
         } 
         catch (error) {
@@ -242,7 +245,13 @@ class WebSocketService {
     console.log('🔍 Sending matchmaking request:', message);
     this.sendMessage(message);
   }
-
+  getExistingGame=(gameId)=>{
+    const message={
+      messageType:"CONTINUE_GAME",
+      gameId:gameId
+    };
+    this.sendMessage(message);
+  }
   // Send player ready
   sendPlayerReady(gameId) {
     const message = {
@@ -379,7 +388,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
   let actualPlayerColor = null;
   
   // Game ready state and matchmaking state
-  let gameReady = gameMode === "practice"; // Practice is always ready
+  let gameReady = gameMode === "practice";
   let actualGameId = null;
   let actualPlayerEmail = playerEmail || "player@example.com"; // Fallback
   let actualPlayerName = playerName || "Player"; // Fallback
@@ -556,9 +565,20 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
         handleMatchFound(response);
         return;
       }
+
+      if(response.messageType==="GAME_EXISTS"){
+        actualGameId=response.gameId;
+        getMatchDetails(actualGameId);
+      }
+
+      if(response.messageType==="UPDATE_RECONNECT"){
+        updateReconnect(response);
+      }
+
       if(response.messageType === "BOARD_STATUS"){
+        console.log("got the board status from backend");
         updateBoard(response);
-        if(message.isActive===false){
+        if(response.isActive===false){
           // add here the game end logic
           handleGameEnd(response); 
         }
@@ -655,6 +675,47 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     
   };
 
+
+
+  const updateReconnect=(response)=>{
+    
+    const opponentName=null;
+    
+    if(response.whitePlayer===actualPlayerEmail){
+      opponentName=response.blackPlayer;
+      actualPlayerColor="white";
+    }
+    else{
+      opponentName=response.whitePlayer;
+      actualPlayerColor="black";
+    }
+    isWaitingForMatch = false;
+    isGameActive=response.isActive;
+    actualMoveNumber=response.moveNumber;
+    
+
+    if(isGameActive===true){
+      gameReady=true;
+      gameStatus = 'active';
+      if(response.moveNumber%2===0){
+        currentPlayer="white";
+      }
+      else{
+        currentPlayer="black";
+      }
+      callbacks.onGameReady?.(true);
+      callbacks.onColorDecide?.(playerColor);
+      callbacks.onGameId?.(actualGameId);
+      updateBoard(response); 
+       startTimer();
+
+    }
+    else{
+      handleGameEnd(response);
+
+    }
+  }
+
    // Update handleMatchFound function
   const handleMatchFound = (response) => {
     console.log('🎯 Match found!', response);
@@ -664,7 +725,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     const playerColor = response.color || 'white';
     actualPlayerColor = playerColor;
     isWaitingForMatch = false;
-    isGameActive = true; // ✅ Mark game as active
+    isGameActive = true;
     
     callbacks.onMessageChange?.(`Match found! Playing against ${opponentName} as ${playerColor}`);
     callbacks.onColorDecide?.(playerColor);
@@ -691,8 +752,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     gameReady = true;
     callbacks.onGameReady?.(true);
     callbacks.onMessageChange?.('Game started! Your turn.');
-    
-    // Update initial game state if provided
+
     if (response.initialBoard) {
       board = response.initialBoard;
       callbacks.onBoardUpdate?.(board.map(row => [...row]));
@@ -1076,13 +1136,13 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     // now lets set the white pieces
 
     for(let piece of response.whitePieces){
-      const [toRow, toCol] = getRowColFromNotation(piece.Square);
+      const [toRow, toCol] = getRowColFromNotation(piece.square);
       board[toRow][toCol]=createPiece(piece.pieceType,"white");
     }
     // now for black pieces
 
     for(let piece of response.blackPieces){
-      const [toRow, toCol] = getRowColFromNotation(piece.Square);
+      const [toRow, toCol] = getRowColFromNotation(piece.square);
       board[toRow][toCol]=createPiece(piece.pieceType,"black");
     }
     callbacks.onBoardUpdate?.(board.map(row => [...row]));
@@ -1468,6 +1528,10 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
 
   }
 
+  const getMatchDetails=()=>{
+    websocketService.getExistingGame(actualGameId);
+  }
+
   const showNextMove = () => {
     console.log('🔜 Showing next move');
     if(currentMove<actualMoveNumber){
@@ -1476,6 +1540,11 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
       websocketService.showMove(actualGameId,currentMove,1);
 
     }
+  }
+
+  const getStatus=()=>{
+    console.log("time to get status of game");
+    websocketService.sendBoardStatus(actualGameId);
   }
   // NEW: Handle time up from frontend timer
   const handleTimeUp = (color) => {
@@ -1531,6 +1600,7 @@ export const createGameManager = ({ gameId, gameMode, initialBoard,playerEmail,p
     startTimer,
     stopTimer,
     handleBackToHome,
+    getStatus,
     cleanup,
     
     // Getters for current state (if needed)

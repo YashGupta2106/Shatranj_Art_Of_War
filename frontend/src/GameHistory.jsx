@@ -43,7 +43,11 @@ export default function GameHistory() {
     };
 
     if (currentUser?.email) {
+      console.log("Fetching game history for user:", currentUser.email);
       fetchGames();
+    }
+    else{
+      console.log("i am not able to see the user how do i fetch the games")
     }
   }, [currentUser]);
 

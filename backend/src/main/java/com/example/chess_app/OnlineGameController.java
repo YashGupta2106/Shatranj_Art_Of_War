@@ -54,6 +54,9 @@ public class OnlineGameController {
         String playerEmail=sessionAccessor.getEmail(sessionId);
         try {
             switch (message.getMessageType()) {
+                case "CONTINUE_GAME":
+                    System.out.println("player is rejoining to existing game... so we sending back details to them");
+                    getGameDetails(message.getGameId(),playerEmail);
                 case "FIND_MATCH":
                     handleFindMatch(message,playerEmail);
                     break;
@@ -88,6 +91,22 @@ public class OnlineGameController {
         }
     }
 
+    private void getGameDetails(String gameId, String playerEmail){
+        Game game= gameRepository.findByGameId(gameId);
+        System.out.println("now lets send the game details to the player");
+        GameExists gameExists = new GameExists();
+        gameExists.setIsActive(game.isActive());
+        gameExists.setWhitePieces(game.getWhitePieces());
+        gameExists.setBlackPieces(game.getBlackPieces());
+        gameExists.setWinner(game.getWinner());
+        gameExists.setGameEndReason(game.getGameEndReason());
+        gameExists.setMoveNumber(game.getMoveNumber());
+        gameExists.setWhitePlayer(game.getWhitePlayer());
+        gameExists.setBlackPlayer(game.getBlackPlayer());
+        messagingTemplate.convertAndSend("/topic/" + playerEmail, gameExists);
+
+    }
+
     private void sendBoardStatus(WebSocketMessage message,String playerEmail){
         Game game= gameRepository.findByGameId(message.getGameId());
         System.out.println("now lets send the current piece positions to the player");
@@ -98,6 +117,7 @@ public class OnlineGameController {
         boardStatus.setWinner(game.getWinner());
         boardStatus.setGameEndReason(game.getGameEndReason());
         boardStatus.setMoveNumber(game.getMoveNumber());
+        System.out.println("sending the board status to player: " + playerEmail);
         messagingTemplate.convertAndSend("/topic/" + playerEmail, boardStatus);
 
     }
@@ -620,6 +640,78 @@ public class OnlineGameController {
         return response;
     }
 
+
+
+    public static class GameExists{
+        private String messageType="UPDATE_RECONNECT";
+        private boolean isActive;
+        private List<Piece> whitePieces;
+        private List<Piece> blackPieces;
+        private String winner;
+        private String gameEndReason;
+        private int moveNumber=0;
+        private String whitePlayer;
+        private String blackPlayer;
+
+        public String getWhitePlayer() {
+            return whitePlayer;
+        }
+        public void setWhitePlayer(String whitePlayer) {
+            this.whitePlayer = whitePlayer;
+        }
+        public String getBlackPlayer() {
+            return blackPlayer;
+        }
+        public void setBlackPlayer(String blackPlayer) {
+            this.blackPlayer = blackPlayer;
+        }
+
+        public boolean getIsActive() {
+            return isActive;
+        }
+        public void setIsActive(boolean isActive) {
+            this.isActive = isActive;
+        }
+        public List<Piece> getWhitePieces() {
+            return whitePieces;
+        }
+        public void setWhitePieces(List<Piece> whitePieces) {
+            this.whitePieces = whitePieces;
+        }
+        public List<Piece> getBlackPieces() {
+            return blackPieces;
+        }
+        public void setBlackPieces(List<Piece> blackPieces) {
+            this.blackPieces = blackPieces;
+        }
+        public String getWinner() {
+            return winner;
+        }
+        public void setWinner(String winner) {
+            this.winner = winner;
+        }
+        public String getGameEndReason() {
+            return gameEndReason;
+        }
+        public void setGameEndReason(String gameEndReason) {
+            this.gameEndReason = gameEndReason;
+        }
+        public int getMoveNumber() {
+            return moveNumber;
+        }
+        public void setMoveNumber(int moveNumber) {
+            this.moveNumber = moveNumber;
+        }
+        public String getMessageType() {
+            return messageType;
+        }
+        public void setMessageType(String messageType) {
+            this.messageType = messageType;
+        }
+        
+    }
+
+
     public static class BoardStatus{
         private String messageType = "BOARD_STATUS";
         private boolean isActive;
@@ -760,6 +852,8 @@ public class OnlineGameController {
         public void setPlayersReady(int playersReady) { this.playersReady = playersReady; }
 
     }
+
+    
 
     public static class GameStartResponse {
         private String messageType;

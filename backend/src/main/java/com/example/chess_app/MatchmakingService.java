@@ -18,7 +18,9 @@ public class MatchmakingService {
     private final Queue<Player> waitingPlayers = new ConcurrentLinkedQueue<>();
     
     // Track players currently in games
-    private final Set<String> playersInGame = ConcurrentHashMap.newKeySet();
+    // private final Set<String> playersInGame = ConcurrentHashMap.newKeySet();
+    private final ConcurrentHashMap<String, String> playersInGame = new ConcurrentHashMap<>();
+
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
     
@@ -28,8 +30,16 @@ public class MatchmakingService {
     public void findPlayerToPlay(Player player) {
         System.out.println("🔍 Finding match for: " + player.getEmail());
         
-        if (playersInGame.contains(player.getEmail())) {
+        if (playersInGame.containsKey(player.getEmail())) {
             System.out.println("⚠️ Player already in active game: " + player.getEmail());
+            String gameId=playersInGame.get(player.getEmail());
+            // return back the detail to them
+            String dest = "/topic/" + player.getEmail();
+            GameExists gameExists=new GameExists();
+            gameExists.setMessageType("GAME_EXISTS");
+            gameExists.setGameId(gameId);
+            messagingTemplate.convertAndSend(dest, gameExists);
+
             return;
         }
 
@@ -43,8 +53,6 @@ public class MatchmakingService {
             // Match found!
             Player player1 = player;
             Player player2 = waitingPlayers.poll();
-            playersInGame.add(player1.getEmail());
-            playersInGame.add(player2.getEmail());
             
             System.out.println("🎯 Match found: " + player1.getEmail() + " vs " + player2.getEmail());
             
@@ -53,6 +61,9 @@ public class MatchmakingService {
             String whitePlayerEmail = player1IsWhite ? player1.getEmail() : player2.getEmail();
             String blackPlayerEmail = player1IsWhite ? player2.getEmail() : player1.getEmail();
             String gameId = UUID.randomUUID().toString();
+            
+            playersInGame.put(player1.getEmail(),gameId);
+            playersInGame.put(player2.getEmail(),gameId);
             
             // Create game
             Game game = createOnlineGame(player1, player2, "Online", whitePlayerEmail, blackPlayerEmail, player1IsWhite);
@@ -131,10 +142,21 @@ public class MatchmakingService {
         notification.setColor(isWhite ? "white" : "black");
         return notification;
     }
+
+    public static class GameExists{
+        private String messageType;
+        private String gameId;
+
+        public String getMessageType() { return messageType; }
+        public void setMessageType(String messageType) { this.messageType = messageType; }
+
+        public String getGameId() { return gameId; }
+        public void setGameId(String gameId) { this.gameId = gameId; }
+    }
     
     // Updated MatchNotification class
     public static class MatchNotification {
-        private String messageType; // ADD THIS FIELD
+        private String messageType;
         private String gameId;
         private String color;
         private String oppName;
