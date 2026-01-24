@@ -1,636 +1,351 @@
 # Shatranj: Art of War ♟️
 
-A modern, real-time multiplayer chess application built with React frontend and Spring Boot backend, featuring Firebase authentication, WebSocket-based gameplay, and comprehensive testing suite.
+A modern, real-time multiplayer chess web application featuring beautiful UI, WebSocket-based gameplay, and comprehensive backend architecture.
+
+**Live Demo:** [Coming Soon - Deployed on Vercel & Render]
 
 ---
 
-## 🎓 Important Note for Evaluators/TAs
+## ✨ Features
 
-> **All credentials are already included in the project files for your convenience!**  
-> You do NOT need to create any Firebase, MongoDB, or Redis accounts.  
-> All configuration is ready to use - just clone, install, and run!
->
-> **Why credentials are exposed:**  
-> To make evaluation quick and seamless. These are temporary evaluation credentials with limited access that will be removed from the repository after evaluation. This approach ensures all evaluators have a consistent testing environment and can focus on code quality rather than setup complexity.
->
-> **See `EVALUATOR_CREDENTIALS.txt` for detailed quick-start instructions.**
-
----
-
-## 👥 Group Members
-
-- **[Yash Gupta]** - Roll Number: [IMT2023125]
-- **[Pranay Kelotra]** - Roll Number: [IMT2023563]  
-- **[Hitanshu Seth]** - Roll Number: [IMT2023100]
-- **[Sahas Sangal]** - Roll Number: [IMT2023556]
-
----
-
-## 📋 Project Overview
-
-Shatranj: Art of War is a full-stack web application that enables users to play chess in real-time against other players online. The application features secure authentication, automatic matchmaking, live game synchronization, and persistent game history.
-
-### Key Features
-
-- 🔐 **Firebase Authentication** - Secure user registration and login
-- ♟️ **Real-time Chess Gameplay** - Live multiplayer chess matches  
-- 🌐 **WebSocket Communication** - Instant move synchronization
-- 📱 **Responsive Design** - Works on desktop and mobile devices
-- 🎯 **Matchmaking System** - Automatic player pairing
-- 💾 **Game State Persistence** - MongoDB database for game history
-- 🔒 **Session Management** - Redis-based secure sessions
-- 🧪 **Comprehensive Testing** - 59 unit tests with 65-70% coverage
+- 🔐 **Secure Authentication** - Firebase-based user registration and login
+- ♟️ **Real-time Multiplayer** - Play chess against opponents worldwide  
+- 🌐 **Live Synchronization** - Instant move updates via WebSocket
+- 📱 **Responsive Design** - Beautiful UI that works on all devices
+- 🎯 **Auto-Matchmaking** - Automatic player pairing system
+- 💾 **Game History** - Review and replay your past games
+- 🔒 **Session Management** - Secure Redis-based sessions
+- 🧪 **Well-Tested** - 59 unit tests with 65-70% code coverage
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### Frontend
-- **React 18** - Modern UI with hooks
+- **React 18** - Modern UI with hooks and functional components
 - **React Router** - Client-side routing
-- **Firebase Auth** - Authentication service
-- **SockJS & STOMP** - WebSocket client
-- **CSS3** - Responsive styling
+- **Firebase Auth** - User authentication
+- **SockJS & STOMP** - WebSocket client for real-time communication
+- **CSS3** - Modern, animated styling with glassmorphism effects
 
 ### Backend
-- **Spring Boot 3.3.11** - Java web framework (Java 21)
-- **Spring WebSocket** - Real-time communication
-- **MongoDB** - NoSQL database for game storage
-- **Redis** - Session management (Required)
+- **Spring Boot 3.3.11** - Java 21 web framework
+- **Spring WebSocket** - Real-time bidirectional communication
+- **MongoDB Atlas** - Cloud NoSQL database
+- **Redis Cloud** - Session management and caching
 - **Firebase Admin SDK** - Token validation
 - **Maven** - Build and dependency management
 
-### Testing & Quality
-- **JUnit 5** - Testing framework
-- **Mockito** - Mocking framework
+### Testing
+- **JUnit 5** - Modern testing framework
+- **Mockito** - Mocking for unit tests  
 - **AssertJ** - Fluent assertions
-- **JaCoCo** - Code coverage reporting
+- **JaCoCo** - Code coverage reporting (65-70% coverage)
 
 ---
 
-## 🏗️ Project Architecture
+## 🏗️ Architecture
 
-### Backend Components
+### Backend Structure
+```
+backend/
+├── Controllers
+│   ├── AuthController - User authentication & sessions
+│   ├── GameHistoryController - Game data & replay
+│   └── OnlineGameController - WebSocket game handler
+├── Services
+│   ├── MatchmakingService - Player queue & matching
+│   ├── RedisService - Session storage
+│   └── OnlineGameHandler - Game logic (9000+ lines)
+├── Models
+│   ├── Game - Complete game state
+│   ├── Player - User data
+│   ├── Move - Individual moves
+│   └── Piece - Chess pieces (6 types)
+└── Repositories
+    ├── GameRepository - MongoDB game access
+    └── PlayerRepository - MongoDB player access
+```
 
-1. **Controllers**
-   - `AuthController` - Handles user authentication and session management
-   - `GameHistoryController` - Provides game history and replay data
-   - `OnlineGameController` - WebSocket handler for real-time gameplay
-
-2. **Services**
-   - `MatchmakingService` - Queue-based player matching
-   - `RedisService` - Session storage and retrieval
-   - Game logic handlers
-
-3. **Models**
-   - `Game` - Complete game state (players, pieces, moves, timestamps)
-   - `Player` - User information
-   - `Move` - Individual move data
-   - `Piece` - Chess piece hierarchy (Pawn, Rook, Knight, Bishop, Queen, King)
-
-4. **Repositories**
-   - `GameRepository` - MongoDB data access for games
-   - `PlayerRepository` - MongoDB data access for players
-
-### Frontend Components
-- Authentication pages (Login, Register)
-- Game board with drag-and-drop interface
-- Matchmaking lobby
-- Game history viewer
-- Real-time move synchronization
+### Frontend Structure
+```
+frontend/
+├── LoginRegister - Authentication UI
+├── HomePage - Main lobby
+├── ChessBoard - Interactive game board
+├── GameHistory - Past games viewer
+└── WebSocketService - Real-time communication
+```
 
 ---
 
-## 🎓 For Evaluators - Quick Start
-
-> **⚠️ ALL CREDENTIALS ALREADY CONFIGURED!** Complete working credentials are already included in:
-> - `backend/src/main/resources/application.properties` (MongoDB, Firebase, Redis)
-> - `frontend/.env` (Firebase config, backend URLs)
->
-> **No need to create any accounts - everything is ready to use!**
->
-> See `EVALUATOR_CREDENTIALS.txt` for detailed 2-minute setup guide.
+## 🚀 Local Development Setup
 
 ### Prerequisites
-
-- **Node.js** v16 or higher ([Download](https://nodejs.org/))
 - **Java 21** ([Download](https://www.oracle.com/java/technologies/downloads/#java21))
 - **Maven 3.6+** ([Download](https://maven.apache.org/download.cgi))
+- **Node.js v16+** ([Download](https://nodejs.org/))
 
-**Note:** MongoDB and Redis are cloud-hosted. Credentials provided in separate file.
+### Environment Variables
 
-### Quick Setup (5 minutes)
+You'll need to set up environment variables for local development:
 
-**Step 3: Install Dependencies & Run Backend**
-```bash
-cd backend
-mvn clean install
-mvn spring-boot:run
-
-# Backend will start on http://localhost:8080
-# All credentials already configured in application.properties
+**Backend** (`application-dev.properties`):
+```properties
+MONGODB_URI=your_mongodb_connection_string
+FIREBASE_PROJECT_ID=your_firebase_project_id
+FIREBASE_SERVICE_ACCOUNT_PATH=path/to/firebase_service.json
+REDIS_HOST=your_redis_host
+REDIS_PORT=your_redis_port
+REDIS_PASSWORD=your_redis_password
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+PORT=8080
+AUTH_SECURE=false
+AUTH_CROSS_SITE=Lax
+DEBUG_ENABLED=true
 ```
 
-**Step 4: Install Dependencies & Run Frontend**
-```bash
-cd frontend
-npm install
-npm start
-
-# Frontend will start on http://localhost:3000
-# All credentials already configured in .env file
+**Frontend** (`.env`):
+```env
+REACT_APP_FIREBASE_API_KEY=your_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+REACT_APP_BACKEND_URL=http://localhost:8080
+REACT_APP_WEBSOCKET_URL=http://localhost:8080
 ```
 
-**Step 5: Verify Tests**
-cd backend
-mvn test
+### Installation
 
-# Expected: 59 tests passing, 0 failures
-```
-
----
-
-## 🎮 Testing the Application
-
-### ⚠️ CRITICAL: Two Players Required!
-
-> **This is a multiplayer chess game. You NEED TWO USERS to test gameplay!**
-
-**IMPORTANT: Use Two DIFFERENT Browsers**
-
-> ⚠️ **DO NOT use Incognito/Private mode** - JWT tokens won't persist!
-
-**How to Test:**
-1. Open **Chrome**: `http://localhost:3000`
-2. Open **Firefox**: `http://localhost:3001` (or Edge, Safari)
-3. Register/login as **Player 1** in Chrome
-4. Register/login as **Player 2** in Firefox  
-5. Both click "Find Match" simultaneously
-6. Game starts and moves sync in real-time!
-
-**Why Two Browsers?**
-- Same browser = session conflict
-- Incognito = tokens don't persist
-- Different browsers = works perfectly
-
-**Pre-created Test Accounts:**
-```
-Account 1:
-Email: guptaji@gmail.com
-Password: guptaji
-
-Account 2:
-Email: ash@gmail.com  
-Password: guptaji
-```
-
-### Testing Flow
-
-1. **Both users** login with different accounts
-2. **Both users** click "Find Match" button
-3. Wait 2-3 seconds for automatic matching
-4. Game board appears for both players
-5. Take turns making moves
-6. Moves sync in real-time!
-
----
-
-## 🧪 Running Tests
-
-### Test Suite Overview
-
-This project includes **59 comprehensive unit tests** covering:
-- **Domain Models** - Game, Move, Player, all Piece types
-- **Service Layer** - RedisService with mocks
-- **Business Logic** - Game state, move validation, session management
-
-### Running All Tests
-
-```bash
-cd backend
-
-# Run all tests
-mvn test
-
-# Expected output:
-# Tests run: 59, Failures: 0, Errors: 0, Skipped: 1
-# BUILD SUCCESS
-```
-
-### Generate Coverage Report
-
-```bash
-cd backend
-mvn clean test jacoco:report
-
-# Open coverage report:
-# backend/target/site/jacoco/index.html
-# Expected coverage: 65-70%
-```
-
-### Test Structure
-
-```
-backend/src/test/java/com/example/chess_app/
-├── GameTest.java (12 tests)
-│   └── Game state management, move tracking
-├── PieceTest.java (21 tests)  
-│   └── All chess pieces (Pawn, Rook, Knight, Bishop, Queen, King)
-├── TestPieceFactory.java (Helper class)
-│
-└── unit/
-    ├── model/
-    │   ├── MoveTest.java (12 tests)
-    │   └── PlayerTest.java (7 tests)
-    └── service/
-        └── RedisServiceTest.java (7 tests - with Mockito mocks)
-```
-
-### Testing Technologies
-
-- **JUnit 5** - Testing framework
-- **Mockito** - Mocking external dependencies  
-- **AssertJ** - Fluent assertions
-- **JaCoCo** - Code coverage analysis
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**1. Backend won't start**
-```bash
-# Check Java version
-java -version  # Must be Java 21
-
-# Clean and rebuild
-mvn clean install
-```
-
-**2. "Cannot connect to MongoDB"**
-- Verify credentials in `application.properties` match `EVALUATOR_CREDENTIALS.txt`
-- Check internet connection (using cloud MongoDB)
-
-**3. "Cannot connect to Redis"**
-- Verify Redis configuration in `application.properties`
-- Redis is required - check cloud Redis credentials
-
-**4. Tests failing**
-```bash
-# Clean and run
-mvn clean test
-
-# Tests should pass without MongoDB/Redis (uses mocks)
-```
-
-**5. Frontend won't connect to backend**
-- Ensure backend is running on port 8080
-- Check `REACT_APP_BACKEND_URL` in frontend `.env`
-- Verify CORS settings in backend `application.properties`
-
-**6. Can't login/register**
-- Check Firebase configuration in frontend `.env`
-- Verify Firebase project ID matches in backend
-- Ensure internet connection (Firebase is cloud-based)
-
-**7. Matchmaking not working**
-- You need **TWO users** logged in simultaneously
-- Use two different browsers (Chrome + Firefox)
-- **DO NOT use incognito mode** (JWT tokens won't persist)
-- Both users must click "Find Match"
-- Wait 2-3 seconds for automatic pairing
-
----
-
-## 📁 Project Structure
-
-```
-Shatranj_Art_Of_War/
-├── backend/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/example/chess_app/
-│   │   │   │   ├── AuthController.java
-│   │   │   │   ├── GameHistoryController.java
-│   │   │   │   ├── OnlineGameController.java
-│   │   │   │   ├── MatchmakingService.java
-│   │   │   │   ├── RedisService.java
-│   │   │   │   ├── Game.java, Player.java, Move.java
-│   │   │   │   └── Piece.java (+ subclasses)
-│   │   │   └── resources/
-│   │   │       └── application.properties
-│   │   └── test/
-│   │       └── java/com/example/chess_app/
-│   │           └── [59 test files]
-│   ├── pom.xml
-│   └── target/site/jacoco/  # Coverage reports
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── firebase/
-│   │   └── App.js
-│   └── .env
-│
-├── README.md (this file)
-└── PROJECT_REPORT.md
-```
-
----
-
-## 📊 API Endpoints
-
-### Authentication
-```
-POST   /api/auth/login          - User login with Firebase token
-POST   /api/auth/verify-session - Verify active session  
-POST   /api/auth/logout         - End user session
-```
-
-### Game History
-```
-GET    /api/game-history        - Get user's game history
-GET    /api/game/{id}           - Get specific game details
-```
-
-### WebSocket
-```
-CONNECT  /ws                     - Establish WebSocket connection
-SEND     /app/game/find-match    - Join matchmaking queue
-SEND     /app/game/move          - Send game move
-RECEIVE  /topic/match-found      - Match notification
-RECEIVE  /topic/game-update      - Game state updates
-```
-
----
-
-
-## 🎯 Evaluation Checklist
-
-- [ ] Java 21 installed
-- [ ] Node.js v16+ installed
-- [ ] Maven 3.6+ installed
-- [ ] Copied credentials from `EVALUATOR_CREDENTIALS.txt`
-- [ ] Backend runs: `mvn spring-boot:run`
-- [ ] Frontend runs: `npm start`
-- [ ] Tests pass: `mvn test` (59/59)
-- [ ] Coverage generated: `mvn test jacoco:report`
-- [ ] Tested with 2 browsers/users
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-4. Game board appears for both players
-5. Take turns making moves
-6. Moves sync in real-time!
-
----
-
-## 🧪 Running Tests
-
-### Test Suite Overview
-
-This project includes **59 comprehensive unit tests** covering:
-- **Domain Models** - Game, Move, Player, all Piece types
-- **Service Layer** - RedisService with mocks
-- **Business Logic** - Game state, move validation, session management
-
-### Running All Tests
-
-```bash
-cd backend
-
-# Run all tests
-mvn test
-
-# Expected output:
-# Tests run: 59, Failures: 0, Errors: 0, Skipped: 1
-# BUILD SUCCESS
-```
-
-### Generate Coverage Report
-
-```bash
-cd backend
-mvn clean test jacoco:report
-
-# Open coverage report:
-# backend/target/site/jacoco/index.html
-# Expected coverage: 65-70%
-```
-
-### Test Structure
-
-```
-backend/src/test/java/com/example/chess_app/
-├── GameTest.java (12 tests)
-│   └── Game state management, move tracking
-├── PieceTest.java (21 tests)  
-│   └── All chess pieces (Pawn, Rook, Knight, Bishop, Queen, King)
-├── TestPieceFactory.java (Helper class)
-│
-└── unit/
-    ├── model/
-    │   ├── MoveTest.java (12 tests)
-    │   └── PlayerTest.java (7 tests)
-    └── service/
-        └── RedisServiceTest.java (7 tests - with Mockito mocks)
-```
-
-### Testing Technologies
-
-- **JUnit 5** - Testing framework
-- **Mockito** - Mocking external dependencies  
-- **AssertJ** - Fluent assertions
-- **JaCoCo** - Code coverage analysis
-
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**1. Backend won't start**
-```bash
-# Check Java version
-java -version  # Must be Java 21
-
-# Clean and rebuild
-mvn clean install
-```
-
-**2. "Cannot connect to MongoDB"**
-- Verify credentials in `application.properties` match `EVALUATOR_CREDENTIALS.txt`
-- Check internet connection (using cloud MongoDB)
-
-**3. "Cannot connect to Redis"**
-- Verify Redis configuration in `application.properties`
-- Redis is required - check cloud Redis credentials
-
-**4. Tests failing**
-```bash
-# Clean and run
-mvn clean test
-
-# Tests should pass without MongoDB/Redis (uses mocks)
-```
-
-**5. Frontend won't connect to backend**
-- Ensure backend is running on port 8080
-- Check `REACT_APP_BACKEND_URL` in frontend `.env`
-- Verify CORS settings in backend `application.properties`
-
-**6. Can't login/register**
-- Check Firebase configuration in frontend `.env`
-- Verify Firebase project ID matches in backend
-- Ensure internet connection (Firebase is cloud-based)
-
-**7. Matchmaking not working**
-- You need **TWO users** logged in simultaneously
-- Use two different browsers (Chrome + Firefox)
-- **DO NOT use incognito mode** (JWT tokens won't persist)
-- Both users must click "Find Match"
-- Wait 2-3 seconds for automatic pairing
-
----
-
-## 📁 Project Structure
-
-```
-Shatranj_Art_Of_War/
-├── backend/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/example/chess_app/
-│   │   │   │   ├── AuthController.java
-│   │   │   │   ├── GameHistoryController.java
-│   │   │   │   ├── OnlineGameController.java
-│   │   │   │   ├── MatchmakingService.java
-│   │   │   │   ├── RedisService.java
-│   │   │   │   ├── Game.java, Player.java, Move.java
-│   │   │   │   └── Piece.java (+ subclasses)
-│   │   │   └── resources/
-│   │   │       └── application.properties
-│   │   └── test/
-│   │       └── java/com/example/chess_app/
-│   │           └── [59 test files]
-│   ├── pom.xml
-│   └── target/site/jacoco/  # Coverage reports
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── firebase/
-│   │   └── App.js
-│   └── .env
-│
-├── README.md (this file)
-└── PROJECT_REPORT.md
-```
-
----
-
-## 📊 API Endpoints
-
-### Authentication
-```
-POST   /api/auth/login          - User login with Firebase token
-POST   /api/auth/verify-session - Verify active session  
-POST   /api/auth/logout         - End user session
-```
-
-### Game History
-```
-GET    /api/game-history        - Get user's game history
-GET    /api/game/{id}           - Get specific game details
-```
-
-### WebSocket
-```
-CONNECT  /ws                     - Establish WebSocket connection
-SEND     /app/game/find-match    - Join matchmaking queue
-SEND     /app/game/move          - Send game move
-RECEIVE  /topic/match-found      - Match notification
-RECEIVE  /topic/game-update      - Game state updates
-```
-
----
-
-
-## 🎯 Evaluation Checklist
-
-- [ ] Java 21 installed
-- [ ] Node.js v16+ installed
-- [ ] Maven 3.6+ installed
-- [ ] Copied credentials from `EVALUATOR_CREDENTIALS.txt`
-- [ ] Backend runs: `mvn spring-boot:run`
-- [ ] Frontend runs: `npm start`
-- [ ] Tests pass: `mvn test` (59/59)
-- [ ] Coverage generated: `mvn test jacoco:report`
-- [ ] Tested with 2 browsers/users
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 👨‍💻 Author
-
-**Yash Gupta**
-- GitHub: [@YashGupta2106](https://github.com/YashGupta2106)
-- Project: [Shatranj Art of War](https://github.com/YashGupta2106/Shatranj_Art_Of_War)
-**Step 1: Clone the Repository**
+**1. Clone the repository**
 ```bash
 git clone https://github.com/YashGupta2106/Shatranj_Art_Of_War.git
 cd Shatranj_Art_Of_War
 ```
 
-**Step 2: Create Firebase Service Account File** ⚠️ **REQUIRED**
+**2. Set up Firebase Service Account**
 
-> **This file cannot be in GitHub for security. You must create it manually.**
+Create `backend/src/main/resources/firebase_service.json` with your Firebase service account credentials.
+
+**3. Run Backend**
+```bash
+cd backend
+
+# Set environment profile
+export SPRING_PROFILES_ACTIVE=dev  # Linux/Mac
+$env:SPRING_PROFILES_ACTIVE="dev"  # Windows PowerShell
+
+mvn clean install
+mvn spring-boot:run
+# Runs on http://localhost:8080
+```
+
+**4. Run Frontend**
+```bash
+cd frontend
+npm install
+npm start
+# Opens on http://localhost:3000
+```
+
+---
+
+## 🎮 How to Play
+
+### Testing Locally (2 Players Required)
+
+> **⚠️ Important:** This is a multiplayer game requiring TWO users!
+
+**Setup:**
+1. Open **Chrome**: `http://localhost:3000`
+2. Open **Firefox**: `http://localhost:3000`  
+3. Register/login as different users in each browser
+4. Both click "Find Match"
+5. Game starts automatically!
+
+**Why two browsers?**
+- Same browser = session conflict
+- Different browsers = works perfectly
+- **Don't use Incognito** - JWT tokens won't persist
+
+---
+
+## 🧪 Running Tests
 
 ```bash
-cd backend/src/main/resources
+cd backend
 
-# Windows:
-notepad firebase_service.json
+# Run all tests
+mvn test
+# Result: 59 tests, 0 failures
 
-# Mac/Linux:
-nano firebase_service.json
+# Generate coverage report
+mvn clean test jacoco:report
+# Open: backend/target/site/jacoco/index.html
 ```
 
-**Copy this template and fill in the credentials from `EVALUATOR_CREDENTIALS.txt`:**
-
-```json
-{
-  "type": "service_account",
-  "project_id": "[FROM EVALUATOR_CREDENTIALS.txt]",
-  "private_key_id": "[FROM EVALUATOR_CREDENTIALS.txt]",
-  "private_key": "[FROM EVALUATOR_CREDENTIALS.txt]",
-  "client_email": "[FROM EVALUATOR_CREDENTIALS.txt]",
-  "client_id": "[FROM EVALUATOR_CREDENTIALS.txt]",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "[FROM EVALUATOR_CREDENTIALS.txt]"
-}
-```
-
-> **See `EVALUATOR_CREDENTIALS.txt` for complete credentials and detailed instructions.**  
-> **Template file:** `backend/src/main/resources/firebase_service.json.template`
-
-**Step 3: Install Dependencies & Run Backend**
+**Test Coverage:**
+- Domain Models: ~90%
+- Services: ~60%
+- Overall: 65-70%
 
 ---
 
-## 📚 Additional Documentation
+## 📚 API Documentation
 
-For detailed information about testing methodology, architecture decisions, and development phases, please refer to `PROJECT_REPORT.md`.
+### Authentication Endpoints
+```
+POST   /api/auth/login           - User login with Firebase token
+POST   /api/auth/sessionVerify   - Verify active session  
+POST   /api/auth/logout          - End session
+```
+
+### Game History Endpoints
+```
+GET    /api/game-history         - Get user's game history
+GET    /api/game/{id}            - Get specific game details
+```
+
+### WebSocket Endpoints
+```
+CONNECT  /ws                     - Establish WebSocket connection
+SEND     /app/game/find-match    - Join matchmaking queue
+SEND     /app/game/move          - Send chess move
+RECEIVE  /topic/match-found      - Matchmaking notification
+RECEIVE  /topic/game-update      - Real-time game updates
+```
 
 ---
+
+## 🚢 Deployment
+
+### Frontend (Vercel)
+
+1. Fork this repository
+2. Connect to Vercel
+3. Set environment variables from frontend `.env`
+4. Deploy!
+
+### Backend (Render)
+
+1. Create new Web Service on Render
+2. Connect GitHub repository
+3. Set build command: `mvn clean install`
+4. Set start command: `java -jar target/chess_app-0.0.1-SNAPSHOT.jar`
+5. Add environment variables from backend config
+6. Deploy!
+
+**Environment Variables Required:**
+- `MONGODB_URI`
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_SERVICE_ACCOUNT_PATH`
+- `REDIS_HOST`
+- `REDIS_PORT`
+- `REDIS_PASSWORD`
+- `CORS_ALLOWED_ORIGINS` (include your Vercel URL)
+- `PORT`
+- `AUTH_SECURE`
+- `AUTH_CROSS_SITE`
+
+---
+
+## 🐛 Troubleshooting
+
+**Backend won't start:**
+```bash
+# Check Java version (must be 21)
+java -version
+
+# Clean and rebuild
+mvn clean install
+```
+
+**Frontend can't connect:**
+- Ensure backend is running
+- Check `REACT_APP_BACKEND_URL` in `.env`
+- Verify CORS settings include your frontend URL
+
+**Matchmaking not working:**
+- Need TWO users in TWO different browsers
+- Both must click "Find Match" simultaneously
+- Wait 2-3 seconds for auto-matching
+
+**Tests failing:**
+```bash
+mvn clean test
+# Should pass without external dependencies (uses mocks)
+```
+
+---
+
+## 📁 Project Structure
+
+```
+Shatranj_Art_Of_War/
+├── backend/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/example/chess_app/
+│   │   │   │   ├── Controllers/
+│   │   │   │   ├── Services/
+│   │   │   │   ├── Models/
+│   │   │   │   └── Repositories/
+│   │   │   └── resources/
+│   │   │       ├── application.properties
+│   │   │       └── application-dev.properties
+│   │   └── test/
+│   │       └── [59 test files]
+│   └── pom.xml
+│
+├── frontend/
+│   ├── src/
+│   │   ├── LoginRegister.jsx
+│   │   ├── HomePage.jsx
+│   │   ├── ChessBoard.js
+│   │   ├── GameHistory.jsx
+│   │   └── WebSocketService.js
+│   ├── package.json
+│   └── .env (not in git)
+│
+└── README.md (this file)
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Chess piece Unicode characters
+- Firebase for authentication
+- MongoDB Atlas for database hosting
+- Redis Cloud for session management
+- Vercel & Render for deployment
+
+---
+
+## 📧 Contact
+
+**Project Link:** [https://github.com/YashGupta2106/Shatranj_Art_Of_War](https://github.com/YashGupta2106/Shatranj_Art_Of_War)
+
+---
+
+**Built with ❤️ using React and Spring Boot**

@@ -1,0 +1,36 @@
+# Render deployment configuration
+# This file tells Render how to build and deploy your Spring Boot backend
+
+# Docker build
+build:
+  dockerfile: Dockerfile
+
+# Environment
+env: docker
+
+# Service name
+name: shatranj-backend
+
+# Region (choose closest to your users)
+region: oregon
+
+# Plan (free tier)
+plan: free
+
+# Auto-deploy on push
+autoDeploy: true
+
+# Health check path
+healthCheckPath: /actuator/health
+
+# Environment variables (set these in Render dashboard)
+# MONGODB_URI
+# FIREBASE_PROJECT_ID
+# FIREBASE_SERVICE_ACCOUNT_PATH
+# REDIS_HOST
+# REDIS_PORT
+# REDIS_PASSWORD
+# CORS_ALLOWED_ORIGINS
+# PORT
+# AUTH_SECURE
+# AUTH_CROSS_SITE

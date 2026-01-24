@@ -1,0 +1,58 @@
+# Ignore files for Docker build optimization
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Test files
+*.test
+test-output/
+
+# Firebase service account (should be added via secrets)
+**/firebase_service.json
+**/firebase-service-account*.json
+
+# Environment files
+.env
+.env.local
+.env.*.local
+application-dev.properties
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (not needed in container)
+README.md
+*.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Other
+node_modules/
+*.bak
+*.tmp
